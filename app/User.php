@@ -20,7 +20,7 @@ class User extends Model
     ];
 
     // Relación con la tabla roles
-    public function role()
+    public function rol()
     {
         return $this->belongsTo('App\Role', 'id_rol');
     }

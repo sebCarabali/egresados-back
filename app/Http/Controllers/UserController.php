@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
+use App\User;
+use App\Helpers\JwtAuth;
+
 class UserController extends Controller
 {
 
     public function login(Request $request)
     {
-
         $jwtAuth = new \JwtAuth();
 
         // Recibir datos por POST
@@ -23,7 +25,7 @@ class UserController extends Controller
             'email' => 'required|email',
             'password' => 'required'
         ]);
-        
+
         // Codigo de error por defecto
         $code = 400;
 

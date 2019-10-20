@@ -32,9 +32,9 @@ class JwtAuth
         // Generar el token
         if ($signup) {
             $token = array(
-                'id' => $user->id,
+                'sub' => $user->id,
                 'email' => $user->email,
-                'id_role' => $user->id_rol,
+                'id_rol' => $user->id_rol,
                 'first_name' => $user->first_name,
                 'last_name' => $user->last_name,
                 'iat' => time(),
@@ -71,7 +71,7 @@ class JwtAuth
             $auth = false;
         }
 
-        if (!empty($decoded) && is_object($decoded) && isset($decoded->id)) {
+        if (!empty($decoded) && is_object($decoded) && isset($decoded->sub)) {
             $auth = true;
         } else {
             $auth = false;

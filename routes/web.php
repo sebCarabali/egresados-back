@@ -17,4 +17,4 @@ Route::get('/', function () {
 
 Route::post('/api/login', 'UserController@login');
 
-
+Route::resource('/api/empresa', 'EmpresaController')->middleware('api.auth');

@@ -11,7 +11,7 @@ class Localizacion extends Model
     public $timestamps = false;
 
     public function ciudad() {
-      return $this->belongsTo('App\Ciudad');
+      return $this->belongsTo('App\Ciudad', 'id_ciudad');
     }
 
     public function egresados() {

@@ -12,20 +12,20 @@ class Egresado extends Model
 
     public function nacimiento()
     {
-        return $this->belongsTo('App\Nacimiento');
+        return $this->belongsTo('App\Nacimiento', 'id_nacimiento_fk');
     }
 
     public function lugarResidencia(){
-      return $this->belongsTo('App\Localizacion');
+      return $this->belongsTo('App\Localizacion', 'id_lugar_residencia');
     }
 
     public function lugarExpedicion() {
-      return $this->belongsTo('App\Ciudad');
+      return $this->belongsTo('App\Ciudad', 'id_lugar_expedicion');
     }
 
-    public function grados() {
-      return $this->belognsToMany('App\Programa', 'grados', 'id_estudiante', 'id_programa')
-        ->withPivot('tipo', 'mension_honor', 'titulo_especial', 'comentarios', 'fecha_graduacion',
-                    'docente_influencia');
+    public function programas() {
+      return $this->belognsToMany('App\Programa', 'grados', 'id_estudiante', 'id_programa');
+        /*->withPivot('tipo', 'mension_honor', 'titulo_especial', 'comentarios', 'fecha_graduacion',
+                    'docente_influencia');*/
     }
 }

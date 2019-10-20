@@ -13,4 +13,9 @@ class Nacimiento extends Model
     public function egresados(){
       return $this->hasMany('App\Egresado');
     }
+
+    public function ciudad()
+    {
+        return $this->belongsTo('App\Ciudad', 'id_ciudad_fk');
+    }
 }

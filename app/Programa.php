@@ -11,12 +11,12 @@ class Programa extends Model
     public $timestamps = false;
 
     public function egresados() {
-        return $this->belognsToMany('App\Egresado', 'grados', 'id_programa', 'id_estudiante')
-                ->withPivot('tipo', 'mension_honor', 'titulo_especial', 'comentarios', 'fecha_graduacion',
-                            'docente_influencia');
+        return $this->belognsToMany('App\Egresado', 'grados', 'id_programa', 'id_estudiante');
+                /*->withPivot('tipo', 'mension_honor', 'titulo_especial', 'comentarios', 'fecha_graduacion',
+                            'docente_influencia');*/
     }
 
     public function facultad() {
-        return $this->belognsTo('App\Facultad');
+        return $this->belognsTo('App\Facultad', 'id_facultad');
     }
 }

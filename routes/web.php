@@ -14,3 +14,7 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::post('/api/login', 'UserController@login');
+
+Route::resource('/api/empresa', 'EmpresaController')->middleware('api.auth');

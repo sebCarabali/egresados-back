@@ -16,16 +16,25 @@ class Egresado extends Model
     }
 
     public function lugarResidencia(){
-      return $this->belongsTo('App\Localizacion', 'id_lugar_residencia');
+      return $this->belongsTo('App\Localizacion', 'id_luagr_residencia');
     }
 
     public function lugarExpedicion() {
       return $this->belongsTo('App\Ciudad', 'id_lugar_expedicion');
     }
 
+    public function roles()
+    {
+        return $this->belongsToMany('App\Role', 'role_user_table', 'user_id', 'role_id');
+    }
+
     public function programas() {
-      return $this->belognsToMany('App\Programa', 'grados', 'id_estudiante', 'id_programa');
+      return $this->belongsToMany('App\Programa', 'grados', 'id_estudiante', 'id_programa');
         /*->withPivot('tipo', 'mension_honor', 'titulo_especial', 'comentarios', 'fecha_graduacion',
                     'docente_influencia');*/
+    }
+
+    public function nivelEducativo() {
+      return $this->belongsTo('App\NivelEducativo', 'id_nivel_educativo');
     }
 }

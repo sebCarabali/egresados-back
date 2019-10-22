@@ -23,3 +23,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::post('egresados', 'API\EgresadoController@storeBasicInfo');
 
 Route::post('empresas/store', 'EmpresaController@store');
+
+Route::get('departamentos', 'DepartamentoController@getAllDepartments');
+Route::get('ciudades/departamento/{dep}', 'DepartamentoController@getAllCitiesDepartment');
+Route::get('sectores', 'SectorController@getAllSectors');

@@ -11,7 +11,7 @@ class Departamento extends Model
     public $timestamps = false;
 
     public function ciudades() {
-      return $this->hasMany('App\Ciudad');
+      return $this->hasMany('App\Ciudad','id_departamento', 'id');
     }
 
     public function pais() {

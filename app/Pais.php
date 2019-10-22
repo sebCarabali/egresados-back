@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Pais extends Model
 {
-    protected $table = 'ofertas.pais';
+    protected $table = 'pais';
+    protected $primaryKey = 'id_pais';
     protected $fillable = ['nombre'];
     public $timestamps = false;
 

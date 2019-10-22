@@ -21,3 +21,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
  * store egresado basic info (url => '/api/egresados').
  */
 Route::post('egresados', 'API\EgresadoController@storeBasicInfo');
+
+Route::post('empresas/store', 'EmpresaController@store');

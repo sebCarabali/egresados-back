@@ -13,19 +13,24 @@ class ApiAuthMiddleware
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle($request, Closure $next, $rol)
     {
-      //Comprobar si el usuario está identificado
-      $token = $request->header('Authorization');
-      $jwtAuth = new \JwtAuth();
-      $checkToken = $jwtAuth->checkToken($token);
+        // var_dump($rol); die();
+        //Comprobar si el usuario está identificado
+        $token = $request->header('Authorization');
+        $jwtAuth = new \JwtAuth();
+        $checkToken = $jwtAuth->checkToken($token);
 
-      if ($checkToken) {
-          return $next($request);
-      } else {
-          $data = null;
-          $code = 401;
-          return response()->json($data, $code);
-      }
+        // Codigos de error por defecto
+        $data = null;
+        $code = 401;
+
+        if ($checkToken) {
+            $user = $jwtAuth->checkToken($token, true);
+            if ($user->id_rol == $rol) {
+                return $next($request);
+            }
+        }
+        return response()->json($data, $code);
     }
 }

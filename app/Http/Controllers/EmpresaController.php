@@ -51,34 +51,46 @@ class EmpresaController extends Controller
             unset($params_array['razon_social']);
             unset($params_array['anio_creacion']);
             unset($params_array['fecha_registro']);
+            unset($params_array['fecha_activacion']);
 
 
             // Buscar el registro
             $empresa = Empresa::where('id', $id)->first();
 
             if (!empty($empresa) && is_object($empresa)) {
-                // Cuando se busca cambiar el estado de la empresa
-                if ($params_array['estado']) {
-                    // Conseguir usuario autentificado
-                    $user = $this->getIdentity($request);
 
-                    // Verificar que sea administrador
-                    if ($user->id_rol == 0) {
-                        // Actualizar el registro en concreto
-                        $empresa->update($params_array);
-                        $data = $empresa;
-                        $code = 200;
-                    } else {
-                        // Permisos insuficientes
-                        $code = 401;
-                    }
-                } else {
-                    // Actualizar el registro en concreto
-                    $empresa->update($params_array);
+                // Actualizar el registro en concreto
+                $empresa->update($params_array);
 
-                    $data = $empresa;
-                    $code = 200;
-                }
+                $data = $empresa;
+                $code = 200;
+            }
+        }
+        return response()->json($data, $code);
+    }
+
+    public function updateEstado($id, Request $request){
+
+
+        // Recoger los datos por PUT
+        $json = $request->input('json', null);
+        $params_array = json_decode($json, true);
+
+        // Código de error por defecto
+        $code = 400;
+        $data = null;
+
+        if (!empty($params_array)) {
+
+            // Buscar el registro
+            $empresa = Empresa::where('id', $id)->first();
+
+            if (!empty($empresa) && is_object($empresa)) {
+              // Actualizar el registro en concreto
+              $empresa->update(['estado' => $params_array['estado']]);
+              $data = $empresa;
+              $code = 200;
+
             }
         }
         return response()->json($data, $code);

@@ -38,7 +38,7 @@ class JwtAuth
                 'first_name' => $user->first_name,
                 'last_name' => $user->last_name,
                 'iat' => time(),
-                'exp' => time() + (7 * 24 * 60 * 60),
+                'exp' => time() + (7 * 24 * 60 * 60),     // Vence token 1 semana
             );
 
             $jwt = JWT::encode($token, $this->key, 'HS256');

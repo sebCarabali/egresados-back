@@ -15,6 +15,6 @@ class Ciudad extends Model
     }
 
     public function departamento(){
-      return $this->belongsTo('App\Departamento');
+      return $this->belongsTo('App\Departamento', 'id_departamento');
     }
 }

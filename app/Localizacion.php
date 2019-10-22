@@ -21,4 +21,16 @@ class Localizacion extends Model
     public function falcultades() {
       return $this->hasMany('App\Facultad');
     }
+
+    public function representanteEmpresa()
+    {
+        return $this->hasMany(\App\RepresentanteEmpresa, 'id_direccion', 'id');
+        // return $this->hasMany(\App\RepresentanteEmpresa, 'id_direccion', 'id_aut_localizacion');
+    }
+
+    public function empresas()
+    {
+        return $this->hasMany(\App\Empresa, 'id_direccion', 'id');
+        // return $this->hasMany(\App\Empresa, 'id_direccion', 'id_aut_localizacion');
+    }
 }

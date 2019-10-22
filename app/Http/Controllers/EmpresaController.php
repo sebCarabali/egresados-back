@@ -112,16 +112,6 @@ class EmpresaController extends Controller
         return response()->json($data, $code);
     }
 
-    private function getIdentity($request)
-    {
-        // Conseguir usuario autentificado
-        $jwtAuth = new JwtAuth();
-        $token = $request->header('Authorization', null);
-        $user = $jwtAuth->checkToken($token, true);
-
-        return $user;
-    }
-
 
     /**
      * Store a newly created resource in storage.
@@ -251,7 +241,7 @@ class EmpresaController extends Controller
                 return response()->json($e);
             }
         }
-        // 
+        //
         // abort(401);
         return response()->json($data, $code);
     }

@@ -45,7 +45,9 @@ Route::get('facultades', 'API\FacultadController@getAll');
  * Obtiene todos los programas de una facultad.
  */
 Route::get('programas/{idFacultad}', 'API\ProgramaController@getByFacultad');
-
+/**
+ * 
+ */
 // --------------------------------------------------------------------------------
 Route::post('empresas/store', 'EmpresaController@store');
 

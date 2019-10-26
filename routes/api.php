@@ -33,6 +33,19 @@ Route::get('departamentos/{idPais}', 'DepartamentoController@getByPais');
  * Obtiene todos los países.
  */
 Route::get('paises', 'PaisController@getAll');
+/**
+ * Obtiene los niveles de estudio.
+ */
+Route::get('nivelesEstudio', 'API\NivelEstudioController@getAll');
+/**
+ * Obtiene las facultades.
+ */
+Route::get('facultades', 'API\FacultadController@getAll');
+/**
+ * Obtiene todos los programas de una facultad.
+ */
+Route::get('programas/{idFacultad}', 'API\ProgramaController@getByFacultad');
+
 // --------------------------------------------------------------------------------
 Route::post('empresas/store', 'EmpresaController@store');
 

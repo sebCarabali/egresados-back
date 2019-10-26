@@ -15,6 +15,6 @@ class Facultad extends Model
     }
 
     public function programas() {
-      return $this->hasMany('App\Programa');
+      return $this->hasMany('App\Programa', '');
     }
 }

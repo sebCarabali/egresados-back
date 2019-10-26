@@ -8,7 +8,6 @@ class Nacimiento extends Model
 {
     protected $table = 'nacimiento';
     protected $guarded = ['id_lug_nac'];
-    protected $primaryKey = 'id_lugar_nac';
     public $timestamps = false;
     
     public function egresados(){

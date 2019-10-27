@@ -96,4 +96,19 @@ class EgresadoController extends Controller
     {
         
     }
+
+    /**
+     * Contraste la información de los egresados registrados en la base de datos,
+     * con los de el excel proporcionado por la secretaria general.
+     * 
+     * @param \Illuminate\Http\Request  $req
+     * @return \Illuminate\Http\Response
+     */
+    public function validate(Request $req)
+    {
+        $retorno = [
+            'file' => 'aqui'
+        ];
+        return response()->json($retorno, 200);
+    }
 }

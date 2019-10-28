@@ -11,10 +11,10 @@ class Facultad extends Model
     public $timestamps = false;
 
     public function localizacion() {
-      return $this->belongsTo('App\Localicacion');
+      return $this->belongsTo('App\Localicacion', 'id_direccion');
     }
 
     public function programas() {
-      return $this->hasMany('App\Programa');
+      return $this->hasMany('App\Programa', '');
     }
 }

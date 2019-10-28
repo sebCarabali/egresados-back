@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Pais;
 use Illuminate\Http\Request;
+use App\Pais;
 
 class PaisController extends Controller
 {
@@ -17,5 +17,9 @@ class PaisController extends Controller
 
         $response = Pais::find($pais);
         return response()->json(($response ? $response->departamentos: null));
+    }
+    public function getAll()
+    {
+        return response()->json(Pais::all(), 200);
     }
 }

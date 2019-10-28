@@ -12,6 +12,6 @@ class Pais extends Model
     public $timestamps = false;
 
     public function departamentos() {
-      return $this->hasMany('App\Departamento');
+      return $this->hasMany('App\Departamento', 'id_pais_fk', 'id_pais');
     }
 }

@@ -7,15 +7,9 @@ use Illuminate\Http\Request;
 
 class DepartamentoController extends Controller
 {
-    public function getAllDepartments()
-    {
-        $response = Departamento::all() ?: null;
-        return response($response);
-    }
-
     public function getAllCitiesDepartment($dep)
     {
-        $response = \App\Departamento::find($dep) ?: null;
+        $response = Departamento::find($dep);
         if ($response) {
             return response()->json($response->ciudades, 200);
         }

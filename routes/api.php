@@ -24,6 +24,14 @@ Route::post('egresados', 'API\EgresadoController@storeBasicInfo');
 
 Route::post('empresas/store', 'EmpresaController@store');
 
-Route::get('departamentos', 'DepartamentoController@getAllDepartments');
-Route::get('ciudades/departamento/{dep}', 'DepartamentoController@getAllCitiesDepartment');
-Route::get('sectores', 'SectorController@getAllSectors');
+Route::get('sectores-subsectores', 'SectorController@getAllSectors');
+Route::get('paises', 'PaisController@getAllCountries');
+Route::get('departamentos/{pais}', 'PaisController@getAllDepartments');
+Route::get('ciudades/{dep}', 'DepartamentoController@getAllCitiesDepartment');
+
+Route::get('aaa/{email}', function($email){
+    dd($email);
+});
+Route::get('validarUsuario/{email}', 'ValidadorController@validateEmail');
+Route::get('validarNIT/{nit}', 'ValidadorController@validateNit');
+

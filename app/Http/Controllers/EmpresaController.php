@@ -119,14 +119,14 @@ class EmpresaController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store()
+    public function store(Request $request)
     {
         // Código de error por defecto
         $code = 400;
         $data = null;
         if (request()->ajax()) {
             try {
-                // return response()->json(request("sectores"));
+                // return response()->json($request);
                 $this->validate(request(), [
                     //Datos usuario login
                     // datos-cuenta

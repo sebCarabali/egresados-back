@@ -16,12 +16,39 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
-
+// --------------------------------------------------------------------------------
 /**
- * store egresado basic info (url => '/api/egresados').
+ * Guarda la información básica de un egresado.
  */
 Route::post('egresados', 'API\EgresadoController@storeBasicInfo');
-
+/**
+ * Obtiene todas la ciudades de un departamento.
+ */
+Route::get('ciudades/{idDepartamento}', 'CiudadController@getByDepartamento');
+/**
+ * Obtiene todos los departamentos de un país.
+ */
+Route::get('departamentos/{idPais}', 'DepartamentoController@getByPais');
+/**
+ * Obtiene todos los países.
+ */
+Route::get('paises', 'PaisController@getAll');
+/**
+ * Obtiene los niveles de estudio.
+ */
+Route::get('nivelesEstudio', 'API\NivelEstudioController@getAll');
+/**
+ * Obtiene las facultades.
+ */
+Route::get('facultades', 'API\FacultadController@getAll');
+/**
+ * Obtiene todos los programas de una facultad.
+ */
+Route::get('programas/{idFacultad}', 'API\ProgramaController@getByFacultad');
+/**
+ * 
+ */
+// --------------------------------------------------------------------------------
 Route::post('empresas/store', 'EmpresaController@store');
 
 Route::get('departamentos', 'DepartamentoController@getAllDepartments');

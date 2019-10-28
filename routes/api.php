@@ -48,7 +48,9 @@ Route::get('programas/{idFacultad}', 'API\ProgramaController@getByFacultad');
 /**
  * Verifica el excel de egresados dato por secretaria.
  */
-Route::post('egresados/verificar', 'API\EgresadoController@validate');
+//Route::group(['middleware' => 'cors'], function () {
+    Route::post('egresados/verificar', 'API\EgresadoController@validateExcel');
+//});
 // --------------------------------------------------------------------------------
 Route::post('empresas/store', 'EmpresaController@store');
 

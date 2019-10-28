@@ -3,12 +3,17 @@
 namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Input;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use App\Egresado;
 use App\Nacimiento;
 use App\Ciudad;
 use App\Localizacion;
+use Validator;
+use Excel;
+
+use App\Imports\EgresadosImport;
 
 class EgresadoController extends Controller
 {
@@ -97,6 +102,13 @@ class EgresadoController extends Controller
         
     }
 
+    private function getCollection($file){
+        $import = new EgresadosImport();
+        Excel::import($import, $file);
+        $egresados = $import->egresados;
+        return array_pop($egresados);
+    }
+
     /**
      * Contraste la información de los egresados registrados en la base de datos,
      * con los de el excel proporcionado por la secretaria general.
@@ -104,11 +116,34 @@ class EgresadoController extends Controller
      * @param \Illuminate\Http\Request  $req
      * @return \Illuminate\Http\Response
      */
-    public function validate(Request $req)
+    public function validateExcel(Request $request)
     {
-        $retorno = [
-            'file' => 'aqui'
+        $file = $request->file('fileInput');
+        $input = [
+            'file' => $file,
+            'extension' => strtolower($file->getClientOriginalExtension())
         ];
-        return response()->json($retorno, 200);
+        $rules = [
+            'file' => 'required',
+            'extension' => 'required|in:xlsx,xsl,csv,ods'
+        ];
+        $messages = [
+            'file.required' => 'Es necesario pasar un archivo.',
+            'extension.required' => 'Debe ser un archivo con extension.',
+            'extension.in' => 'Debe se un arvhivo excel válido.'
+        ];
+        $validator = Validator::make($input, $rules, $messages);
+
+        if($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $aceptados = $this->getCollection($file);
+
+        /*if(count($errors) > 0) {
+            return response()->json($validator->errors(), 422);
+        }*/
+
+        return response()->json(['msg' => 'Archivo verificado correctamente', 'aceptados' => $aceptados], 200);
     }
 }

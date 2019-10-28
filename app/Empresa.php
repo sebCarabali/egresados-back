@@ -6,12 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Empresa extends Model
 {
-    protected $table = 'empresas';
+    protected $table = 'ofertas.empresas';
 
     public $timestamps = false;
 
-
-    // protected $primaryKey = 'id_aut_empresa';
+    protected $primaryKey = 'id_aut_empresa';
 
     protected $fillable = [
         'nit',
@@ -38,13 +37,18 @@ class Empresa extends Model
 
     public function direccion()
     {
-        return $this->belongsTo(\App\Localizacion::class, 'id_direccion', 'id');
-        // return $this->belongsTo(\App\Localizacion::class, 'id_direccion', 'id_aut_localizacion');
+        // return $this->belongsTo(\App\Localizacion::class, 'id_direccion', 'id');
+        return $this->belongsTo(\App\Localizacion::class, 'id_direccion', 'id_aut_localizacion');
     }
 
     public function user()
     {
         return $this->belongsTo(\App\User::class, 'id_user', 'id');
         // return $this->belongsTo(\App\User::class, 'id_aut_user', 'id_aut_user');
+    }
+
+    public function ofertas()
+    {
+        return $this->hasMany(\App\Oferta::class, 'id_empresa', 'id_aut_empresa');
     }
 }

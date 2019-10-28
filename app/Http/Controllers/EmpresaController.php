@@ -31,7 +31,15 @@ class EmpresaController extends Controller
         return response()->json($empresas, 200);
     }
 
-    public function show($id)
+    public function getEmpresasEnEspera()
+    {
+        $empresas = Empresa::orderBy('fecha_registro', 'ASC')
+                          ->where('estado', 'En espera')->get();
+
+        return response()->json($empresas, 200);
+    }
+
+    public function showAllInfo($id)
     {
         // Codigo de error por defecto
         $code = 404;
@@ -48,8 +56,6 @@ class EmpresaController extends Controller
 
     public function update($id, Request $request)
     {
-
-
         // Recoger los datos por POST
         $json = $request->input('json', null);
         $params_array = json_decode($json, true);
@@ -98,15 +104,16 @@ class EmpresaController extends Controller
 
         if (!empty($params_array)) {
 
-            // Buscar el registro
-            $empresa = Empresa::where('id', $id)->first();
+            if ($params_array['estado'] == 'En espera' || $params_array['estado'] == 'Activo' || $params_array['estado'] == 'Inactivo') {
+                // Buscar el registro
+                $empresa = Empresa::find($id);
 
-            if (!empty($empresa) && is_object($empresa)) {
-              // Actualizar el registro en concreto
-              $empresa->update(['estado' => $params_array['estado']]);
-              $data = $empresa;
-              $code = 200;
-
+                if (!empty($empresa) && is_object($empresa)) {
+                  // Actualizar el registro en concreto
+                  $empresa->update(['estado' => $params_array['estado']]);
+                  $data = $empresa;
+                  $code = 200;
+                }
             }
         }
         return response()->json($data, $code);

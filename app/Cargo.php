@@ -6,17 +6,19 @@ use Illuminate\Database\Eloquent\Model;
 
 class Cargo extends Model
 {
-    protected $table = 'cargos';
+    protected $table = 'ofertas.cargos';
+
+    protected $primaryKey = 'id_aut_cargo';
 
     public $timestamps = false;
 
     protected $fillable = [
-        'id','nombre', 'id_categoria'
+        'nombre', 'id_categoria'
     ];
 
     public function categoria()
     {
-        return $this->belongsTo(\App\CategoriaCargo::class, 'id_categoria', 'id');
+        return $this->belongsTo(\App\CategoriaCargo::class, 'id_categoria', 'id_aut_cate_crago');
     }
 
     public function representantesEmpresas()

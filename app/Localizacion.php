@@ -10,6 +10,8 @@ class Localizacion extends Model
     protected $fillable = ['codigo_postal', 'direccion', 'barrio', 'id_ciudad'];
     public $timestamps = false;
 
+    protected $primaryKey = 'id_aut_localizacion';
+
     public function ciudad() {
       return $this->belongsTo('App\Ciudad', 'id_ciudad');
     }
@@ -30,7 +32,7 @@ class Localizacion extends Model
 
     public function empresas()
     {
-        return $this->hasMany(\App\Empresa, 'id_direccion', 'id');
-        // return $this->hasMany(\App\Empresa, 'id_direccion', 'id_aut_localizacion');
+        // return $this->hasMany(\App\Empresa, 'id_direccion', 'id');
+        return $this->hasMany(\App\Empresa, 'id_direccion', 'id_aut_localizacion');
     }
 }

@@ -18,6 +18,7 @@
   2: Egresado
 */
 Route::get('/', function () {
+    // dd(\App\Departamento::all());
     return view('welcome');
 });
 

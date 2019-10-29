@@ -23,7 +23,7 @@ class DepartamentoController extends Controller
 
     public function getAllCitiesDepartment($dep)
     {
-        $response = \App\Departamento::find($dep) ?: null;
+        $response = Departamento::find($dep);
         if ($response) {
             return response()->json($response->ciudades, 200);
         }

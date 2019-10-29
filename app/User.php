@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class User extends Model
 {
 
-    protected $table = 'ofertas.users';
+    protected $table = 'users';
 
     public $timestamps = false;
 

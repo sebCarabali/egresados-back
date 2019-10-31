@@ -6,34 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Empresa extends Model
 {
-    protected $table = 'ofertas.empresas';
-
+    protected $table = 'empresas';
     public $timestamps = false;
-
     protected $primaryKey = 'id_aut_empresa';
+    protected $guarded = ['id_aut_empresa'];
 
-    protected $fillable = [
-        'nit',
-        'nombre',
-        'razon_social',
-        'anio_creacion',
-        'numero_empleados',
-        'ingresos',
-        'sitio_web',
-        'id_direccion',
-        'estado',
-        'fecha_registro',
-        'fecha_activacion',
-        'total_publicaciones',
-        'limite_publicaciones',
-        'num_publicaciones_actuales'
-    ];
-
-    public function representante()
-    {
-        return $this->hasOne(\App\RepresentanteEmpresa::class, 'id_empresa', 'id');
-        // return $this->hasOne(\App\RepresentanteEmpresa::class, 'id_empresa', 'id_aut_empresa');
-    }
 
     public function direccion()
     {
@@ -50,5 +27,20 @@ class Empresa extends Model
     public function ofertas()
     {
         return $this->hasMany(\App\Oferta::class, 'id_empresa', 'id_aut_empresa');
+    }
+
+    public function sectores()
+    {
+        return $this->belongsToMany('App\Sector', 'empresas_sectores', 'id_empresa', 'id_sector');
+    }
+
+    public function representante()
+    {
+        return $this->hasMany(\App\RepresentanteEmpresa::class, 'id_empresa', 'id_aut_empresa');
+    }
+
+    public function administrador()
+    {
+        return $this->hasMany(\App\AdministradorEmpresa::class, 'id_empresa', 'id_aut_empresa');
     }
 }

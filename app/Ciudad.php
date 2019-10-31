@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Ciudad extends Model
 {
-    protected $table = 'ciudades';
+    protected $table = 'ofertas.ciudades';
+    protected $primaryKey = 'id_aut_ciudad';
     protected $guarded = ['id'];
     public $timestamps = false;
 
@@ -14,7 +15,8 @@ class Ciudad extends Model
       return $this->hasMany('App\Nacimiento');
     }
 
-    public function departamento(){
-      return $this->belongsTo('App\Departamento', 'id_departamento');
+    public function departamento()
+    {
+        return $this->belongsTo('App\Departamento', 'id_departamento');
     }
 }

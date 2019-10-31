@@ -43,9 +43,23 @@ class EmpresaController extends Controller
     {
         // Codigo de error por defecto
         $code = 404;
-        $empresa = Empresa::find($id);
+        $empresa = Empresa::find($id)->load('sectores', 'direccion', 'representante', 'administrador');
 
         if (is_object($empresa)) {
+            $empresa->direccion->load('ciudad');
+            $empresa->direccion->ciudad->load('departamento');
+            $empresa->direccion->ciudad->departamento->load('pais');
+
+            $empresa->administrador->load('direccion');
+            $empresa->administrador[0]->direccion->load('ciudad');
+            $empresa->administrador[0]->direccion->ciudad->load('departamento');
+            $empresa->administrador[0]->direccion->ciudad->departamento->load('pais');
+
+
+                    // Se borra el atributo pivot, el cual no es necesario
+            foreach ($empresa->sectores as $sector) {
+                unset($sector['pivot']);
+            }
             $code = 200;
             $data = $empresa;
         } else {
@@ -91,9 +105,8 @@ class EmpresaController extends Controller
         return response()->json($data, $code);
     }
 
-    public function updateEstado($id, Request $request){
-
-
+    public function updateEstado($id, Request $request)
+    {
         // Recoger los datos por PUT
         $json = $request->input('json', null);
         $params_array = json_decode($json, true);
@@ -103,16 +116,24 @@ class EmpresaController extends Controller
         $data = null;
 
         if (!empty($params_array)) {
+            // Buscar el registro
+            $empresa = Empresa::find($id);
 
-            if ($params_array['estado'] == 'En espera' || $params_array['estado'] == 'Activo' || $params_array['estado'] == 'Inactivo') {
-                // Buscar el registro
-                $empresa = Empresa::find($id);
+            if (!empty($empresa) && is_object($empresa)) {
 
-                if (!empty($empresa) && is_object($empresa)) {
-                  // Actualizar el registro en concreto
-                  $empresa->update(['estado' => $params_array['estado']]);
-                  $data = $empresa;
-                  $code = 200;
+                if ($params_array['estado'] == 'Activo' && !empty($params_array['limite_publicaciones'])) {
+                    // Actualizar el registro en concreto
+                    $empresa->update([
+                        'estado' => $params_array['estado'],
+                        'limite_publicaciones' => $params_array['limite_publicaciones']
+                    ]);
+                    $data = $empresa;
+                    $code = 200;
+                } else if ($params_array['estado'] == 'En espera' || $params_array['estado'] == 'Inactivo') {
+                    // Actualizar el registro en concreto
+                    $empresa->update(['estado' => $params_array['estado']]);
+                    $data = $empresa;
+                    $code = 200;
                 }
             }
         }

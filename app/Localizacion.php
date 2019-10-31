@@ -12,8 +12,9 @@ class Localizacion extends Model
 
     protected $primaryKey = 'id_aut_localizacion';
 
-    public function ciudad() {
-      return $this->belongsTo('App\Ciudad', 'id_ciudad');
+    public function ciudad()
+    {
+        return $this->belongsTo('App\Ciudad', 'id_ciudad');
     }
 
     public function egresados() {
@@ -24,9 +25,9 @@ class Localizacion extends Model
       return $this->hasMany('App\Facultad');
     }
 
-    public function representanteEmpresa()
+    public function administradores()
     {
-        return $this->hasMany(\App\RepresentanteEmpresa, 'id_direccion', 'id');
+        return $this->hasMany(\App\AdministradorEmpresa::class, 'id_direccion', 'id_aut_representante'); // Corregir
         // return $this->hasMany(\App\RepresentanteEmpresa, 'id_direccion', 'id_aut_localizacion');
     }
 

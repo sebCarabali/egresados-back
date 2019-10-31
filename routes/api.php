@@ -46,7 +46,7 @@ Route::get('facultades', 'API\FacultadController@getAll');
  */
 Route::get('programas/{idFacultad}', 'API\ProgramaController@getByFacultad');
 /**
- * 
+ *
  */
 // --------------------------------------------------------------------------------
 Route::post('empresas/store', 'EmpresaController@store');
@@ -61,7 +61,7 @@ Route::get('/empresa', 'EmpresaController@index');
 
 Route::post('/empresa', 'EmpresaController@store');
 Route::get('/empresa/enEspera', 'EmpresaController@getEmpresasEnEspera');
-Route::get('/empresa/{id}', 'EmpresaController@showAllInfo');
+Route::get('empresa/{id}', 'EmpresaController@showAllInfo');
 Route::put('/empresa/estado/{id}', 'EmpresaController@updateEstado');//->middleware('api.auth:0');
 Route::put('/empresa/{id}', 'EmpresaController@update');//->middleware('api.auth:1');
 
@@ -69,4 +69,4 @@ Route::put('/empresa/{id}', 'EmpresaController@update');//->middleware('api.auth
 Route::get('/ofertas/empresa/{id}', 'OfertaController@getOfertasEmpresa');
 
 // Admin
-Route::get('/ofertas/empresas', 'OfertasController@getOfertasEnEspera');
+Route::get('/ofertas/empresas', 'OfertaController@getOfertasEnEspera');

@@ -10,9 +10,14 @@ class Egresado extends Model
     protected $guraded = ['id'];
     public $timestamps = false;
 
-    public function nacimiento()
+    public function ciudadNacimiento()
     {
-        return $this->belongsTo('App\Nacimiento', 'id_nacimiento_fk');
+      return $this->belognsTo('App\Ciudad', 'id_ciudad_nacimiento');
+    }
+
+    public function nivelEducativo()
+    {
+      return $this->belognsTo('App\NivelEstudio', 'id_nivel_educativo');
     }
 
     public function lugarResidencia(){

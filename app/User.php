@@ -8,11 +8,10 @@ class User extends Model
 {
 
     protected $table = 'users';
-
     public $timestamps = false;
 
     protected $fillable = [
-        'id', 'email', 'password', 'id_rol', 'first_name', 'last_name'
+        'email', 'password', 'id_rol', 'first_name', 'last_name', 'codigo_confirmacion'
     ];
 
     protected $hidden = [

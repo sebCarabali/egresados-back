@@ -16,7 +16,7 @@ class SectorResource extends Resource
     {
         return [
             "Nombre" => $this->nombre,
-            "subSectores" => SubSectorResource::collection($this->subsectores)
+            "subSectores" => SubSectorResource::collection($this->subSectores)
         ];
     }
 }

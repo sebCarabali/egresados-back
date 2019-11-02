@@ -7,14 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 class Departamento extends Model
 {
     protected $table = 'departamentos';
+    protected $primaryKey = 'id_aut_dep';
     protected $guarded = ['id'];
     public $timestamps = false;
 
-    public function ciudades() {
-      return $this->hasMany('App\Ciudad','id_departamento', 'id');
+    public function ciudades()
+    {
+      return $this->hasMany('App\Ciudad', 'id_departamento', 'id');
     }
 
-    public function pais() {
-      return $this->belongsTo('App\Pais');
+    public function pais()
+    {
+      return $this->belongsTo('App\Pais', 'id_pais_fk');
     }
 }

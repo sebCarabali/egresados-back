@@ -16,4 +16,11 @@ class SubSector extends Model
     {
         return $this->belongsTo(Sector::class, 'id_sectores', 'id_aut_sector');
     }
+
+    public function empresas()
+    {
+        return $this->belongsToMany(Empresa::class, 'empresas_sectores', 'id_sub_sector', 'id_empresa');
+    }
+
+
 }

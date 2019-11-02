@@ -31,13 +31,35 @@ class EmpresaController extends Controller
         return response()->json($empresas, 200);
     }
 
-    public function show($id)
+    public function getEmpresasEnEspera()
+    {
+        $empresas = Empresa::orderBy('fecha_registro', 'ASC')
+                          ->where('estado', 'En espera')->get();
+
+        return response()->json($empresas, 200);
+    }
+
+    public function showAllInfo($id)
     {
         // Codigo de error por defecto
         $code = 404;
-        $empresa = Empresa::find($id);
+        $empresa = Empresa::find($id)->load('subSectores', 'direccion', 'representante', 'administrador');
 
         if (is_object($empresa)) {
+            $empresa->direccion->load('ciudad');
+            $empresa->direccion->ciudad->load('departamento');
+            $empresa->direccion->ciudad->departamento->load('pais');
+
+            $empresa->administrador->load('direccion');
+            $empresa->administrador->direccion->load('ciudad');
+            $empresa->administrador->direccion->ciudad->load('departamento');
+            $empresa->administrador->direccion->ciudad->departamento->load('pais');
+
+
+            // Se borra el atributo pivot, el cual no es necesario
+            foreach ($empresa->subSectores as $sector) {
+                unset($sector['pivot']);
+            }
             $code = 200;
             $data = $empresa;
         } else {
@@ -48,8 +70,6 @@ class EmpresaController extends Controller
 
     public function update($id, Request $request)
     {
-
-
         // Recoger los datos por POST
         $json = $request->input('json', null);
         $params_array = json_decode($json, true);
@@ -85,9 +105,8 @@ class EmpresaController extends Controller
         return response()->json($data, $code);
     }
 
-    public function updateEstado($id, Request $request){
-
-
+    public function updateEstado($id, Request $request)
+    {
         // Recoger los datos por PUT
         $json = $request->input('json', null);
         $params_array = json_decode($json, true);
@@ -97,16 +116,27 @@ class EmpresaController extends Controller
         $data = null;
 
         if (!empty($params_array)) {
-
             // Buscar el registro
-            $empresa = Empresa::where('id', $id)->first();
+            $empresa = Empresa::find($id);
 
             if (!empty($empresa) && is_object($empresa)) {
-              // Actualizar el registro en concreto
-              $empresa->update(['estado' => $params_array['estado']]);
-              $data = $empresa;
-              $code = 200;
 
+                if ($params_array['estado'] == 'Activo' && !empty($params_array['limite_publicaciones'])) {
+                    // Actualizar el registro en concreto
+
+                    $empresa->update([
+                        'estado' => $params_array['estado'],
+                        'limite_publicaciones' => $params_array['limite_publicaciones'],
+                        'fecha_activacion' => Carbon::now('-5:00'),
+                    ]);
+                    $data = $empresa;
+                    $code = 200;
+                } else if ($params_array['estado'] == 'En espera' || $params_array['estado'] == 'Inactivo') {
+                    // Actualizar el registro en concreto
+                    $empresa->update(['estado' => $params_array['estado']]);
+                    $data = $empresa;
+                    $code = 200;
+                }
             }
         }
         return response()->json($data, $code);
@@ -257,7 +287,7 @@ class EmpresaController extends Controller
         return response()->json($data, $code);
     }
 
-   
+
 }
 
 

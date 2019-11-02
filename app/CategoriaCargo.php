@@ -6,10 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class CategoriaCargo extends Model
 {
-    protected $table = 'ofertas.categorias_cargos';
-
+    protected $table = 'categorias_cargos';
     protected $primaryKey = 'id_aut_cate_crago';
-
     public $timestamps = false;
 
     protected $fillable = [
@@ -18,6 +16,6 @@ class CategoriaCargo extends Model
 
     public function cargos()
     {
-        return $this->hasMany(\App\Cargo::class, 'id_categoria', 'id_aut_cate_crago');
+        return $this->hasMany('App\Cargo', 'id_categoria', 'id_aut_cate_crago');
     }
 }

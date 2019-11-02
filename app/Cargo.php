@@ -6,10 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Cargo extends Model
 {
-    protected $table = 'ofertas.cargos';
-
+    protected $table = 'cargos';
     protected $primaryKey = 'id_aut_cargo';
-
     public $timestamps = false;
 
     protected $fillable = [
@@ -18,11 +16,11 @@ class Cargo extends Model
 
     public function categoria()
     {
-        return $this->belongsTo(\App\CategoriaCargo::class, 'id_categoria', 'id_aut_cate_crago');
+        return $this->belongsTo('App\CategoriaCargo', 'id_categoria', 'id_aut_cate_crago');
     }
 
     public function representantesEmpresas()
     {
-        return $this->hasMany(\App\RepresentanteEmpresa::class, 'id_cargo', 'id');
+        return $this->hasMany('App\RepresentanteEmpresa', 'id_cargo', 'id');
     }
 }

@@ -8,13 +8,12 @@ class RepresentanteEmpresa extends Model
 {
     //
     protected $table = 'representante_empresa';
-    protected $primaryKey = 'id_aut_administrador_empresa'; // Corregir
+    protected $primaryKey = 'id_aut_representante_empresa';
     public $timestamps = false;
 
     public function empresa()
     {
-        return $this->belongsTo(\App\Empresa::class, 'id_empresa', 'id_aut_empresa');
-        // return $this->belongsTo(\App\Empresa::class, 'id_empresa', 'id_aut_empresa');
+        return $this->belongTo('App\Empresa', 'id_empresa', 'id_aut_empresa');
     }
 
 }

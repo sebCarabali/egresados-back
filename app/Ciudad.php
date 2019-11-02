@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Ciudad extends Model
 {
-    protected $table = 'ofertas.ciudades';
+    protected $table = 'ciudades';
     protected $primaryKey = 'id_aut_ciudad';
     protected $guarded = ['id'];
     public $timestamps = false;

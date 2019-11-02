@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Oferta extends Model
 {
-    protected $table = 'ofertas.ofertas';
+    protected $table = 'ofertas';
     protected $primaryKey = 'id_aut_oferta';
     public $timestamps = false;
 

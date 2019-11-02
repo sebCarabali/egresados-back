@@ -43,7 +43,7 @@ class EmpresaController extends Controller
     {
         // Codigo de error por defecto
         $code = 404;
-        $empresa = Empresa::find($id)->load('sectores', 'direccion', 'representante', 'administrador');
+        $empresa = Empresa::find($id)->load('subSectores', 'direccion', 'representante', 'administrador');
 
         if (is_object($empresa)) {
             $empresa->direccion->load('ciudad');
@@ -51,13 +51,13 @@ class EmpresaController extends Controller
             $empresa->direccion->ciudad->departamento->load('pais');
 
             $empresa->administrador->load('direccion');
-            $empresa->administrador[0]->direccion->load('ciudad');
-            $empresa->administrador[0]->direccion->ciudad->load('departamento');
-            $empresa->administrador[0]->direccion->ciudad->departamento->load('pais');
+            $empresa->administrador->direccion->load('ciudad');
+            $empresa->administrador->direccion->ciudad->load('departamento');
+            $empresa->administrador->direccion->ciudad->departamento->load('pais');
 
 
-                    // Se borra el atributo pivot, el cual no es necesario
-            foreach ($empresa->sectores as $sector) {
+            // Se borra el atributo pivot, el cual no es necesario
+            foreach ($empresa->subSectores as $sector) {
                 unset($sector['pivot']);
             }
             $code = 200;
@@ -123,9 +123,11 @@ class EmpresaController extends Controller
 
                 if ($params_array['estado'] == 'Activo' && !empty($params_array['limite_publicaciones'])) {
                     // Actualizar el registro en concreto
+
                     $empresa->update([
                         'estado' => $params_array['estado'],
-                        'limite_publicaciones' => $params_array['limite_publicaciones']
+                        'limite_publicaciones' => $params_array['limite_publicaciones'],
+                        'fecha_activacion' => Carbon::now('-5:00'),
                     ]);
                     $data = $empresa;
                     $code = 200;
@@ -195,7 +197,7 @@ class EmpresaController extends Controller
                     'datos-resp.nombreResp' => 'required|string',
                     'datos-resp.telefonoMovilResp'  => 'required|integer',
                     'datos-resp.telefonoResp'  => 'required|integer',
-                    
+
 
                 ]);
 
@@ -280,7 +282,7 @@ class EmpresaController extends Controller
         return response()->json($data, $code);
     }
 
-   
+
 }
 
 

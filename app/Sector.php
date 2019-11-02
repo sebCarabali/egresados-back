@@ -6,12 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Sector extends Model
 {
-    protected $table = "ofertas.sectores";
+    protected $table = "sectores";
+    protected $primaryKey = "id_aut_sector";
+    public $timestamps = false;
 
-    protected $primaryKey = "id_aut_sectore";
-
-    public function empresas()
+    public function subSectores()
     {
-        return $this->belongsToMany('App\Empresa', 'empresas_sectores', 'id_sector', 'id_empresa');
+        return $this->belongsTo('App\SubSector', 'id_sectores', 'id_aut_sector');
     }
 }

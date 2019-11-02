@@ -13,7 +13,7 @@ class OfertaController extends Controller
 {
     public function getOfertasEnEspera()
     {
-        $ofertas = Oferta::where('estado', 'Por aprobar');
+        $ofertas = Oferta::where('estado', 'Pendiente')->get();
 
         return response()->json($ofertas, 200);
     }

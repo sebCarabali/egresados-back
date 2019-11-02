@@ -143,20 +143,24 @@ class EmpresaController extends Controller
                     'datos-generales-empresa.descripcionEmpresa' => 'required|string',
                     'datos-generales-empresa.ingresosEmp' => 'required|string',
                     'datos-generales-empresa.nombreEmpresa' => 'required|unique:empresas,nombre',
-                    'datos-generales-empresa.numEmpleados' => 'required|integer',
+                    'datos-generales-empresa.numEmpleados' => 'required|string',
                     'datos-generales-empresa.razonSocial' => 'required|string',
+
+
 
                     'loc-contact-empresa.barrioEmp' => 'required|string',
                     'loc-contact-empresa.ciudadEmp' => 'required|exists:ciudades,id',
                     'loc-contact-empresa.codigoPostalEmp' => 'required|integer',
                     'loc-contact-empresa.direccionEmp' => 'required|string',
-                    'loc-contact-empresa.sitioWebEmp' => 'required|url',
+                    'loc-contact-empresa.sitioWebEmp' => 'url',
+                    'loc-contact-empresa.emailEmp' => 'email',
+                    'loc-contact-empresa.telefonoEmp' => 'string',
 
                     // 'sectores' => 'required|array',
-                    // 'sectores.*' => 'required|integer|distinct|exists:sectores,id',
-                    'sectores.sectores' => 'required|integer|exists:sectores,id',
+                    // 'sectores.sectores' => 'required|integer|exists:sectores,id',
+                    'sectores.sectores' => 'required|string',
                     // //datos representante
-                    'dir_empresa' => 'required|integer',
+                    // 'dir_empresa' => 'required|integer',
                     'datos-resp.apellidoResp'  => 'required|string',
                     'datos-resp.barrioResp' => 'required_if:dir_empresa,0|string',
                     'datos-resp.cargo'  => 'required|string',
@@ -164,9 +168,10 @@ class EmpresaController extends Controller
                     'datos-resp.codigoPostalResp' => 'required_if:dir_empresa,0|integer',
                     'datos-resp.direccionResp' => 'required_if:dir_empresa,0|string',
                     'datos-resp.emailCorpResp'  => 'required|email',
+                    'datos-resp.horarioContacto'  => 'required|string',
                     'datos-resp.nombreResp' => 'required|string',
                     'datos-resp.telefonoMovilResp'  => 'required|integer',
-                    'datos-resp.telefonoResp'  => 'required|integer',
+                    'datos-resp.telefonoResp'  => 'integer',
                     
 
                 ]);

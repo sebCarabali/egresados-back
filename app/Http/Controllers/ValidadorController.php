@@ -12,20 +12,26 @@ class ValidadorController extends Controller
     public function validateEmail($email)
     {
         // dd($request);
-       $user = User::whereEmail($email)->first();
-       if ($user) {
-           return response()->json("El correo ya existe", 200);
-       }
-       return response()->json("Correcto", 200);
+
+        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $user = User::whereEmail($email)->first();
+            if ($user) {
+                return response()->json("El correo electrónico ya existe", 200);
+            }
+            return response()->json("Correcto", 200);
+        } else {
+            return response()->json("No es un correo electrónico!", 200);
+        }
     }
 
     public function validateNit($nit)
     {
         // dd($request);
-       $user = Empresa::whereNit($nit)->first();
-       if ($user) {
-           return response()->json("El correo NIT existe", 200);
-       }
-       return response()->json("Correcto", 200);
+        $user = Empresa::whereNit($nit)->first();
+        if ($user) {
+            return response()->json("El correo NIT existe", 200);
+        }
+        return response()->json("Correcto", 200);
     }
+    
 }

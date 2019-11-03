@@ -3,13 +3,19 @@
 namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\GuardarInformacionBasicaRequest;
 use Illuminate\Support\Facades\Input;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Hash;
 use App\Egresado;
 use App\Nacimiento;
 use App\Ciudad;
+use App\User;
+use App\Role as Rol;
 use App\Localizacion;
+use App\NivelEstudio;
 use Validator;
 use Excel;
 
@@ -24,89 +30,141 @@ class EgresadoController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function storeBasicInfo(Request $request)
+    public function guardarInformacionBasica(GuardarInformacionBasicaRequest $request)
+    {
+        // verificar si ya hay datos registrados.
+        $hasDataRegistered = $this->_tieneDatosRegistrados($request->get('identificacion'));
+        if($hasDataRegistered) {
+            // cambiar estado egresado y completar información básica
+            $egresado = Egresado::where('identificacion', $request->get('identificacion'))->first();
+            $egresado = $this->_completarInformacionBasica($egresado, $request);
+        } else {
+            // crear un nuevo registro de egresado con el estado EGRESADO_NO_LOGUEADO
+            $egresado = $this->_crearInformacionBasica($request);
+        }
+        return response()->json($egresado, 201);
+    }
+
+    private function _crearInformacionBasica(Request $request)
     {
         // get egresados data
         $egresado = new Egresado();
+        $egresado->num_hijos = $request->get('num_hijos');
+        $egresado->correo = $request->get('correo');
+        $egresado->correo_alternativo = $request->get('correo_alternativo');
+        $egresado->grupo_etnico = $request->get('grupo_etnico');
+        $egresado->fecha_nacimiento = $request->get('fecha_nacimiento');
+
+        $egresado->lugarExpedicion()->associate(Ciudad::where('id_aut_ciudad', $request->get('id_lugar_expedicion'))->first());
+        $egresado->ciudadNacimiento()->associate(Ciudad::where('id_aut_ciudad', $request->get('id_lugar_nacimiento'))->first());
+        $egresado->nivelEducativo()->associate(NivelEstudio::find($request->get('id_nivel_educativo'))->first());
+        $egresado->discapacidad = $request->get('discapacidad');
+        $egresado->telefono = $request->get('telefono');
+        $egresado->estado_civil = $request->get('estado_civil');
+        $egresado->genero = $request->get('genero');
         $egresado->identificacion = $request->get('identificacion');
         $egresado->nombres = $request->get('nombres');
         $egresado->apellidos = $request->get('apellidos');
         $egresado->genero = $request->get('genero');
-        $egresado->num_hijos = int($request->get('num_hijos'));
-        // get lugar_nacimiento data
-        $nacimiento = new Nacimiento();
-        $nacimiento->fecha_nacimiento = $request->get('fecha_nacimiento');
-        $nacimiento->ciudad()->associate(Cuidad::whereId($request->get('id_ciudad_nacimiento'))->firstOrFail());
+        $egresado->num_hijos = $request->get('num_hijos');
+        // TODO: Verificar estados.
+        $egresado->estado = 'EN_ESPERA';
+        $egresado->ha_trabajado = false;
+        $egresado->trabaja_actualmente = false;
+        // 
         // get lugar_residencia data
         $localizacion = new Localizacion();
         $localizacion->codigo_postal = $request->get('codigo_postal');
         $localizacion->direccion = $request->get('direccion');
         $localizacion->barrio = $request->get('barrio');
-        $localizacion->ciudad()->associate(Cuidad::whereId($request->get('id_ciudad_residencia'))->firstOrFail());
-        // get grados data
-        $egresado = DB::transaction(function () use ($nacimiento, $egresado, $localizacion, $request) {
-            // save all data and response egresados object in json format
-            $nacimiento->save();
-            $egresado->nacimiento()->associate($nacimiento);
+        $localizacion->ciudad()->associate(Ciudad::where('id_aut_ciudad', $request->get('id_lugar_residencia'))->first());
+        // get grado info
+        $grado = $request->get('grado');
+        return $this->_guardarInformacionBasica($egresado, $localizacion, $grado);
+    }
+
+    private function _completarInformacionBasica(Egresado $egresado, Request $request)
+    {
+        $egresado->num_hijos = $request->get('num_hijos');
+        $egresado->correo = $request->get('correo');
+        $egresado->correo_alternativo = $request->get('correo_alternativo');
+        $egresado->grupo_etnico = $request->get('grupo_etnico');
+        $egresado->fecha_nacimiento = $request->get('fecha_nacimiento');
+        $egresado->lugarExpedicion()->associate(Ciudad::where('id_aut_ciudad', $request->get('id_lugar_expedicion'))->first());
+        $egresado->ciudadNacimiento()->associate(Ciudad::where('id_aut_ciudad',$request->get('id_lugar_nacimiento'))->first());
+        $egresado->nivelEducativo()->associate(NivelEstudio::find($request->get('id_nivel_educativo'))->first());
+        $egresado->discapacidad = $request->get('discapacidad');
+        $egresado->telefono = $request->get('telefono');
+        $egresado->estado_civil = $request->get('estado_civil');
+        $egresado->genero = $request->get('genero');
+        //TODO: Cambio de estados
+        $egresado->estado = 'ACTIVO_LOGUEADO';
+        // get lugar_residencia data
+        $localizacion = new Localizacion();
+        $localizacion->codigo_postal = $request->get('codigo_postal');
+        $localizacion->direccion = $request->get('direccion');
+        $localizacion->barrio = $request->get('barrio');
+        $localizacion->ciudad()->associate(Ciudad::where('id_aut_ciudad', $request->get('id_lugar_residencia'))->first());
+        // get grado info
+        $grado = $request->get('grado');
+        return $this->_guardarInformacionBasica($egresado, $localizacion, $grado);
+    }
+
+    private function _guardarInformacionBasica(Egresado $egresado, Localizacion $localizacion,
+             array $grado)
+    {
+        // save all data and response egresados object in json format
+        return DB::transaction(function () use ($egresado, $localizacion, $grado) {
             $localizacion->save();
             $egresado->lugarResidencia()->associate($localizacion);
             $egresado->save();
-            // save grados
-            foreach ($request->get('grados') as $grado) {
-                $egresado->programas()->attach($grado->id_programa, [
-                    'tipo' => $grado->tipo,
-                    'mension_honor' => $grado->mension_honor,
-                    'titulo_especial' => $grado->titulo_especial,
-                    'comentarios' => $grado->comentarios,
-                    'fecha_graduacion' => $grado->fecha_graduacion,
-                    'docente_influencia' => $grado->docente_influencia
-                ]);
-            }
+            $egresado->programas()->attach($grado['id_programa'], [
+                //'tipo' => $grado->tipo,
+                'mension_honor' => array_key_exists('mension_honor', $grado) ? $grado['mension_honor'] : 'No',
+                'titulo_especial' => array_key_exists('titulo_especial', $grado) ? $grado['titulo_especial'] : '',
+                //'comentarios' => array_key_exists('comentarios', $grado) ? $grado['comentarios'] : '',
+                'fecha_graduacion' => $grado['fecha_grado']
+                //'docente_influencia' => array_key_exists('docente_influencia', $grado) ? $grado['docente_influencia'] : ''
+            ]);
+            $usuario = $this->_crearUsuario($egresado);
+            $this->_enviarMensajeActivacion($usuario);
             return $egresado;
         });
-        
-        return response()->json($egresado, 201);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
+    private function _crearUsuario($egresado)    {
+        $user = new User([
+            'email' => $egresado->correo,
+            'codigo_verificacion' => Hash::make($egresado->correo)
+        ]);
+        $user->rol()->associate(Rol::where('nombre', 'User')->first());
+        $user->save();
+        return $user;
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+    private function _enviarMensajeActivacion(User $usuario)
     {
-        //
+        $correo = $usuario->email;
+        $data = [
+            'codigo' => $usuario->codigo_verificacion
+        ];
+        Mail::send('mail.confirmation', $data, 
+                function ($message) use ($correo, $data){
+            $message->from('sebastiancc@unicauca.edu.co', 'Egresados');
+            $message->to($correo)->subject('Nuevo usuario');
+        });
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
+    private function _tieneDatosRegistrados($identificacion)
     {
-        
+        return Egresado::where('identificacion', $identificacion)->exists();
     }
 
     private function getCollection($file){
         $import = new EgresadosImport();
         Excel::import($import, $file);
         $egresados = $import->egresados;
-        return array_pop($egresados);
+        return $egresados;
     }
 
     /**
@@ -138,12 +196,42 @@ class EgresadoController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        $aceptados = $this->getCollection($file);
-
+        $egresadosEnExcel = $this->getCollection($file);
+        $this->_procesarExcel($egresadosEnExcel);
         /*if(count($errors) > 0) {
             return response()->json($validator->errors(), 422);
         }*/
 
-        return response()->json(['msg' => 'Archivo verificado correctamente', 'aceptados' => $aceptados], 200);
+        return response()->json(['msg' => 'Archivo verificado correctamente', 'aceptados' => $egresadosEnExcel], 200);
+    }
+
+    private function _procesarExcel($egresados)
+    {
+        $resultado = array(
+            'aceptados' => array(),
+            'pendientes' => array(),
+            'rechazados' => array()
+        );
+        // para todos los egresados de excel.
+        foreach($egresados as $e) {
+            // Si el egresado ya ha realizado el pre-registro, cambiar estado de EN_ESPERA a ACTIVO LOGUEADO.
+            $egresadoYaRegistrado = Egresado::where('identificacion', $e->identificacion)
+                ->where('estado', 'EN_ESPERA')->first();
+            if($egresadoYaRegistrado) {
+                // cambiar estado.
+                $egresadoYaRegistrado->estado = 'ACTIVO_LOGUEADO';
+                $egresadoYaRegistrado->save();
+                array_push($resultado['aceptados'], $egresadoYaRegistrado);
+            } else {
+                // Si no ha realizado el pre-registro, registrar en la base de datos.
+                $egresadoARegistrar = new Egresado([
+                    'identificacion' => $e->identificacion,
+                    'correo' => $e->correo,
+                    'nombres' => $e->nombres,
+                    'apellidos' => $e->apellidos
+                ]);
+                
+            }
+        }
     }
 }

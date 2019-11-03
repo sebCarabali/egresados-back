@@ -15,6 +15,16 @@ class OfertaController extends Controller
     {
         $ofertas = Oferta::where('estado', 'Pendiente')->get();
 
+        $ofertas->load('empresa');
+        $ofertas->load('areasConocimiento');
+
+        // Se borra el atributo pivot, el cual no es necesario
+        foreach ($ofertas as $oferta) {
+            foreach ($oferta->areasConocimiento as $areacon) {
+                unset($areacon['pivot']);
+            }
+        }
+
         return response()->json($ofertas, 200);
     }
 

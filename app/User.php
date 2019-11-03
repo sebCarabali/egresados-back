@@ -8,7 +8,7 @@ class User extends Model
 {
 
     protected $table = 'users';
-
+    protected $primaryKey = 'id_aut_user';
     public $timestamps = false;
 
     protected $fillable = [
@@ -23,5 +23,10 @@ class User extends Model
     public function rol()
     {
         return $this->belongsTo('App\Role', 'id_rol');
+    }
+
+    public function administradores()
+    {
+        return $this->hasMany('App\AdministradorEmpresa', 'id_aut_user', 'id_aut_user');
     }
 }

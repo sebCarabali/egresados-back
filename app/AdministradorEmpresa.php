@@ -22,11 +22,11 @@ class AdministradorEmpresa extends Model
 
     public function cargo()
     {
-        return $this->belongsTo('App\Cargo', 'id_cargo', 'id_aut_cargo');
+        return $this->belongsTo('App\Cargo', 'id_cargo', 'id_aut_cargos');
     }
 
     public function user()
     {
-        return $this->hasOne('App\User', 'id_aut_user', 'id_aut_user');
+        return $this->belongsTo('App\User', 'id_aut_user', 'id_aut_user');
     }
 }

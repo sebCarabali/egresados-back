@@ -107,6 +107,10 @@ Route::put('/empresa/{id}', 'EmpresaController@update');//->middleware('api.auth
  */
 Route::get('/ofertas/empresa/{id}', 'OfertaController@getOfertasEmpresa');
 /**
+ * Obtiene todas las ofertas de una empresa
+ */
+Route::get('/ofertas/activas/empresa/{id}', 'OfertaController@getOfertasActivasEmpresa');
+/**
  * Obtiene todas las ofertas que están en espera, vista desde administrador
  */
 Route::get('/ofertas/empresas', 'OfertaController@getOfertasEnEspera');

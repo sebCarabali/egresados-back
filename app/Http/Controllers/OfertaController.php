@@ -34,4 +34,14 @@ class OfertaController extends Controller
 
         return response()->json($ofertas, 200);
     }
+
+    public function getOfertasActivasEmpresa($id)
+    {
+        $ofertas = Oferta::where([
+            'id_empresa' => $id,
+            'estado' => 'Aceptada'
+          ])->get();
+
+        return response()->json($ofertas, 200);
+    }
 }

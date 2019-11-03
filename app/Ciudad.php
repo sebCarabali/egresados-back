@@ -7,7 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class Ciudad extends Model
 {
     protected $table = 'ciudades';
-    protected $guarded = ['id'];
+    protected $primaryKey = 'id_aut_ciudad';
+    protected $guarded = ['id_aut_ciudad'];
     public $timestamps = false;
 
     public function nacimientos() {

@@ -24,24 +24,26 @@ class GuardarInformacionBasicaRequest extends FormRequest
     public function rules()
     {
         return [
-            'correo' => 'required|email|unique',
-            'correo_alternativo' => 'required|email'
-            'identificacion' => 'required|unique:users',
+            'correo' => 'required|email|unique:egresados',
+            'correo_alternativo' => 'required|email',
+            'identificacion' => 'required',
             'nombres' => 'required',
             'grupo_etnico' => 'required',
             'apellidos' => 'required',
             'genero' => 'required',
             'fecha_nacimiento' => 'required|date',
-            'id_ciudad_nacimiento' => 'required',
+            'id_lugar_nacimiento' => 'required',
+            'id_lugar_expedicion' => 'required',
             'direccion' => 'required',
-            'barrio' => 'required',
-            'id_ciudad_residencia' => 'required',
+            'id_lugar_residencia' => 'required',
             'grado' => 'required',
             'discapacidad' => 'required',
             'estado_civil' => 'required',
             'id_nivel_educativo' => 'required',
             'telefono' => 'required',
-
+            'grado.fecha_grado' => 'required',
+            'num_hijos' => 'required',
+            'grado.id_programa' => 'required'
         ];
     }
 
@@ -50,10 +52,13 @@ class GuardarInformacionBasicaRequest extends FormRequest
         return [
             'correo.required' => 'Debe proporcionar un correo electrónico.',
             'correo.email' => 'Debe proporcionar un correo electrónico válido.',
+            'identificacion.required' => 'Debe proporcionar su número de identificación',
+            'identificacion.unique' => 'El número de identificación proporcionado ya se encuentra registrado.',
             'correo.unique' => 'Ya existe registrado este correo electrónico.',
             'correo_alternativo.required' => 'Debe proporcionar un correo electrónico alternativo.',
             'correo_alternativo.email' => 'Debe proporcionar un correo electrónico alternativo válido.',
             'nombres.required' => 'Debe proporcionar sus nombres.',
+            'num_hijos.required' => 'Debe proporcionar el número de hijos.',
             'apellidos.required' => 'Debe proporcionar sus apellidos.',
             'genero.required' => 'Debe proporcionar su género.',
             'fecha_nacimiento.required' => 'Debe seleccionar una fecha de nacimiento.',
@@ -65,9 +70,9 @@ class GuardarInformacionBasicaRequest extends FormRequest
             'id_nivel_educativo.required' => 'Debe seleccionar su nivel de estudio.',
             'telefono.required' => 'Debe proporcionar un número telefónico.',
             'direccion.required' => 'Debe proporcionar una dirección de residencia.',
-            'barrio.required' => 'Debe proporcionar el barrio en el cual reside.',
             'id_ciudad_residencia' => 'Debe proporcionar la ciudad en la cual reside.',
-            'grado.required' => 'Debe ingresar la información de su grado.'
+            'grado.fecha_grado.required' => 'Debe ingresar la información de su grado.',
+            'grado.id_programa.required' => 'Debe seleccionar el programa del cual egresa.'
         ];
     }
 }

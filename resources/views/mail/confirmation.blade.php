@@ -7,7 +7,7 @@
 </head>
 <body>
     <div class="mail">
-        Para verificar su cuenta siga el siguiente enlace <a href="http://localhost:4200/confirmar/<?=codigo_confirmacion?>">confirmar cuenta</a>
+        Para verificar su cuenta siga el siguiente enlace <a href="http://localhost:4200/confirmar/{{$codigo}}">confirmar cuenta</a>
     </div>
 </body>
 </html>

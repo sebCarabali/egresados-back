@@ -69,7 +69,7 @@ class UserController extends Controller
             return response()->json($validator->errors(), 400);
         }
         // Obtener usuario con el código de confirmación
-        $usuario => User::where('codigo_confirmacion', $codigo_confirmacion)->first();
+        $usuario => User::where('codigo_verificacion', $codigo_confirmacion)->first();
         if(!$usuario) {
             return response()->json(false, 400);
         }

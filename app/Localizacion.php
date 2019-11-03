@@ -11,8 +11,11 @@ class Localizacion extends Model
     protected $fillable = ['codigo_postal', 'direccion', 'barrio', 'id_ciudad'];
     public $timestamps = false;
 
-    public function ciudad() {
-      return $this->belongsTo('App\Ciudad', 'id_ciudad');
+    protected $primaryKey = 'id_aut_localizacion';
+
+    public function ciudad()
+    {
+        return $this->belongsTo('App\Ciudad', 'id_ciudad');
     }
 
     public function egresados() {
@@ -23,15 +26,15 @@ class Localizacion extends Model
       return $this->hasMany('App\Facultad');
     }
 
-    public function representanteEmpresa()
+    public function administradores()
     {
-        return $this->hasMany(\App\RepresentanteEmpresa, 'id_direccion', 'id');
+        return $this->hasMany(\App\AdministradorEmpresa::class, 'id_direccion', 'id_aut_representante'); // Corregir
         // return $this->hasMany(\App\RepresentanteEmpresa, 'id_direccion', 'id_aut_localizacion');
     }
 
     public function empresas()
     {
-        return $this->hasMany(\App\Empresa, 'id_direccion', 'id');
-        // return $this->hasMany(\App\Empresa, 'id_direccion', 'id_aut_localizacion');
+        // return $this->hasMany(\App\Empresa, 'id_direccion', 'id');
+        return $this->hasMany(\App\Empresa, 'id_direccion', 'id_aut_localizacion');
     }
 }

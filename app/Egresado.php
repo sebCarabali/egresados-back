@@ -7,12 +7,18 @@ use Illuminate\Database\Eloquent\Model;
 class Egresado extends Model
 {
     protected $table = 'egresados';
-    protected $guraded = ['id'];
+    protected $guraded = ['id_aut_egresado'];
     public $timestamps = false;
+    protected $primaryKey = 'id_aut_egresado';
 
-    public function nacimiento()
+    public function ciudadNacimiento()
     {
-        return $this->belongsTo('App\Nacimiento', 'id_nacimiento_fk');
+      return $this->belongsTo('App\Ciudad', 'id_lugar_nacimiento');
+    }
+
+    public function nivelEducativo()
+    {
+      return $this->belongsTo('App\NivelEstudio', 'id_nivel_educativo');
     }
 
     public function lugarResidencia(){
@@ -22,10 +28,16 @@ class Egresado extends Model
     public function lugarExpedicion() {
       return $this->belongsTo('App\Ciudad', 'id_lugar_expedicion');
     }
+    /*
+    public function user()
+    {
+        return $this->belongsTo('App\User', 'foreign_key', 'other_key');
+    }*/
 
     public function programas() {
-      return $this->belognsToMany('App\Programa', 'grados', 'id_estudiante', 'id_programa');
+      return $this->belongsToMany('App\Programa', 'grados', 'id_estudiante', 'id_programa');
         /*->withPivot('tipo', 'mension_honor', 'titulo_especial', 'comentarios', 'fecha_graduacion',
                     'docente_influencia');*/
     }
 }
+

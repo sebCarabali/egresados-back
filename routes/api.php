@@ -56,6 +56,10 @@ Route::post('empresas/store', 'EmpresaController@store');
 /**
  * Obtiene los sectores
  */
+Route::get('sectores', 'SectorController@getAll');
+/**
+ * Obtiene los sectores
+ */
 Route::get('sectores-subsectores', 'SectorController@getAllSectors');
 /**
  * Obtiene todos los países registrados
@@ -110,3 +114,11 @@ Route::get('/ofertas/empresa/{id}', 'OfertaController@getOfertasEmpresa');
  * Obtiene todas las ofertas que están en espera, vista desde administrador
  */
 Route::get('/ofertas/empresas', 'OfertaController@getOfertasEnEspera');
+
+
+
+Route::get('idiomas', 'IdiomaController@getAll');
+Route::get('discapacidades', 'DiscapacidadController@getAll');
+Route::get('programas', 'API\ProgramaController@getAll');
+Route::get('cargos', 'CargoController@getAll');
+

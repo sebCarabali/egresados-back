@@ -11,7 +11,7 @@ class Cargo extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'nombre', 'id_categoria'
+        'nombre', 'id_categoria', 'estado'
     ];
 
     public function categoria()

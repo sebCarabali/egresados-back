@@ -34,7 +34,7 @@ class EmpresaController extends Controller
     public function getEmpresasEnEspera()
     {
         $empresas = Empresa::orderBy('fecha_registro', 'ASC')
-                          ->where('estado', 'En espera')->get();
+            ->where('estado', 'En espera')->get();
 
         return response()->json($empresas, 200);
     }
@@ -158,6 +158,8 @@ class EmpresaController extends Controller
             try {
                 // return response()->json($request);
                 $this->validate(request(), [
+
+                    
                     //Datos usuario login
                     // datos-cuenta
                     // datos-generales-empresa
@@ -202,7 +204,7 @@ class EmpresaController extends Controller
                     'datos-resp.nombreResp' => 'required|string',
                     'datos-resp.telefonoMovilResp'  => 'required|integer',
                     'datos-resp.telefonoResp'  => 'integer',
-                    
+
 
                 ]);
 
@@ -231,7 +233,7 @@ class EmpresaController extends Controller
                 $empresa->anio_creacion = request('datos-generales-empresa.anioCreacion');
                 // return response()->json($empresa);
 
-                $empresa->estado = false;
+                $empresa->estado = "En espera";
                 $empresa->fecha_registro = Carbon::now();
                 $empresa->total_publicaciones = 0;
                 $empresa->limite_publicaciones = 0;
@@ -239,12 +241,11 @@ class EmpresaController extends Controller
 
                 $dir_empresa = request('dir_empresa');
                 $direccionRepresen = new Localizacion();
-                if (!$dir_empresa) {
-                    $direccionRepresen->codigo_postal = request('datos-resp.codigoPostalResp');
-                    $direccionRepresen->direcccion = request('datos-resp.direccionResp');
-                    $direccionRepresen->barrio = request('datos-resp.barrioResp');
-                    $direccionRepresen->ciudad()->associate(Ciudad::find(request('datos-resp.ciudadResp'))->firstOrFail());
-                }
+                $direccionRepresen->codigo_postal = request('datos-resp.codigoPostalResp');
+                $direccionRepresen->direcccion = request('datos-resp.direccionResp');
+                $direccionRepresen->barrio = request('datos-resp.barrioResp');
+                $direccionRepresen->ciudad()->associate(Ciudad::find(request('datos-resp.ciudadResp'))->firstOrFail());
+                // if (!$dir_empresa) { }
                 // return response()->json($direccionRepresen);
 
                 $representante = new RepresentanteEmpresa();
@@ -256,7 +257,7 @@ class EmpresaController extends Controller
                 $representante->correo_corporativo = request('datos-resp.emailCorpResp');
                 // return response()->json($representante);
                 // return response()->json(Cargo::find(request('rep_id_cargo'))->firstOrFail());
-                $representante->cargo()->associate(Cargo::firstOrCreate(["nombre"=>request('datos-resp.cargo')]));
+                $representante->cargo()->associate(Cargo::firstOrCreate(["nombre" => request('datos-resp.cargo')]));
                 // return response()->json($representante);
 
                 DB::transaction(function () use ($user, $direccionEmpr, $empresa, $direccionRepresen, $representante, $dir_empresa) {
@@ -286,11 +287,51 @@ class EmpresaController extends Controller
         // abort(401);
         return response()->json($data, $code);
     }
-
-
 }
 
 
 // Departamento
     // Ciudad
 // Sectores
+
+
+// EMPRESAS
+// nit
+// numero_empleados
+// estado
+// limite_publicaciones
+// url_logo
+// telefono
+// correo
+// total_publicaciones
+// fecha_activacion
+// fecha_registro
+// id_direccion
+// sitio_web
+// ingresos
+// anio_creacion
+// razon_social
+// nombre
+// num_publicaciones_actuales
+// url_doc_camaracomercio
+
+// los sectores (subsectores)
+
+// representante_empresa
+// nombre
+// apellidos
+// id_empresa
+// telefono
+// telefono_movil
+
+// // administrador_empresa
+// nombres
+// apellidos
+// id_cargo  toca ver si se guarda o que pedo
+// telefono
+// telefono_movil
+// horario_contacto
+// correo_corporativo
+// id_direccion
+// id_empresa
+// id_aut_user

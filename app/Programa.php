@@ -8,6 +8,7 @@ class Programa extends Model
 {
     protected $table = 'programas';
     protected $guarded = ['id'];
+    protected $primaryKey = 'id_aut_programa';
     public $timestamps = false;
 
     public function egresados() {

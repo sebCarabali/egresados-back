@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Oferta;
 use App\Cargo;
+use App\Contrato;
 use App\CategoriaCargo;
 use Illuminate\Support\Facades\DB;
 
@@ -32,6 +33,11 @@ class OfertaController extends Controller
     {
         $ofertas = Oferta::where('id_empresa', $id)->get();
 
+        foreach ($ofertas as $oferta) {
+            // Obtener el nombre del cargo
+            $oferta['nombreCargo'] = Cargo::find($oferta->id_cargo)->first()->nombre;
+
+        }
         return response()->json($ofertas, 200);
     }
 
@@ -42,6 +48,11 @@ class OfertaController extends Controller
             'estado' => 'Aceptada'
           ])->get();
 
+        foreach ($ofertas as $oferta) {
+            // Obtener el nombre del cargo
+            $oferta['nombreCargo'] = Cargo::find($oferta->id_cargo)->first()->nombre;
+
+        }
         return response()->json($ofertas, 200);
     }
 }

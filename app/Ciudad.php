@@ -8,7 +8,8 @@ class Ciudad extends Model
 {
     protected $table = 'ciudades';
     protected $primaryKey = 'id_aut_ciudad';
-    protected $guarded = ['id'];
+    protected $guarded = ['id_aut_ciudad'];
+
     public $timestamps = false;
 
     public function nacimientos() {

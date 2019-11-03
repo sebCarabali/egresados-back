@@ -43,17 +43,15 @@ class EmpresaController extends Controller
     {
         // Codigo de error por defecto
         $code = 404;
-        $empresa = Empresa::find($id)->load('subSectores', 'direccion', 'representante', 'administrador');
+        $empresa = Empresa::find($id);
 
         if (is_object($empresa)) {
+            $empresa->load('subSectores', 'direccion', 'representante', 'administrador');
             $empresa->direccion->load('ciudad');
             $empresa->direccion->ciudad->load('departamento');
             $empresa->direccion->ciudad->departamento->load('pais');
 
-            $empresa->administrador->load('direccion');
-            $empresa->administrador->direccion->load('ciudad');
-            $empresa->administrador->direccion->ciudad->load('departamento');
-            $empresa->administrador->direccion->ciudad->departamento->load('pais');
+            $empresa->administrador->load('direccion', 'user', 'cargo');
 
 
             // Se borra el atributo pivot, el cual no es necesario

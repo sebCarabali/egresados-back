@@ -30,4 +30,9 @@ class Oferta extends Model
     {
         return $this->belongsTo('App\Empresa', 'id_empresa', 'id_aut_empresa');
     }
+
+    public function areasConocimiento()
+    {
+        return $this->belongsToMany('App\AreaConocimiento', 'ofertas_areascon', 'id_aut_oferta', 'id_areaconocimiento');
+    }
 }

@@ -20,7 +20,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 /**
  * Guarda la información básica de un egresado.
  */
-Route::post('egresados', 'API\EgresadoController@storeBasicInfo');
+Route::post('egresados', 'API\EgresadoController@guardarInformacionBasica');
 /**
  * Obtiene todas la ciudades de un departamento.
  */
@@ -46,8 +46,11 @@ Route::get('facultades', 'API\FacultadController@getAll');
  */
 Route::get('programas/{idFacultad}', 'API\ProgramaController@getByFacultad');
 /**
- *
+ * Verifica el excel de egresados dato por secretaria.
  */
+//Route::group(['middleware' => 'cors'], function () {
+    Route::post('egresados/verificar', 'API\EgresadoController@validateExcel');
+//});
 // --------------------------------------------------------------------------------
 /**
  * Registro de una empresa
@@ -110,6 +113,10 @@ Route::put('/empresa/{id}', 'EmpresaController@update');//->middleware('api.auth
  * Obtiene todas las ofertas de una empresa
  */
 Route::get('/ofertas/empresa/{id}', 'OfertaController@getOfertasEmpresa');
+/**
+ * Obtiene todas las ofertas de una empresa
+ */
+Route::get('/ofertas/activas/empresa/{id}', 'OfertaController@getOfertasActivasEmpresa');
 /**
  * Obtiene todas las ofertas que están en espera, vista desde administrador
  */

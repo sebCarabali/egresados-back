@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Localizacion extends Model
 {
     protected $table = 'localizacion';
+    protected $primaryKey = 'id_aut_localizacion';
     protected $fillable = ['codigo_postal', 'direccion', 'barrio', 'id_ciudad'];
     public $timestamps = false;
 

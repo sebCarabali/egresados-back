@@ -30,4 +30,26 @@ class Oferta extends Model
     {
         return $this->belongsTo('App\Empresa', 'id_empresa', 'id_aut_empresa');
     }
+
+    public function areasConocimiento()
+    {
+        return $this->belongsToMany('App\AreaConocimiento', 'ofertas_areascon', 'id_aut_oferta', 'id_areaconocimiento');
+    }
+
+    public function software()
+    {
+        return $this->hasMany(OfertaSoftware::class, 'id_oferta', 'id_aut_oferta');
+    }
+    
+    public function ubicaciones()
+    {
+        return $this->belongsToMany(Ciudad::class, 'ubicacion_oferta','id_oferta', 'id_ciudad');
+    }
+    
+    public function idiomas()
+    {
+        return $this->belongsToMany(Idioma::class, 'ofertas_idiomas')
+            ->withPivot(['id_oferta', 'id_idioma', 'nivel_escritura', 'nivel_lectura', 'nivel_conversacion'])
+            ->withTimestamps();
+    }
 }

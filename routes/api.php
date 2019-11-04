@@ -57,6 +57,14 @@ Route::get('programas/{idFacultad}', 'API\ProgramaController@getByFacultad');
  */
 Route::post('empresas/store', 'EmpresaController@store');
 /**
+ * Actualización  de una empresa
+ */
+Route::post('empresas/update', 'EmpresaController@update');
+/**
+ * Obtiene los sectores
+ */
+Route::get('sectores', 'SectorController@getAll');
+/**
  * Obtiene los sectores
  */
 Route::get('sectores-subsectores', 'SectorController@getAllSectors');
@@ -110,6 +118,20 @@ Route::put('/empresa/{id}', 'EmpresaController@update');//->middleware('api.auth
  */
 Route::get('/ofertas/empresa/{id}', 'OfertaController@getOfertasEmpresa');
 /**
+ * Obtiene todas las ofertas de una empresa
+ */
+Route::get('/ofertas/activas/empresa/{id}', 'OfertaController@getOfertasActivasEmpresa');
+/**
  * Obtiene todas las ofertas que están en espera, vista desde administrador
  */
 Route::get('/ofertas/empresas', 'OfertaController@getOfertasEnEspera');
+
+
+
+Route::get('idiomas', 'IdiomaController@getAll');
+Route::get('discapacidades', 'DiscapacidadController@getAll');
+Route::get('programas', 'API\ProgramaController@getAll');
+Route::get('cargos', 'CargoController@getAll');
+
+Route::post('ofertas/store', 'OfertaController@storeOferta');
+

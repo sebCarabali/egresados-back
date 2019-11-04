@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class Cargo extends Model
 {
     protected $table = 'cargos';
-    protected $primaryKey = 'id_aut_cargo';
+    protected $primaryKey = 'id_aut_cargos';
     public $timestamps = false;
+    public $incrementing = false;
 
     protected $fillable = [
-        'nombre', 'id_categoria'
+        'nombre', 'id_categoria', 'estado'
     ];
 
     public function categoria()
@@ -19,8 +20,8 @@ class Cargo extends Model
         return $this->belongsTo('App\CategoriaCargo', 'id_categoria', 'id_aut_cate_crago');
     }
 
-    public function representantesEmpresas()
+    public function administradores()
     {
-        return $this->hasMany('App\RepresentanteEmpresa', 'id_cargo', 'id');
+        return $this->hasMany('App\AdministradorEmpresa', 'id_cargo', 'id_aut_cargos');
     }
 }

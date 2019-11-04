@@ -12,7 +12,7 @@ class User extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'email', 'password', 'id_rol', 'first_name', 'last_name', 'codigo_verificacion'
+        'email', 'password',  'first_name', 'last_name', 'codigo_verificacion'
     ];
 
     protected $hidden = [
@@ -20,8 +20,18 @@ class User extends Model
     ];
 
     // Relación con la tabla roles
+    // public function rol()
+    // {
+    //     return $this->belongsTo('App\Role', 'id_rol');
+    // }
+
     public function rol()
     {
-        return $this->belongsTo('App\Role', 'id_rol');
+        return $this->belongsTo(Role::class, 'id_rol', 'id_aut_rol');
+    }
+
+    public function administradores()
+    {
+        return $this->hasMany('App\AdministradorEmpresa', 'id_aut_user', 'id_aut_user');
     }
 }

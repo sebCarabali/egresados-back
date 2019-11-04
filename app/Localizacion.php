@@ -11,7 +11,6 @@ class Localizacion extends Model
     protected $fillable = ['codigo_postal', 'direccion', 'barrio', 'id_ciudad'];
     public $timestamps = false;
 
-    protected $primaryKey = 'id_aut_localizacion';
 
     public function ciudad()
     {

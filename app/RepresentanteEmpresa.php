@@ -13,7 +13,7 @@ class RepresentanteEmpresa extends Model
 
     public function empresa()
     {
-        return $this->belongTo('App\Empresa', 'id_empresa', 'id_aut_empresa');
+        return $this->belongsTo('App\Empresa', 'id_empresa', 'id_aut_empresa');
     }
 
 }

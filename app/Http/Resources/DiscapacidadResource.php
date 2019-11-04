@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\Resource;
 
-class SubSectorResource extends Resource
+class DiscapacidadResource extends Resource
 {
     /**
      * Transform the resource into an array.
@@ -15,9 +15,8 @@ class SubSectorResource extends Resource
     public function toArray($request)
     {
         return [
-            "idSubSector" => $this->id_aut_sub_sector,
-            "Nombre" => $this->nombre,
-            "idSector" => $this->id_sectores
+            "idDiscapacidad" => $this->id_aut_discapacidades,
+            "Nombre" => $this->nombre
         ];
     }
 }

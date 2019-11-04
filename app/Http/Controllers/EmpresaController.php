@@ -291,6 +291,8 @@ class EmpresaController extends Controller
                 $direccionEmpr->save();
                 $empresa->direccion()->associate($direccionEmpr);
                 $empresa->save();
+                $empresa->subSectores()->sync($request['sectores']['sectores']);
+
 
                 // if ($dir_empresa) {
                 //     $representante->direccion()->associate($direccionEmpr);

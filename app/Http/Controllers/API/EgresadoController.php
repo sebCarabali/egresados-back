@@ -197,41 +197,32 @@ class EgresadoController extends Controller
         }
 
         $egresadosEnExcel = $this->getCollection($file);
-        $this->_procesarExcel($egresadosEnExcel);
+        $aceptados = $this->_procesarExcel($egresadosEnExcel);
         /*if(count($errors) > 0) {
             return response()->json($validator->errors(), 422);
         }*/
-
-        return response()->json(['msg' => 'Archivo verificado correctamente', 'aceptados' => $egresadosEnExcel], 200);
+        return response()->json($aceptados, 200);
     }
 
     private function _procesarExcel($egresados)
     {
-        $resultado = array(
-            'aceptados' => array(),
-            'pendientes' => array(),
-            'rechazados' => array()
-        );
+        $resultado = array();
+        $fisrtRow = true;
         // para todos los egresados de excel.
         foreach($egresados as $e) {
-            // Si el egresado ya ha realizado el pre-registro, cambiar estado de EN_ESPERA a ACTIVO LOGUEADO.
-            $egresadoYaRegistrado = Egresado::where('identificacion', $e->identificacion)
-                ->where('estado', 'EN_ESPERA')->first();
-            if($egresadoYaRegistrado) {
-                // cambiar estado.
-                $egresadoYaRegistrado->estado = 'ACTIVO_LOGUEADO';
-                $egresadoYaRegistrado->save();
-                array_push($resultado['aceptados'], $egresadoYaRegistrado);
-            } else {
-                // Si no ha realizado el pre-registro, registrar en la base de datos.
-                $egresadoARegistrar = new Egresado([
-                    'identificacion' => $e->identificacion,
-                    'correo' => $e->correo,
-                    'nombres' => $e->nombres,
-                    'apellidos' => $e->apellidos
-                ]);
-                
+            if(!$fisrtRow) {
+                // Si el egresado ya ha realizado el pre-registro, cambiar estado de EN_ESPERA a ACTIVO LOGUEADO.
+                $egresadoYaRegistrado = Egresado::where('identificacion', $e->identificacion)
+                    ->where('estado', 'EN_ESPERA')->first();
+                if($egresadoYaRegistrado) {
+                    // cambiar estado.
+                    $egresadoYaRegistrado->estado = 'ACTIVO_LOGUEADO';
+                    $egresadoYaRegistrado->save();
+                    array_push($resultado, $e);
+                }
             }
+            $fisrtRow = false;
         }
+        return $resultado;
     }
 }

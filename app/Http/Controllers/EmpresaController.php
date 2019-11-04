@@ -200,7 +200,7 @@ class EmpresaController extends Controller
                     'datos-resp.nombreResp' => 'required|string',
                     'datos-resp.telefonoMovilResp'  => 'required|integer',
                     'datos-resp.telefonoResp'  => 'integer',
-                    
+
 
                 ]);
 

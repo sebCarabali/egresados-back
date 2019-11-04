@@ -23,4 +23,8 @@ class Cargo extends Model
     {
         return $this->hasMany(\App\RepresentanteEmpresa::class, 'id_cargo', 'id');
     }
+
+    public function experiencia(){
+        return $this->hasMany('App\Experiencia', 'id_cargo');
+    }
 }

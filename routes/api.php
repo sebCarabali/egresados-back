@@ -21,6 +21,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
  * Guarda la información básica de un egresado.
  */
 Route::post('egresados', 'API\EgresadoController@storeBasicInfo');
+
+Route::put('completeEgresados/{idEgresado}', 'API\EgresadoController@fullInfo');
 /**
  * Obtiene todas la ciudades de un departamento.
  */

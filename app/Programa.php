@@ -19,4 +19,8 @@ class Programa extends Model
     public function facultad() {
         return $this->belognsTo('App\Facultad', 'id_facultad');
     }
+    public function referidos()
+    {
+        return $this->hasMany('App\Referido','id_aut_referido');
+    }
 }

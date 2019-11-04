@@ -11,6 +11,7 @@ class Localizacion extends Model
     protected $fillable = ['codigo_postal', 'direccion', 'barrio', 'id_ciudad'];
     public $timestamps = false;
 
+
     public function ciudad()
     {
         return $this->belongsTo('App\Ciudad', 'id_ciudad');

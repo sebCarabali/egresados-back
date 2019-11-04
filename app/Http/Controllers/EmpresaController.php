@@ -13,6 +13,7 @@ use App\Localizacion;
 use App\RepresentanteEmpresa;
 use App\Role;
 use App\Sector;
+use App\SubSector;
 use App\User;
 use Exception;
 use Illuminate\Support\Carbon;
@@ -46,18 +47,38 @@ class EmpresaController extends Controller
         $empresa = Empresa::find($id);
 
         if (is_object($empresa)) {
-            $empresa->load('subSectores', 'direccion', 'representante', 'administrador');
+            $empresa->load('direccion', 'representante', 'administrador');
             $empresa->direccion->load('ciudad');
             $empresa->direccion->ciudad->load('departamento');
             $empresa->direccion->ciudad->departamento->load('pais');
 
             $empresa->administrador->load('direccion', 'user', 'cargo');
 
+            $sectores = [];
 
-            // Se borra el atributo pivot, el cual no es necesario
-            foreach ($empresa->subSectores as $sector) {
-                unset($sector['pivot']);
+            //Por cada subsector obtengo el sector
+            foreach ($empresa->subSectores as $subSector) {
+                $res = Sector::find($subSector->id_sectores)->first();
+                if (!isset($sectores->$res)){
+                    $sectores[] = $res;
+                }
+                // Se borra el atributo pivot, el cual no es necesario
+                unset($subSector['pivot']);
             }
+            $empresa['sectores'] = $sectores;
+
+            foreach ($empresa->sectores as $sector) {
+                $subsec = [];
+                foreach ($empresa->subSectores as $subSector) {
+                    if ($subSector->id_sectores == $sector->id_aut_sector){
+                        $subsec[] = $subSector;
+                    }
+                }
+                $sector['subSectores'] = $subsec;
+            }
+
+            unset($empresa['subSectores']);
+
             $code = 200;
             $data = $empresa;
         } else {
@@ -157,7 +178,7 @@ class EmpresaController extends Controller
                 // return response()->json($request);
                 $this->validate(request(), [
 
-                    
+
                     //Datos usuario login
                     // datos-cuenta
                     // datos-generales-empresa

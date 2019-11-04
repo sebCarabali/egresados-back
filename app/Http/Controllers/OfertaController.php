@@ -8,7 +8,6 @@ use App\Oferta;
 use App\Cargo;
 use App\Contrato;
 use App\CategoriaCargo;
-use App\Contrato;
 use Illuminate\Support\Facades\DB;
 
 class OfertaController extends Controller

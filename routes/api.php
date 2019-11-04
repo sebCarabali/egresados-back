@@ -57,6 +57,10 @@ Route::get('programas/{idFacultad}', 'API\ProgramaController@getByFacultad');
  */
 Route::post('empresas/store', 'EmpresaController@store');
 /**
+ * Actualización  de una empresa
+ */
+Route::post('empresas/update', 'EmpresaController@update');
+/**
  * Obtiene los sectores
  */
 Route::get('sectores', 'SectorController@getAll');

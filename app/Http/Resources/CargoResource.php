@@ -4,9 +4,9 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\Resource;
 
-class SectorResource extends Resource
+class CargoResource extends Resource
 {
-     /**
+    /**
      * Transform the resource into an array.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -15,12 +15,8 @@ class SectorResource extends Resource
     public function toArray($request)
     {
         return [
-            "idSector" => $this->id_aut_sector,
-            "Nombre" => $this->nombre,
+            "idCargo" => $this->id_aut_cargos,
+            "Nombre" => $this->nombre
         ];
     }
 }
-// $this->mergeWhen(Auth::user()->isAdmin(), [
-//     'first-secret' => 'value',
-//     'second-secret' => 'value',
-// ]),

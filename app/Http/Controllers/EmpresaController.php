@@ -104,7 +104,7 @@ class EmpresaController extends Controller
         // return response()->json($data, $code);
 
         if (request()->ajax()) {
-            $empresa = Empresa::first();
+            $empresa = Empresa::firstOrFail();
             // return response()->json($empresa->administrador->id_aut_user);
             try {
                 // return response()->json($request);

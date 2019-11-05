@@ -76,27 +76,29 @@ class OfertaController extends Controller
         $salario->forma_pago = ""; // Enum  ('Moneda local', 'US Dolar')
 
         $oferta = new Oferta();
-        $oferta->id_empresa = ""; // ID de la empresa
         $oferta->nombre_oferta = ""; //
         $oferta->descripcion = ""; //
-        $oferta->id_cargo = ""; // // ID del cargo que la persona va a ocupar
-        $oferta->id_contrato = $contrato->id_aut_contrato; // ID del Contrato de arriba
         $oferta->numero_vacantes = ""; //
-        $oferta->id_forma_pago = $salario->id_aut_salario; // ID de Salario de arriba
         $oferta->experiencia = ""; // Enum ('Sin experiencia', 'Igual a', 'Mayor o igual que', 'Menor o igual que')
         $oferta->anios_experiencia = ""; //
         $oferta->fecha_publicacion = ""; //
         $oferta->fecha_cierre = ""; //
         $oferta->estado = "Pendiente"; // Enum ('Aceptada', 'Rechazada', 'Pendiente');  --Administrador
         $oferta->estado_proceso = "En seleccion"; // ('En seleccion', 'Desactivada', 'Expirada');  --Empresa
-        $oferta->id_sector = ""; // ID seleccionado de la tabla sectores
         $oferta->nombre_temporal_empresa = ""; //
         $oferta->licencia_conduccion = ""; // Enum ('A1', 'A2', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3')
-        $oferta->requisitos_minimos = ""; // TEsto descriptivo 
+        $oferta->requisitos_minimos = ""; // Texto descriptivo 
+        $oferta->id_empresa = ""; // ID de la empresa
+        $oferta->id_contrato = $contrato->id_aut_contrato; // ID del Contrato de arriba
+        $oferta->id_forma_pago = $salario->id_aut_salario; // ID de Salario de arriba
+        $oferta->id_sector = ""; // ID seleccionado de la tabla sectores
+        $oferta->id_cargo = ""; // // ID del cargo que la persona va a ocupar
         $oferta->id_discapacidad = ""; // Id consultado de la tabla discapacidad
 
+        
+
         // Asigna los id de las ciudades donde va a estar disponible la oferta
-        $oferta->ubicaciones()->attach($ubicaione); // Ids consultados de la tabla discapacidad
+        $oferta->ubicaciones()->attach($ubicaiones); // Ids consultados de la tabla discapacidad
        
         // Asigna los id de las areas de conocimientos requeridos por la oferta
         $oferta->ubicaciones()->attach($areas); // Ids consultados de la tabla areas de conocimiento
@@ -125,9 +127,9 @@ class OfertaController extends Controller
 // Salario --
 // Ubicaciones --
 // Areas Conocimiento --
-// Cargo
+// Cargo --
 // Sector NO Subsector, SECTOR --
-// Discapacidades
+// Discapacidades --
 // Preguntas
 // Ofertas
 

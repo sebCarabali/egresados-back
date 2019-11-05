@@ -15,6 +15,11 @@ class Salario extends Model
     ];
     public function oferta()
     {
-        return $this->hasOne('App\Oferta', 'id_contrato', 'id_aut_contrato');
+        return $this->hasOne('App\Oferta', 'id_forma_pago', 'id_aut_salario');
+    }
+
+    public function user()
+    {
+        return $this->hasOne('App\User', 'foreign_key', 'local_key');
     }
 }

@@ -258,13 +258,17 @@ class EmpresaController extends Controller
                 //     $administradorEmp->direccion()->associate($direccionEmpr);
                 // } else {
                 $direccionAdministrador->update();
-                $cargo = Cargo::whereNombre($request['datos-resp']['cargo'])->first();
+                $cargo = Cargo::firstOrCreate(["nombre"=>$request['datos-resp']['cargo']], ["estado"=>false]);
+                // return response()->json($cargo);
                 if (!$cargo) {
+                    $cargo = new Cargo();
                     $cargo->nombre = $request['datos-resp']['cargo'];
                     $cargo->estado = false;
+                    $current_id = DB::table('cargos')->max('id_aut_cargos');
+                    $cargo->id_aut_cargos = $current_id + 1;
                     $cargo->save();
                 }
-                // return response()->json($cargo);
+                // return response()->json($request['datos-resp']['cargo']);
                 // $administradorEmp->direccion()->associate($direccionAdministrador);
                 // $administradorEmp->user()->associate($user);
                 $administradorEmp->cargo()->associate($cargo);
@@ -479,18 +483,24 @@ class EmpresaController extends Controller
                 $empresa->direccion()->associate($direccionEmpr);
                 $empresa->save();
                 $empresa->subSectores()->sync($request['sectores']['sectores']);
-
-
+                
+                
                 // if ($dir_empresa) {
-                //     $representante->direccion()->associate($direccionEmpr);
-                // } else {
+                    //     $representante->direccion()->associate($direccionEmpr);
+                    // } else {
                 $direccionAdministrador->save();
-                $cargo = Cargo::whereNombre($request['datos-resp']['cargo'])->first();
+                // $cargo = Cargo::whereNombre($request['datos-resp']['cargo'])->first();
+                $cargo = Cargo::firstOrCreate(["nombre"=>$request['datos-resp']['cargo']], ["estado"=>false]);
+                // return response()->json($cargo);
                 if (!$cargo) {
+                    $cargo = new Cargo();
                     $cargo->nombre = $request['datos-resp']['cargo'];
                     $cargo->estado = false;
+                    $current_id = DB::table('cargos')->max('id_aut_cargos');
+                    $cargo->id_aut_cargos = $current_id + 1;
                     $cargo->save();
                 }
+                // return response()->json($request['datos-resp']['cargo']);
                 // return response()->json($cargo);
                 $representante->direccion()->associate($direccionAdministrador);
                 $representante->user()->associate($user);

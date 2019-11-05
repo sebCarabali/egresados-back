@@ -16,6 +16,10 @@ class Ciudad extends Model
       return $this->hasMany('App\Nacimiento');
     }
 
+    public function experiencias() {
+      return $this->hasMany('App\Experiencia');
+    }
+
     public function departamento()
     {
         return $this->belongsTo('App\Departamento', 'id_departamento');

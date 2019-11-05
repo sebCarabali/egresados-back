@@ -111,7 +111,7 @@ class EmpresaController extends Controller
                 $this->validate(request(), [
 
                     'datos-cuenta.email' => 'required|max:255|email|unique:users,email,' . $empresa->administrador->id_aut_user . ',id_aut_user',
-                    'datos-cuenta.contrasenia' => 'required|string|min:6',
+                    'datos-cuenta.contrasenia' => 'string|min:6',
 
                     // Datos empresa
                     'datos-generales-empresa.NIT' => 'required|integer|digits:8|unique:empresas,nit,' . $empresa->id_aut_empresa . ',id_aut_empresa',
@@ -133,7 +133,8 @@ class EmpresaController extends Controller
 
                     // 'sectores' => 'required|array',
                     'sectores.sectores' => 'required|array',
-                    'sectores.sectores.*' => 'required|integer|exists:sectores,id_aut_sector',
+                    'sectores.sectores.*.subSectores.*.idSector' => 'required|integer|exists:sectores,id_aut_sector',
+                    // 'sectores.sectores.*' => 'required|integer|exists:sectores,id_aut_sector',
                     // //datos representante
                     'datos-resp.nombrereplegal'  => 'required|string',
                     'datos-resp.apellidoreplegal'  => 'required|string',
@@ -156,7 +157,9 @@ class EmpresaController extends Controller
                 // return response()->json($user);
                 // $user->email = request('datos-cuenta.email');
                 $user->email = $request['datos-cuenta']['email'];
-                $user->password = bcrypt($request['datos-cuenta']['contrasenia']);
+                if($request['datos-cuenta']['contrasenia']){
+                    $user->password = bcrypt($request['datos-cuenta']['contrasenia']);
+                }
                 // return response()->json($user); 
 
                 $direccionEmpr = $empresa->direccion;
@@ -229,6 +232,15 @@ class EmpresaController extends Controller
                 // return response()->json(Cargo::find(request('rep_id_cargo'))->firstOrFail());
                 // return response()->json($administradorEmp);
                 // return response()->json([$user, $empresa, $representanteLegal, $administradorEmp]);
+               
+                $ids = array();
+                foreach ($request['sectores']['sectores'] as $sect) {
+                    foreach ($sect["subSectores"] as $subs) {
+                        array_push($ids, $subs["idSector"]);
+                    }
+                }
+                // return response()->json($ids);
+                // return response()->json($request['sectores']['sectores'][0]['subSectores'][0]['idSector']);
 
                 // DB::transaction(function () use ($user, $direccionEmpr, $empresa, $direccionAdministrador, $administradorEmp, $representanteLegal) {
                 DB::beginTransaction();
@@ -237,7 +249,9 @@ class EmpresaController extends Controller
                 $direccionEmpr->update();
                 // $empresa->direccion()->associate($direccionEmpr);
                 $empresa->update();
-                $empresa->subSectores()->sync($request['sectores']['sectores']);
+
+                // $empresa->subSectores()->sync($request['sectores']['sectores']);
+                $empresa->subSectores()->sync($ids);
 
 
                 // if ($dir_empresa) {

@@ -178,14 +178,14 @@ class EmpresaController extends Controller
                 // return response()->json($user);
                 // $user->email = request('datos-cuenta.email');
                 $user->email = $request['datos-cuenta']['email'];
-                if ($request['datos-cuenta']['contrasenia']) {
+                if (!empty($request['datos-cuenta']['contrasenia'])) {
                     $user->password = bcrypt($request['datos-cuenta']['contrasenia']);
                 }
                 // return response()->json($user); 
 
                 $direccionEmpr = $empresa->direccion;
                 // return response()->json($direccionEmpr);
-                if ($request['loc-contact-empresa']['codigoPostalEmp']) {
+                if (!empty($request['loc-contact-empresa']['codigoPostalEmp'])) {
                     $direccionEmpr->codigo_postal = $request['loc-contact-empresa']['codigoPostalEmp'];
                 }
                 $direccionEmpr->direccion = $request['loc-contact-empresa']['direccionEmp'];
@@ -199,16 +199,16 @@ class EmpresaController extends Controller
                 $empresa->razon_social = $request['datos-generales-empresa']['razonSocial'];
                 $empresa->numero_empleados = $request['datos-generales-empresa']['numEmpleados'];
                 $empresa->ingresos = $request['datos-generales-empresa']['ingresosEmp'];
-                if ($request['loc-contact-empresa']['sitioWebEmp']) {
+                if (!empty($request['loc-contact-empresa']['sitioWebEmp'])) {
                     $empresa->sitio_web = $request['loc-contact-empresa']['sitioWebEmp'];
                 }
                 $empresa->anio_creacion = $request['datos-generales-empresa']['anioCreacion'];
                 $empresa->url_doc_camaracomercio = "url pdf camara y comercio";
 
-                if ($request['loc-contact-empresa']['telefonoEmp']) {
+                if (!empty($request['loc-contact-empresa']['telefonoEmp'])) {
                     $empresa->telefono = $request['loc-contact-empresa']['telefonoEmp'];
                 }
-                if ($request['loc-contact-empresa']['emailEmp']) {
+                if (!empty($request['loc-contact-empresa']['emailEmp'])) {
                     $empresa->correo = $request['loc-contact-empresa']['emailEmp'];
                 }
                 // return response()->json($empresa);
@@ -233,7 +233,7 @@ class EmpresaController extends Controller
                 $representanteLegal = $empresa->representante;
                 $representanteLegal->nombre = $request['datos-resp']['nombrereplegal'];
                 $representanteLegal->apellidos = $request['datos-resp']['apellidoreplegal'];
-                if ($request['datos-resp']['telefonoreplegal']) {
+                if (!empty($request['datos-resp']['telefonoreplegal'])) {
                     $representanteLegal->telefono = $request['datos-resp']['telefonoreplegal'];
                 }
                 $representanteLegal->telefono_movil = $request['datos-resp']['telefonoMovilreplegal'];
@@ -243,7 +243,7 @@ class EmpresaController extends Controller
                 $administradorEmp = $empresa->administrador;
                 $administradorEmp->nombres = $request['datos-resp']['nombreResp'];
                 $administradorEmp->apellidos = $request['datos-resp']['apellidoResp'];
-                if ($request['datos-resp']['telefonoResp']) {
+                if (!empty($request['datos-resp']['telefonoResp'])) {
                     $administradorEmp->telefono = $request['datos-resp']['telefonoResp'];
                 }
                 $administradorEmp->telefono_movil = $request['datos-resp']['telefonoMovilResp'];

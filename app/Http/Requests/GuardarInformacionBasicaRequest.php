@@ -34,16 +34,11 @@ class GuardarInformacionBasicaRequest extends FormRequest
             'fecha_nacimiento' => 'required|date',
             'id_lugar_nacimiento' => 'required',
             'id_lugar_expedicion' => 'required',
-            'direccion' => 'required',
+            //'direccion' => 'required',
             'id_lugar_residencia' => 'required',
-            'grado' => 'required',
             'discapacidad' => 'required',
             'estado_civil' => 'required',
-            'id_nivel_educativo' => 'required',
-            'telefono' => 'required',
-            'grado.fecha_grado' => 'required',
-            'num_hijos' => 'required',
-            'grado.id_programa' => 'required'
+            'id_nivel_educativo' => 'required'
         ];
     }
 
@@ -68,11 +63,8 @@ class GuardarInformacionBasicaRequest extends FormRequest
             'discapacidad.required' => 'Debe indicar si tiene una discapacidad.',
             'estado_civil.required' => 'Debe proporcionar su estado civil.',
             'id_nivel_educativo.required' => 'Debe seleccionar su nivel de estudio.',
-            'telefono.required' => 'Debe proporcionar un número telefónico.',
             'direccion.required' => 'Debe proporcionar una dirección de residencia.',
-            'id_ciudad_residencia' => 'Debe proporcionar la ciudad en la cual reside.',
-            'grado.fecha_grado.required' => 'Debe ingresar la información de su grado.',
-            'grado.id_programa.required' => 'Debe seleccionar el programa del cual egresa.'
+            'id_ciudad_residencia' => 'Debe proporcionar la ciudad en la cual reside.'
         ];
     }
 }

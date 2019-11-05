@@ -53,7 +53,7 @@ class UserController extends Controller
         return response()->json($signup, $code);
     }
 
-    public function activarCuenta(Request $request, $codigo_confirmacion)
+    public function activarCuenta(Request $request, $codigo)
     {
         $validator = Validator::make($request->all(), [
             'password' => 'required|confirmed|min:8',
@@ -69,7 +69,7 @@ class UserController extends Controller
             return response()->json($validator->errors(), 400);
         }
         // Obtener usuario con el código de confirmación
-        $usuario => User::where('codigo_verificacion', $codigo_confirmacion)->first();
+        $usuario = User::where('codigo_verificacion', $codigo)->first();
         if(!$usuario) {
             return response()->json(false, 400);
         }
@@ -82,7 +82,7 @@ class UserController extends Controller
     public function esUsuarioActivo($email)
     {
         $activo = false;
-        $usuario => User::where('email', $email)->first();
+        $usuario = User::where('email', $email)->first();
         if($usuario) {
             $activo = boolval($usuario->activo);
         }

@@ -53,11 +53,20 @@ Route::get('programas/{idFacultad}', 'API\ProgramaController@getByFacultad');
 //Route::group(['middleware' => 'cors'], function () {
     Route::post('egresados/verificar', 'API\EgresadoController@validateExcel');
 //});
+
+Route::post('users/validar/{codigo}', function ($id) {
+    
+});
+
 // --------------------------------------------------------------------------------
 /**
  * Registro de una empresa
  */
 Route::post('empresas/store', 'EmpresaController@store');
+/**
+ * Actualización  de una empresa
+ */
+Route::post('empresas/update', 'EmpresaController@update');
 /**
  * Obtiene los sectores
  */
@@ -90,6 +99,8 @@ Route::get('validarUsuario/{email}', 'ValidadorController@validateEmail');
  * @param nit
  */
 Route::get('validarNIT/{nit}', 'ValidadorController@validateNit');
+
+
 
 /**
  * Ruta para el login
@@ -130,4 +141,6 @@ Route::get('idiomas', 'IdiomaController@getAll');
 Route::get('discapacidades', 'DiscapacidadController@getAll');
 Route::get('programas', 'API\ProgramaController@getAll');
 Route::get('cargos', 'CargoController@getAll');
+
+Route::post('ofertas/store', 'OfertaController@storeOferta');
 

@@ -15,8 +15,9 @@ class SubSectorResource extends Resource
     public function toArray($request)
     {
         return [
-            "idSector" => $this->id_aut_sub_sector,
-            "Nombre" => $this->nombre
+            "idSubSector" => $this->id_aut_sub_sector,
+            "Nombre" => $this->nombre,
+            "idSector" => $this->id_sectores
         ];
     }
 }

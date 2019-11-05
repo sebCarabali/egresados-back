@@ -31,11 +31,11 @@ class Egresado extends Model
     public function lugarExpedicion() {
       return $this->belongsTo('App\Ciudad', 'id_lugar_expedicion');
     }
-    /*
+    
     public function user()
     {
-        return $this->belongsTo('App\User', 'foreign_key', 'other_key');
-    }*/
+        return $this->belongsTo('App\User', 'id_aut_user', 'id_aut_user');
+    }
 
     public function programas() {
       return $this->belongsToMany('App\Programa', 'grados', 'id_estudiante', 'id_programa');

@@ -10,8 +10,9 @@ class Nacimiento extends Model
     protected $guarded = ['id_lug_nac'];
     public $timestamps = false;
     
-    public function egresados(){
-      return $this->hasMany('App\Egresado');
+    public function egresados()
+    {
+      return $this->hasMany('App\Egresado', 'id_nacimiento_fk');  
     }
 
     public function ciudad()

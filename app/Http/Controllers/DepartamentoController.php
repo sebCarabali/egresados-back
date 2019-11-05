@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Departamento;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class DepartamentoController extends Controller
 {
@@ -13,9 +14,16 @@ class DepartamentoController extends Controller
         return response($response);
     }
 
+    public function getByPais($idPais)
+    {
+        $departamentos = DB::table('departamentos')
+                ->where('id_pais_fk', $idPais)->get();
+        return response()->json($departamentos, 200);
+    }
+
     public function getAllCitiesDepartment($dep)
     {
-        $response = \App\Departamento::find($dep) ?: null;
+        $response = Departamento::find($dep);
         if ($response) {
             return response()->json($response->ciudades, 200);
         }

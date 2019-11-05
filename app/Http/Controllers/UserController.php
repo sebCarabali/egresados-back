@@ -52,4 +52,40 @@ class UserController extends Controller
 
         return response()->json($signup, $code);
     }
+
+    public function activarCuenta(Request $request, $codigo_confirmacion)
+    {
+        $validator = Validator::make($request->all(), [
+            'password' => 'required|confirmed|min:8',
+            'password_confirmation' => 'required|same:password'
+        ], [
+            'password.required' => 'Debe ingresar un password',
+            'password_confirmation.same' => 'Debe ingresar el mismo password.',
+            'password.min' => 'El password debe tener 8 o más caracteres.',
+            'password_confirmation.required' => 'Debe ingresar la confirmación del password.'
+        ]);
+
+        if($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+        // Obtener usuario con el código de confirmación
+        $usuario = User::where('codigo_verificacion', $codigo_confirmacion)->first();
+        if(!$usuario) {
+            return response()->json(false, 400);
+        }
+
+        $usuario->activado = true;
+        $usuario->save();
+        return response()->json(true, 200);
+    }
+
+    public function esUsuarioActivo($email)
+    {
+        $activo = false;
+        $usuario = User::where('email', $email)->first();
+        if($usuario) {
+            $activo = boolval($usuario->activo);
+        }
+        return response()->json($activo, 200);
+    }
 }

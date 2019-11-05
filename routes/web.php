@@ -18,14 +18,6 @@
   2: Egresado
 */
 Route::get('/', function () {
+    // dd(\App\Departamento::all());
     return view('welcome');
 });
-
-Route::post('/api/login', 'UserController@login');
-
-Route::get('/api/empresa', 'EmpresaController@index');
-Route::post('/api/empresa', 'EmpresaController@store');
-Route::get('/api/empresa/{id}', 'EmpresaController@show');
-Route::put('/api/empresa/{id}', 'EmpresaController@update')->middleware('api.auth:1');
-
-Route::put('/api/empresa/estado/{id}', 'EmpresaController@updateEstado');//->middleware('api.auth:0');

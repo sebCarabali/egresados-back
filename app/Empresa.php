@@ -7,44 +7,38 @@ use Illuminate\Database\Eloquent\Model;
 class Empresa extends Model
 {
     protected $table = 'empresas';
-
     public $timestamps = false;
+    protected $primaryKey = 'id_aut_empresa';
+    protected $guarded = ['id_aut_empresa'];
 
-
-    // protected $primaryKey = 'id_aut_empresa';
-
-    protected $fillable = [
-        'nit',
-        'nombre',
-        'razon_social',
-        'anio_creacion',
-        'numero_empleados',
-        'ingresos',
-        'sitio_web',
-        'id_direccion',
-        'estado',
-        'fecha_registro',
-        'fecha_activacion',
-        'total_publicaciones',
-        'limite_publicaciones',
-        'num_publicaciones_actuales'
-    ];
-
-    public function representante()
-    {
-        return $this->hasOne(\App\RepresentanteEmpresa::class, 'id_empresa', 'id');
-        // return $this->hasOne(\App\RepresentanteEmpresa::class, 'id_empresa', 'id_aut_empresa');
-    }
 
     public function direccion()
     {
-        return $this->belongsTo(\App\Localizacion::class, 'id_direccion', 'id');
-        // return $this->belongsTo(\App\Localizacion::class, 'id_direccion', 'id_aut_localizacion');
+        return $this->belongsTo('App\Localizacion', 'id_direccion', 'id_aut_localizacion');
     }
 
     public function user()
     {
-        return $this->belongsTo(\App\User::class, 'id_user', 'id');
-        // return $this->belongsTo(\App\User::class, 'id_aut_user', 'id_aut_user');
+        return $this->belongsTo('App\User', 'id_user', 'id');
+    }
+
+    public function ofertas()
+    {
+        return $this->hasMany('App\Oferta', 'id_empresa', 'id_aut_empresa');
+    }
+
+    public function subSectores()
+    {
+        return $this->belongsToMany('App\SubSector', 'empresas_sectores', 'id_empresa', 'id_sub_sector');
+    }
+
+    public function representante()
+    {
+        return $this->hasOne('App\RepresentanteEmpresa', 'id_empresa', 'id_aut_empresa');
+    }
+
+    public function administrador()
+    {
+        return $this->hasOne('App\AdministradorEmpresa', 'id_empresa', 'id_aut_empresa');
     }
 }

@@ -20,7 +20,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 /**
  * Guarda la información básica de un egresado.
  */
-Route::post('egresados', 'API\EgresadoController@guardarInformacionBasica');
+Route::post('egresados', 'API\EgresadoController@storeBasicInfo');
+
+Route::put('completeEgresados/{idEgresado}', 'API\EgresadoController@fullInfo');
 /**
  * Obtiene todas la ciudades de un departamento.
  */
@@ -51,6 +53,11 @@ Route::get('programas/{idFacultad}', 'API\ProgramaController@getByFacultad');
 //Route::group(['middleware' => 'cors'], function () {
     Route::post('egresados/verificar', 'API\EgresadoController@validateExcel');
 //});
+
+Route::post('users/validar/{codigo}', function ($id) {
+    
+});
+
 // --------------------------------------------------------------------------------
 /**
  * Registro de una empresa
@@ -92,6 +99,8 @@ Route::get('validarUsuario/{email}', 'ValidadorController@validateEmail');
  * @param nit
  */
 Route::get('validarNIT/{nit}', 'ValidadorController@validateNit');
+
+
 
 /**
  * Ruta para el login

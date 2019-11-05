@@ -17,11 +17,15 @@ class Cargo extends Model
 
     public function categoria()
     {
-        return $this->belongsTo('App\CategoriaCargo', 'id_categoria', 'id_aut_cate_crago');
+        return $this->belongsTo('App\CategoriaCargo', 'id_categoria', 'id_aut_cate_cargo');
     }
 
     public function administradores()
     {
         return $this->hasMany('App\AdministradorEmpresa', 'id_cargo', 'id_aut_cargos');
+    }
+
+    public function experiencia(){
+        return $this->hasMany('App\Experiencia', 'id_cargo');
     }
 }

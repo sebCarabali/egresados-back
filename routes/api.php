@@ -133,3 +133,5 @@ Route::get('discapacidades', 'DiscapacidadController@getAll');
 Route::get('programas', 'API\ProgramaController@getAll');
 Route::get('cargos', 'CargoController@getAll');
 
+Route::post('ofertas/store', 'OfertaController@storeOferta');
+

@@ -4,6 +4,7 @@ namespace App\Imports;
 
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\{ToCollection};
+use App\Egresado;
 
 class EgresadosImport implements ToCollection
 {
@@ -26,7 +27,8 @@ class EgresadosImport implements ToCollection
             $egresado = [
                 'nombres' => $row[6],
                 'apellidos' => $row[7],
-                'identificacion' => $this->_obtenerIdentificacion($row[8])
+                'identificacion' => $this->_obtenerIdentificacion($row[8]),
+                'titulo' => $row[5]
                 // TODO: Obtener demas datos del excel.
             ];
             array_push($this->egresados, $egresado);
@@ -38,6 +40,7 @@ class EgresadosImport implements ToCollection
     {
         $retorno = [];
         preg_match('/[0-9]+(.[0-9])+/', $identificacion, $retorno);
-        return $retorno;
+        $identificacion = count($retorno) > 0 ? str_replace('.', '', $retorno[0]) : '';
+        return $identificacion;        
     }
 }

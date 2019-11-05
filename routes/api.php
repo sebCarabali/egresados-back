@@ -48,13 +48,20 @@ Route::get('facultades', 'API\FacultadController@getAll');
  */
 Route::get('programas/{idFacultad}', 'API\ProgramaController@getByFacultad');
 /**
- * 
+ * Verifica el excel de egresados dato por secretaria.
  */
+//Route::group(['middleware' => 'cors'], function () {
+    Route::post('egresados/verificar', 'API\EgresadoController@validateExcel');
+//});
 // --------------------------------------------------------------------------------
 /**
  * Registro de una empresa
  */
 Route::post('empresas/store', 'EmpresaController@store');
+/**
+ * Obtiene los sectores
+ */
+Route::get('sectores', 'SectorController@getAll');
 /**
  * Obtiene los sectores
  */
@@ -70,7 +77,7 @@ Route::get('paises', 'PaisController@getAllCountries');
 Route::get('departamentos/{pais}', 'PaisController@getAllDepartments');
 /**
  * Obtiene las Ciudades que pertenecen a un Departamento.
- * @param dep 
+ * @param dep
  */
 Route::get('ciudades/{dep}', 'DepartamentoController@getAllCitiesDepartment');
 /**
@@ -83,4 +90,44 @@ Route::get('validarUsuario/{email}', 'ValidadorController@validateEmail');
  * @param nit
  */
 Route::get('validarNIT/{nit}', 'ValidadorController@validateNit');
+
+/**
+ * Ruta para el login
+ */
+Route::post('/login', 'UserController@login');
+/**
+ * Obtiene las empresas que están en estado de espera
+ */
+Route::get('/empresa/enEspera', 'EmpresaController@getEmpresasEnEspera');
+/**
+ * Obtiene toda la información de una empresa en específico
+ */
+Route::get('empresa/{id}', 'EmpresaController@showAllInfo');
+/**
+ * Cambia el estado de una empresa
+ */
+Route::put('/empresa/estado/{id}', 'EmpresaController@updateEstado');//->middleware('api.auth:0');
+/**
+ * update general de empresa
+ */
+Route::put('/empresa/{id}', 'EmpresaController@update');//->middleware('api.auth:1');
+/**
+ * Obtiene todas las ofertas de una empresa
+ */
+Route::get('/ofertas/empresa/{id}', 'OfertaController@getOfertasEmpresa');
+/**
+ * Obtiene todas las ofertas de una empresa
+ */
+Route::get('/ofertas/activas/empresa/{id}', 'OfertaController@getOfertasActivasEmpresa');
+/**
+ * Obtiene todas las ofertas que están en espera, vista desde administrador
+ */
+Route::get('/ofertas/empresas', 'OfertaController@getOfertasEnEspera');
+
+
+
+Route::get('idiomas', 'IdiomaController@getAll');
+Route::get('discapacidades', 'DiscapacidadController@getAll');
+Route::get('programas', 'API\ProgramaController@getAll');
+Route::get('cargos', 'CargoController@getAll');
 

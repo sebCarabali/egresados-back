@@ -31,13 +31,33 @@ class EmpresaController extends Controller
         return response()->json($empresas, 200);
     }
 
-    public function show($id)
+    public function getEmpresasEnEspera()
+    {
+        $empresas = Empresa::orderBy('fecha_registro', 'ASC')
+            ->where('estado', 'En espera')->get();
+
+        return response()->json($empresas, 200);
+    }
+
+    public function showAllInfo($id)
     {
         // Codigo de error por defecto
         $code = 404;
         $empresa = Empresa::find($id);
 
         if (is_object($empresa)) {
+            $empresa->load('subSectores', 'direccion', 'representante', 'administrador');
+            $empresa->direccion->load('ciudad');
+            $empresa->direccion->ciudad->load('departamento');
+            $empresa->direccion->ciudad->departamento->load('pais');
+
+            $empresa->administrador->load('direccion', 'user', 'cargo');
+
+
+            // Se borra el atributo pivot, el cual no es necesario
+            foreach ($empresa->subSectores as $sector) {
+                unset($sector['pivot']);
+            }
             $code = 200;
             $data = $empresa;
         } else {
@@ -48,8 +68,6 @@ class EmpresaController extends Controller
 
     public function update($id, Request $request)
     {
-
-
         // Recoger los datos por POST
         $json = $request->input('json', null);
         $params_array = json_decode($json, true);
@@ -85,9 +103,8 @@ class EmpresaController extends Controller
         return response()->json($data, $code);
     }
 
-    public function updateEstado($id, Request $request){
-
-
+    public function updateEstado($id, Request $request)
+    {
         // Recoger los datos por PUT
         $json = $request->input('json', null);
         $params_array = json_decode($json, true);
@@ -97,16 +114,27 @@ class EmpresaController extends Controller
         $data = null;
 
         if (!empty($params_array)) {
-
             // Buscar el registro
-            $empresa = Empresa::where('id', $id)->first();
+            $empresa = Empresa::find($id);
 
             if (!empty($empresa) && is_object($empresa)) {
-              // Actualizar el registro en concreto
-              $empresa->update(['estado' => $params_array['estado']]);
-              $data = $empresa;
-              $code = 200;
 
+                if ($params_array['estado'] == 'Activo' && !empty($params_array['limite_publicaciones'])) {
+                    // Actualizar el registro en concreto
+
+                    $empresa->update([
+                        'estado' => $params_array['estado'],
+                        'limite_publicaciones' => $params_array['limite_publicaciones'],
+                        'fecha_activacion' => Carbon::now('-5:00'),
+                    ]);
+                    $data = $empresa;
+                    $code = 200;
+                } else if ($params_array['estado'] == 'En espera' || $params_array['estado'] == 'Inactivo') {
+                    // Actualizar el registro en concreto
+                    $empresa->update(['estado' => $params_array['estado']]);
+                    $data = $empresa;
+                    $code = 200;
+                }
             }
         }
         return response()->json($data, $code);
@@ -128,6 +156,8 @@ class EmpresaController extends Controller
             try {
                 // return response()->json($request);
                 $this->validate(request(), [
+
+                    
                     //Datos usuario login
                     // datos-cuenta
                     // datos-generales-empresa
@@ -143,20 +173,24 @@ class EmpresaController extends Controller
                     'datos-generales-empresa.descripcionEmpresa' => 'required|string',
                     'datos-generales-empresa.ingresosEmp' => 'required|string',
                     'datos-generales-empresa.nombreEmpresa' => 'required|unique:empresas,nombre',
-                    'datos-generales-empresa.numEmpleados' => 'required|integer',
+                    'datos-generales-empresa.numEmpleados' => 'required|string',
                     'datos-generales-empresa.razonSocial' => 'required|string',
+
+
 
                     'loc-contact-empresa.barrioEmp' => 'required|string',
                     'loc-contact-empresa.ciudadEmp' => 'required|exists:ciudades,id',
                     'loc-contact-empresa.codigoPostalEmp' => 'required|integer',
                     'loc-contact-empresa.direccionEmp' => 'required|string',
-                    'loc-contact-empresa.sitioWebEmp' => 'required|url',
+                    'loc-contact-empresa.sitioWebEmp' => 'url',
+                    'loc-contact-empresa.emailEmp' => 'email',
+                    'loc-contact-empresa.telefonoEmp' => 'string',
 
                     // 'sectores' => 'required|array',
-                    // 'sectores.*' => 'required|integer|distinct|exists:sectores,id',
-                    'sectores.sectores' => 'required|integer|exists:sectores,id',
+                    // 'sectores.sectores' => 'required|integer|exists:sectores,id',
+                    'sectores.sectores' => 'required|string',
                     // //datos representante
-                    'dir_empresa' => 'required|integer',
+                    // 'dir_empresa' => 'required|integer',
                     'datos-resp.apellidoResp'  => 'required|string',
                     'datos-resp.barrioResp' => 'required_if:dir_empresa,0|string',
                     'datos-resp.cargo'  => 'required|string',
@@ -164,10 +198,11 @@ class EmpresaController extends Controller
                     'datos-resp.codigoPostalResp' => 'required_if:dir_empresa,0|integer',
                     'datos-resp.direccionResp' => 'required_if:dir_empresa,0|string',
                     'datos-resp.emailCorpResp'  => 'required|email',
+                    'datos-resp.horarioContacto'  => 'required|string',
                     'datos-resp.nombreResp' => 'required|string',
                     'datos-resp.telefonoMovilResp'  => 'required|integer',
-                    'datos-resp.telefonoResp'  => 'required|integer',
-                    
+                    'datos-resp.telefonoResp'  => 'integer',
+
 
                 ]);
 
@@ -196,7 +231,7 @@ class EmpresaController extends Controller
                 $empresa->anio_creacion = request('datos-generales-empresa.anioCreacion');
                 // return response()->json($empresa);
 
-                $empresa->estado = false;
+                $empresa->estado = "En espera";
                 $empresa->fecha_registro = Carbon::now();
                 $empresa->total_publicaciones = 0;
                 $empresa->limite_publicaciones = 0;
@@ -204,12 +239,11 @@ class EmpresaController extends Controller
 
                 $dir_empresa = request('dir_empresa');
                 $direccionRepresen = new Localizacion();
-                if (!$dir_empresa) {
-                    $direccionRepresen->codigo_postal = request('datos-resp.codigoPostalResp');
-                    $direccionRepresen->direcccion = request('datos-resp.direccionResp');
-                    $direccionRepresen->barrio = request('datos-resp.barrioResp');
-                    $direccionRepresen->ciudad()->associate(Ciudad::find(request('datos-resp.ciudadResp'))->firstOrFail());
-                }
+                $direccionRepresen->codigo_postal = request('datos-resp.codigoPostalResp');
+                $direccionRepresen->direcccion = request('datos-resp.direccionResp');
+                $direccionRepresen->barrio = request('datos-resp.barrioResp');
+                $direccionRepresen->ciudad()->associate(Ciudad::find(request('datos-resp.ciudadResp'))->firstOrFail());
+                // if (!$dir_empresa) { }
                 // return response()->json($direccionRepresen);
 
                 $representante = new RepresentanteEmpresa();
@@ -221,7 +255,7 @@ class EmpresaController extends Controller
                 $representante->correo_corporativo = request('datos-resp.emailCorpResp');
                 // return response()->json($representante);
                 // return response()->json(Cargo::find(request('rep_id_cargo'))->firstOrFail());
-                $representante->cargo()->associate(Cargo::firstOrCreate(["nombre"=>request('datos-resp.cargo')]));
+                $representante->cargo()->associate(Cargo::firstOrCreate(["nombre" => request('datos-resp.cargo')]));
                 // return response()->json($representante);
 
                 DB::transaction(function () use ($user, $direccionEmpr, $empresa, $direccionRepresen, $representante, $dir_empresa) {
@@ -251,11 +285,51 @@ class EmpresaController extends Controller
         // abort(401);
         return response()->json($data, $code);
     }
-
-   
 }
 
 
 // Departamento
     // Ciudad
 // Sectores
+
+
+// EMPRESAS
+// nit
+// numero_empleados
+// estado
+// limite_publicaciones
+// url_logo
+// telefono
+// correo
+// total_publicaciones
+// fecha_activacion
+// fecha_registro
+// id_direccion
+// sitio_web
+// ingresos
+// anio_creacion
+// razon_social
+// nombre
+// num_publicaciones_actuales
+// url_doc_camaracomercio
+
+// los sectores (subsectores)
+
+// representante_empresa
+// nombre
+// apellidos
+// id_empresa
+// telefono
+// telefono_movil
+
+// // administrador_empresa
+// nombres
+// apellidos
+// id_cargo  toca ver si se guarda o que pedo
+// telefono
+// telefono_movil
+// horario_contacto
+// correo_corporativo
+// id_direccion
+// id_empresa
+// id_aut_user

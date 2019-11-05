@@ -226,14 +226,15 @@ class EgresadoController extends Controller
         foreach($egresados as $e) {
             if(!$fisrtRow) {
                 // Si el egresado ya ha realizado el pre-registro, cambiar estado de EN_ESPERA a ACTIVO LOGUEADO.
-                $egresadoYaRegistrado = Egresado::where('identificacion', $e->identificacion)
+                $egresadoYaRegistrado = Egresado::where('identificacion', $e['identificacion'])
                     ->where('estado', 'EN_ESPERA')->first();
                 if($egresadoYaRegistrado) {
                     // cambiar estado.
                     $egresadoYaRegistrado->estado = 'ACTIVO_LOGUEADO';
                     $egresadoYaRegistrado->save();
-                    array_push($resultado, $e);
+                    //array_push($resultado, $e);
                 }
+                array_push($resultado, $e);
             }
             $fisrtRow = false;
         }

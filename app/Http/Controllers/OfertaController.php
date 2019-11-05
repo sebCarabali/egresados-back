@@ -87,19 +87,14 @@ class OfertaController extends Controller
         $oferta->estado_proceso = "En seleccion"; // ('En seleccion', 'Desactivada', 'Expirada');  --Empresa
         $oferta->nombre_temporal_empresa = ""; //
         $oferta->licencia_conduccion = ""; // Enum ('A1', 'A2', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3')
-        $oferta->requisitos_minimos = ""; // Texto descriptivo 
-        $oferta->id_empresa = ""; // ID de la empresa
-        $oferta->id_contrato = $contrato->id_aut_contrato; // ID del Contrato de arriba
-        $oferta->id_forma_pago = $salario->id_aut_salario; // ID de Salario de arriba
-        $oferta->id_sector = ""; // ID seleccionado de la tabla sectores
-        $oferta->id_cargo = ""; // // ID del cargo que la persona va a ocupar
+        $oferta->requisitos_minimos = ""; // TEsto descriptivo
         $oferta->id_discapacidad = ""; // Id consultado de la tabla discapacidad
 
         
 
         // Asigna los id de las ciudades donde va a estar disponible la oferta
-        $oferta->ubicaciones()->attach($ubicaiones); // Ids consultados de la tabla discapacidad
-       
+        $oferta->ubicaciones()->attach($ubicaione); // Ids consultados de la tabla discapacidad
+
         // Asigna los id de las areas de conocimientos requeridos por la oferta
         $oferta->ubicaciones()->attach($areas); // Ids consultados de la tabla areas de conocimiento
 

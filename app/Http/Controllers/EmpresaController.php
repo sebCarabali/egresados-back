@@ -14,6 +14,7 @@ use App\Localizacion;
 use App\RepresentanteEmpresa;
 use App\Role;
 use App\Sector;
+use App\SubSector;
 use App\User;
 use Exception;
 use Illuminate\Support\Carbon;
@@ -47,18 +48,38 @@ class EmpresaController extends Controller
         $empresa = Empresa::find($id);
 
         if (is_object($empresa)) {
-            $empresa->load('subSectores', 'direccion', 'representante', 'administrador');
+            $empresa->load('direccion', 'representante', 'administrador');
             $empresa->direccion->load('ciudad');
             $empresa->direccion->ciudad->load('departamento');
             $empresa->direccion->ciudad->departamento->load('pais');
 
             $empresa->administrador->load('direccion', 'user', 'cargo');
 
+            $sectores = [];
 
-            // Se borra el atributo pivot, el cual no es necesario
-            foreach ($empresa->subSectores as $sector) {
-                unset($sector['pivot']);
+            //Por cada subsector obtengo el sector
+            foreach ($empresa->subSectores as $subSector) {
+                $res = Sector::find($subSector->id_sectores)->first();
+                if (!isset($sectores->$res)){
+                    $sectores[] = $res;
+                }
+                // Se borra el atributo pivot, el cual no es necesario
+                unset($subSector['pivot']);
             }
+            $empresa['sectores'] = $sectores;
+
+            foreach ($empresa->sectores as $sector) {
+                $subsec = [];
+                foreach ($empresa->subSectores as $subSector) {
+                    if ($subSector->id_sectores == $sector->id_aut_sector){
+                        $subsec[] = $subSector;
+                    }
+                }
+                $sector['subSectores'] = $subsec;
+            }
+
+            unset($empresa['subSectores']);
+
             $code = 200;
             $data = $empresa;
         } else {
@@ -163,7 +184,7 @@ class EmpresaController extends Controller
                 // return response()->json($user); 
 
                 $direccionEmpr = $empresa->direccion;
-                // return response()->json($direccionEmpr); 
+                // return response()->json($direccionEmpr);
                 if ($request['loc-contact-empresa']['codigoPostalEmp']) {
                     $direccionEmpr->codigo_postal = $request['loc-contact-empresa']['codigoPostalEmp'];
                 }
@@ -232,7 +253,7 @@ class EmpresaController extends Controller
                 // return response()->json(Cargo::find(request('rep_id_cargo'))->firstOrFail());
                 // return response()->json($administradorEmp);
                 // return response()->json([$user, $empresa, $representanteLegal, $administradorEmp]);
-               
+
                 $ids = array();
                 foreach ($request['sectores']['sectores'] as $sect) {
                     foreach ($sect["subSectores"] as $subs) {
@@ -280,7 +301,7 @@ class EmpresaController extends Controller
                 // $representanteLegal->empresa()->associate($empresa);
                 $representanteLegal->update();
                 // });
-                
+
                 DB::commit();
                 return response()->json($empresa, 200);
             } catch (ValidationException $ev) {
@@ -402,7 +423,7 @@ class EmpresaController extends Controller
                 $user->password = bcrypt($request['datos-cuenta']['contrasenia']);
                 // return response()->json(request());
                 $user->rol()->associate(Role::whereNombre('Empresa')->firstOrFail());
-                // return response()->json($user); 
+                // return response()->json($user);
 
                 $direccionEmpr = new Localizacion();
                 if ($request['loc-contact-empresa']['codigoPostalEmp']) {

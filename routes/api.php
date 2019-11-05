@@ -51,6 +51,11 @@ Route::get('programas/{idFacultad}', 'API\ProgramaController@getByFacultad');
 //Route::group(['middleware' => 'cors'], function () {
     Route::post('egresados/verificar', 'API\EgresadoController@validateExcel');
 //});
+
+Route::post('users/validar/{codigo}', function ($id) {
+    
+});
+
 // --------------------------------------------------------------------------------
 /**
  * Registro de una empresa
@@ -92,6 +97,8 @@ Route::get('validarUsuario/{email}', 'ValidadorController@validateEmail');
  * @param nit
  */
 Route::get('validarNIT/{nit}', 'ValidadorController@validateNit');
+
+
 
 /**
  * Ruta para el login

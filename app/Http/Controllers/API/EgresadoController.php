@@ -53,13 +53,14 @@ class EgresadoController extends Controller
         $egresado->correo = $request->get('correo');
         $egresado->correo_alternativo = $request->get('correo_alternativo');
         $egresado->grupo_etnico = $request->get('grupo_etnico');
-        $egresado->fecha_nacimiento = $request->get('fecha_nacimiento');
+        $egresado->fecha_nacimiento = date('m/d/Y', strtotime($request->get('fecha_nacimiento')));
 
         $egresado->lugarExpedicion()->associate(Ciudad::where('id_aut_ciudad', $request->get('id_lugar_expedicion'))->first());
         $egresado->ciudadNacimiento()->associate(Ciudad::where('id_aut_ciudad', $request->get('id_lugar_nacimiento'))->first());
         $egresado->nivelEducativo()->associate(NivelEstudio::find($request->get('id_nivel_educativo'))->first());
         $egresado->discapacidad = $request->get('discapacidad');
-        $egresado->telefono = $request->get('telefono');
+        $egresado->telefono_fijo = $request->get('telefono_fijo');
+        $egresado->celular = $request->get('celular');
         $egresado->estado_civil = $request->get('estado_civil');
         $egresado->genero = $request->get('genero');
         $egresado->identificacion = $request->get('identificacion');
@@ -76,10 +77,15 @@ class EgresadoController extends Controller
         $localizacion = new Localizacion();
         $localizacion->codigo_postal = $request->get('codigo_postal');
         $localizacion->direccion = $request->get('direccion');
-        $localizacion->barrio = $request->get('barrio');
         $localizacion->ciudad()->associate(Ciudad::where('id_aut_ciudad', $request->get('id_lugar_residencia'))->first());
         // get grado info
-        $grado = $request->get('grado');
+        $grado = array(
+            'id_programa' => $request->get('id_programa'),
+            'mension_honor' => $request->get('mension_honor'),
+            'titulo_especial' => $request->get('titulo_especial'),
+            'fecha_grado' => date('m/d/Y', strtotime($request->get('fecha_grado'))),
+            'anio_graduacion' => $request->get('anio_graduacion')
+        );
         return $this->_guardarInformacionBasica($egresado, $localizacion, $grado);
     }
 
@@ -89,12 +95,13 @@ class EgresadoController extends Controller
         $egresado->correo = $request->get('correo');
         $egresado->correo_alternativo = $request->get('correo_alternativo');
         $egresado->grupo_etnico = $request->get('grupo_etnico');
-        $egresado->fecha_nacimiento = $request->get('fecha_nacimiento');
+        $egresado->fecha_nacimiento = date('m/d/Y', strtotime($request->get('fecha_nacimiento')));
         $egresado->lugarExpedicion()->associate(Ciudad::where('id_aut_ciudad', $request->get('id_lugar_expedicion'))->first());
         $egresado->ciudadNacimiento()->associate(Ciudad::where('id_aut_ciudad',$request->get('id_lugar_nacimiento'))->first());
         $egresado->nivelEducativo()->associate(NivelEstudio::find($request->get('id_nivel_educativo'))->first());
         $egresado->discapacidad = $request->get('discapacidad');
-        $egresado->telefono = $request->get('telefono');
+        $egresado->telefono_fijo = $request->get('telefono_fijo');
+        $egresado->celular = $request->get('celular');
         $egresado->estado_civil = $request->get('estado_civil');
         $egresado->genero = $request->get('genero');
         //TODO: Cambio de estados
@@ -103,10 +110,15 @@ class EgresadoController extends Controller
         $localizacion = new Localizacion();
         $localizacion->codigo_postal = $request->get('codigo_postal');
         $localizacion->direccion = $request->get('direccion');
-        $localizacion->barrio = $request->get('barrio');
         $localizacion->ciudad()->associate(Ciudad::where('id_aut_ciudad', $request->get('id_lugar_residencia'))->first());
         // get grado info
-        $grado = $request->get('grado');
+        $grado = array(
+            'id_programa' => $request->get('id_programa'),
+            'mension_honor' => $request->get('mension_honor'),
+            'titulo_especial' => $request->get('titulo_especial'),
+            'fecha_grado' => date('m/d/Y', strtotime($request->get('fecha_grado'))),
+            'anio_graduacion' => $request->get('anio_graduacion')
+        );
         return $this->_guardarInformacionBasica($egresado, $localizacion, $grado);
     }
 
@@ -116,17 +128,19 @@ class EgresadoController extends Controller
         // save all data and response egresados object in json format
         return DB::transaction(function () use ($egresado, $localizacion, $grado) {
             $localizacion->save();
+            $usuario = $this->_crearUsuario($egresado);
+            $egresado->user()->associate($usuario);
             $egresado->lugarResidencia()->associate($localizacion);
             $egresado->save();
             $egresado->programas()->attach($grado['id_programa'], [
                 //'tipo' => $grado->tipo,
-                'mension_honor' => array_key_exists('mension_honor', $grado) ? $grado['mension_honor'] : 'No',
+                'mencion_honor' => array_key_exists('mension_honor', $grado) ? $grado['mension_honor'] : 'No',
                 'titulo_especial' => array_key_exists('titulo_especial', $grado) ? $grado['titulo_especial'] : '',
                 //'comentarios' => array_key_exists('comentarios', $grado) ? $grado['comentarios'] : '',
-                'fecha_graduacion' => $grado['fecha_grado']
-                //'docente_influencia' => array_key_exists('docente_influencia', $grado) ? $grado['docente_influencia'] : ''
+                'fecha_graduacion' => $grado['fecha_grado'],
+                //'docente_influencia' => array_key_exists('docente_influencia', $grado) ? $grado['docente_influencia'] : '',
+                'anio_graduacion' => $grado['anio_graduacion']
             ]);
-            $usuario = $this->_crearUsuario($egresado);
             $this->_enviarMensajeActivacion($usuario);
             return $egresado;
         });

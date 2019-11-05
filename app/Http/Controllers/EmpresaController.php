@@ -21,7 +21,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Validation\ValidationException;
 
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Log;
 
 class EmpresaController extends Controller
 {
@@ -60,7 +60,7 @@ class EmpresaController extends Controller
             //Por cada subsector obtengo el sector
             foreach ($empresa->subSectores as $subSector) {
                 $res = Sector::find($subSector->id_sectores)->first();
-                if (!isset($sectores->$res)){
+                if (!isset($sectores->$res)) {
                     $sectores[] = $res;
                 }
                 // Se borra el atributo pivot, el cual no es necesario
@@ -71,7 +71,7 @@ class EmpresaController extends Controller
             foreach ($empresa->sectores as $sector) {
                 $subsec = [];
                 foreach ($empresa->subSectores as $subSector) {
-                    if ($subSector->id_sectores == $sector->id_aut_sector){
+                    if ($subSector->id_sectores == $sector->id_aut_sector) {
                         $subsec[] = $subSector;
                     }
                 }
@@ -178,7 +178,7 @@ class EmpresaController extends Controller
                 // return response()->json($user);
                 // $user->email = request('datos-cuenta.email');
                 $user->email = $request['datos-cuenta']['email'];
-                if($request['datos-cuenta']['contrasenia']){
+                if ($request['datos-cuenta']['contrasenia']) {
                     $user->password = bcrypt($request['datos-cuenta']['contrasenia']);
                 }
                 // return response()->json($user); 
@@ -279,7 +279,7 @@ class EmpresaController extends Controller
                 //     $administradorEmp->direccion()->associate($direccionEmpr);
                 // } else {
                 $direccionAdministrador->update();
-                $cargo = Cargo::firstOrCreate(["nombre"=>$request['datos-resp']['cargo']], ["estado"=>false]);
+                $cargo = Cargo::firstOrCreate(["nombre" => $request['datos-resp']['cargo']], ["estado" => false]);
                 // return response()->json($cargo);
                 if (!$cargo) {
                     $cargo = new Cargo();
@@ -367,8 +367,10 @@ class EmpresaController extends Controller
         $data = null;
         if (request()->ajax()) {
             try {
-                // return response()->json($request);
-                $this->validate(request(), [
+                // Log::info("PRUEBA " . request());
+                header('Access-Control-Allow-Origin: *');
+                // return response()->json(request()->all(), 200);
+                $this->validate($request, [
                     //Datos usuario login
                     // datos-cuenta
                     // datos-generales-empresa
@@ -397,8 +399,10 @@ class EmpresaController extends Controller
                     // 'loc-contact-empresa.sitioWebEmp' => 'url|active_url',
 
                     // 'sectores' => 'required|array',
+                    // 'sectores.sectores' => 'required|array',
+                    // 'sectores.sectores.*' => 'required|integer|exists:sectores,id_aut_sector',
                     'sectores.sectores' => 'required|array',
-                    'sectores.sectores.*' => 'required|integer|exists:sectores,id_aut_sector',
+                    'sectores.sectores.*.subSectores.*.idSector' => 'required|integer|exists:sectores,id_aut_sector',
                     // //datos representante
                     'datos-resp.nombrereplegal'  => 'required|string',
                     'datos-resp.apellidoreplegal'  => 'required|string',
@@ -495,6 +499,16 @@ class EmpresaController extends Controller
                 // return response()->json(Cargo::find(request('rep_id_cargo'))->firstOrFail());
                 // return response()->json($representante);
                 // return response()->json([$user, $empresa, $representanteLegal, $representante]);
+                $ids = array();
+                // return response()->json($request['sectores']['sectores']);
+                foreach ($request['sectores']['sectores'] as $sect) {
+                    // foreach ($sect["subSectores"] as $subs) {
+                        // return response()->json($sect);
+                    // array_push($ids, $subs["idSubSector"]);
+                    array_push($ids, $sect["idSubSector"]);
+                    // }
+                }
+                // return response()->json("aqui va");
 
                 // DB::transaction(function () use ($user, $direccionEmpr, $empresa, $direccionAdministrador, $representante, $representanteLegal) {
                 DB::beginTransaction();
@@ -503,15 +517,16 @@ class EmpresaController extends Controller
                 $direccionEmpr->save();
                 $empresa->direccion()->associate($direccionEmpr);
                 $empresa->save();
-                $empresa->subSectores()->sync($request['sectores']['sectores']);
-                
-                
+                // $empresa->subSectores()->sync($request['sectores']['sectores']);
+                $empresa->subSectores()->sync($ids);
+
+
                 // if ($dir_empresa) {
-                    //     $representante->direccion()->associate($direccionEmpr);
-                    // } else {
+                //     $representante->direccion()->associate($direccionEmpr);
+                // } else {
                 $direccionAdministrador->save();
                 // $cargo = Cargo::whereNombre($request['datos-resp']['cargo'])->first();
-                $cargo = Cargo::firstOrCreate(["nombre"=>$request['datos-resp']['cargo']], ["estado"=>false]);
+                $cargo = Cargo::firstOrCreate(["nombre" => $request['datos-resp']['cargo']], ["estado" => false]);
                 // return response()->json($cargo);
                 if (!$cargo) {
                     $cargo = new Cargo();

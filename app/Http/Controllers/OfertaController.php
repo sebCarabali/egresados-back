@@ -20,6 +20,7 @@ class OfertaController extends Controller
 
         $ofertas->load('empresa');
         $ofertas->load('areasConocimiento');
+        $ofertas->load('salario');
 
         // Se borra el atributo pivot, el cual no es necesario
         foreach ($ofertas as $oferta) {
@@ -90,7 +91,7 @@ class OfertaController extends Controller
         $oferta->requisitos_minimos = ""; // TEsto descriptivo
         $oferta->id_discapacidad = ""; // Id consultado de la tabla discapacidad
 
-        
+
 
         // Asigna los id de las ciudades donde va a estar disponible la oferta
         $oferta->ubicaciones()->attach($ubicaione); // Ids consultados de la tabla discapacidad

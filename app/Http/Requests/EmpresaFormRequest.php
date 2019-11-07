@@ -16,11 +16,7 @@ class EmpresaFormRequest extends FormRequest
      */
     public function authorize()
     {
-        $product = $this->route('a');
-        if ($product == "carlos") {
-            return true;
-        }
-        return false;
+        return true;
     }
 
     /**

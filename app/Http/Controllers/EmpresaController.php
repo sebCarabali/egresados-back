@@ -128,7 +128,7 @@ class EmpresaController extends Controller
         if (request()->ajax()) {
             $empresa = Empresa::first();
             // return response()->json($empresa->administrador->id_aut_user);
-            if(!$empresa){
+            if (!$empresa) {
                 return response()->json($empresa);
             }
             try {
@@ -373,7 +373,7 @@ class EmpresaController extends Controller
         if (request()->ajax()) {
             try {
                 // Log::info("PRUEBA " . request());
-                header('Access-Control-Allow-Origin: *');
+                // header('Access-Control-Allow-Origin: *');
                 // return response()->json(request()->all(), 200);
                 $this->validate($request, [
                     //Datos usuario login
@@ -386,7 +386,7 @@ class EmpresaController extends Controller
                     'datos-cuenta.contrasenia' => 'required|string|min:6',
 
                     // Datos empresa
-                    'datos-generales-empresa.NIT' => 'required|integer|digits:8|unique:empresas,nit',
+                    'datos-generales-empresa.NIT' => 'required|integer||digits_between:8,16|unique:empresas,nit',
                     'datos-generales-empresa.razonSocial' => 'required|string',
                     'datos-generales-empresa.nombreEmpresa' => 'required|unique:empresas,nombre',
                     'datos-generales-empresa.anioCreacion' => 'required|numeric|between:1900,' . Carbon::now()->format("Y"),
@@ -411,22 +411,22 @@ class EmpresaController extends Controller
                     // //datos representante
                     'datos-resp.nombrereplegal'  => 'required|string',
                     'datos-resp.apellidoreplegal'  => 'required|string',
-                    'datos-resp.telefonoreplegal'  => 'numeric|regex:[0-9]{7,16}',
-                    'datos-resp.telefonoMovilreplegal'  => 'required|numeric|regex:[0-9]{7,16}',
+                    'datos-resp.telefonoreplegal'  => 'numeric|digits_between:1,16',
+                    'datos-resp.telefonoMovilreplegal'  => 'required|numeric|digits_between:1,16',
                     // 'datos-resp.barrioResp' => 'required|string',
                     // 'datos-resp.ciudadResp' => 'required|exists:ciudades,id_aut_ciudad',
                     // 'datos-resp.codigoPostalResp' => 'required|integer',
                     'datos-resp.nombreResp' => 'required|string',
                     'datos-resp.apellidoResp'  => 'required|string',
                     'datos-resp.cargo'  => 'required|string',
-                    'datos-resp.telefonoResp'  => 'numeric|regex:[0-9]{7,16}',
-                    'datos-resp.telefonoMovilResp'  => 'required|numeric|regex:[0-9]{7,16}',
+                    'datos-resp.telefonoResp'  => 'numeric|digits_between:1,16',
+                    'datos-resp.telefonoMovilResp'  => 'required|digits_between:1,16',
                     'datos-resp.horarioContactoResp'  => 'string',
                     'datos-resp.direccionTrabajoResp' => 'required|string',
                     'datos-resp.emailCorpResp'  => 'required|email',
 
-                    'archivos.logo' => '',
-                    'archivos.logo' => 'required|mimetypes:text/pdf',
+                    'archivos.logo' => 'image',
+                    'archivos.camaraycomercio' => 'required|mimes:pdf',
                 ]);
                 // return response()->json(request());
                 $user = new User();
@@ -434,6 +434,10 @@ class EmpresaController extends Controller
                 $user->email = $request['datos-cuenta']['email'];
                 $user->password = bcrypt($request['datos-cuenta']['contrasenia']);
                 // return response()->json(request());
+                $rol = Role::whereNombre('Empresa')->firstOrFail();
+                if (!$rol) {
+                    return response()->json("AL pareces no hay datos en la BD!");                    
+                 }
                 $user->rol()->associate(Role::whereNombre('Empresa')->firstOrFail());
                 // return response()->json($user);
 
@@ -511,7 +515,7 @@ class EmpresaController extends Controller
                 // return response()->json($request['sectores']['sectores']);
                 foreach ($request['sectores']['sectores'] as $sect) {
                     // foreach ($sect["subSectores"] as $subs) {
-                        // return response()->json($sect);
+                    // return response()->json($sect);
                     // array_push($ids, $subs["idSubSector"]);
                     array_push($ids, $sect);
                     // }
@@ -560,7 +564,7 @@ class EmpresaController extends Controller
                 DB::commit();
                 return response()->json($empresa, 200);
             } catch (ValidationException $ev) {
-                return response()->json($ev->validator->errors(), $code);
+                return response()->json($ev->validator->errors(), 422);
             } catch (Exception $e) {
                 return response()->json($e);
             }

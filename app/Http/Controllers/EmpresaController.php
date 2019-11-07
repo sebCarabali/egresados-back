@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 
 use App\Empresa;
 use App\Helpers\JwtAuth;
+use App\Http\Requests\EmpresaFormRequest;
 use App\Localizacion;
 use App\RepresentanteEmpresa;
 use App\Role;
@@ -125,8 +126,11 @@ class EmpresaController extends Controller
         // return response()->json($data, $code);
 
         if (request()->ajax()) {
-            $empresa = Empresa::firstOrFail();
+            $empresa = Empresa::first();
             // return response()->json($empresa->administrador->id_aut_user);
+            if(!$empresa){
+                return response()->json($empresa);
+            }
             try {
                 // return response()->json($request);
                 $this->validate(request(), [
@@ -355,11 +359,12 @@ class EmpresaController extends Controller
 
 
     /**
-     * Store a newly created resource in storage.
+     * Almacene un recurso recién creado en el almacenamiento.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+    // public function store(EmpresaFormRequest $request)
     public function store(Request $request)
     {
         // Código de error por defecto
@@ -385,7 +390,7 @@ class EmpresaController extends Controller
                     'datos-generales-empresa.razonSocial' => 'required|string',
                     'datos-generales-empresa.nombreEmpresa' => 'required|unique:empresas,nombre',
                     'datos-generales-empresa.anioCreacion' => 'required|numeric|between:1900,' . Carbon::now()->format("Y"),
-                    'datos-generales-empresa.numEmpleados' => 'required|integer',
+                    'datos-generales-empresa.numEmpleados' => 'required|string',
                     'datos-generales-empresa.ingresosEmp' => 'required|string',
                     'datos-generales-empresa.descripcionEmpresa' => 'required|string',
 
@@ -399,10 +404,10 @@ class EmpresaController extends Controller
                     // 'loc-contact-empresa.sitioWebEmp' => 'url|active_url',
 
                     // 'sectores' => 'required|array',
-                    // 'sectores.sectores' => 'required|array',
-                    // 'sectores.sectores.*' => 'required|integer|exists:sectores,id_aut_sector',
                     'sectores.sectores' => 'required|array',
-                    'sectores.sectores.*.subSectores.*.idSector' => 'required|integer|exists:sectores,id_aut_sector',
+                    'sectores.sectores.*' => 'required|integer|exists:sectores,id_aut_sector',
+                    // 'sectores.sectores' => 'required|array',
+                    // 'sectores.sectores.*.subSectores.*.idSector' => 'required|integer|exists:sectores,id_aut_sector',
                     // //datos representante
                     'datos-resp.nombrereplegal'  => 'required|string',
                     'datos-resp.apellidoreplegal'  => 'required|string',
@@ -419,6 +424,9 @@ class EmpresaController extends Controller
                     'datos-resp.horarioContactoResp'  => 'required|string',
                     'datos-resp.direccionTrabajoResp' => 'required|string',
                     'datos-resp.emailCorpResp'  => 'required|email',
+
+                    'archivos.logo' => '',
+                    'archivos.logo' => 'required|mimetypes:text/pdf',
                 ]);
                 // return response()->json(request());
                 $user = new User();
@@ -505,7 +513,7 @@ class EmpresaController extends Controller
                     // foreach ($sect["subSectores"] as $subs) {
                         // return response()->json($sect);
                     // array_push($ids, $subs["idSubSector"]);
-                    array_push($ids, $sect["idSubSector"]);
+                    array_push($ids, $sect);
                     // }
                 }
                 // return response()->json("aqui va");
@@ -525,8 +533,8 @@ class EmpresaController extends Controller
                 //     $representante->direccion()->associate($direccionEmpr);
                 // } else {
                 $direccionAdministrador->save();
-                // $cargo = Cargo::whereNombre($request['datos-resp']['cargo'])->first();
-                $cargo = Cargo::firstOrCreate(["nombre" => $request['datos-resp']['cargo']], ["estado" => false]);
+                $cargo = Cargo::whereNombre($request['datos-resp']['cargo'])->first();
+                // $cargo = Cargo::firstOrCreate(["nombre" => $request['datos-resp']['cargo']], ["estado" => false]);
                 // return response()->json($cargo);
                 if (!$cargo) {
                     $cargo = new Cargo();

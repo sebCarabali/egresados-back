@@ -224,6 +224,10 @@ return [
             'horarioContactoResp' => 'Horario Administrador',
             'direccionTrabajoResp' => 'Dirección Administrador',
             'emailCorpResp' => 'Correo Corporativo Administrador',
+        ],
+        'archivos' => [
+            'logo' => 'logo',
+            'camaraycomercio' => 'cámara y comercio'
         ]
     ],
 ];

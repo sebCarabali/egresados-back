@@ -370,14 +370,9 @@ class EmpresaController extends Controller
         $data = null;
         try {
             // $files = requ
-            return response()->json([$request['archivos']['camaraycomercio'], "AQUI"], 400);
+            // return response()->json([$request['archivos']['camaraycomercio'], "AQUI"], 400);
+            
             $this->validate($request, [
-                //Datos usuario login
-                // datos-cuenta
-                // datos-generales-empresa
-                // datos-resp
-                // loc-contact-empresa
-                // sectores
                 'datos-cuenta.email' => 'required|max:255|email|unique:users,email',
                 'datos-cuenta.contrasenia' => 'required|string|min:6',
 
@@ -399,7 +394,6 @@ class EmpresaController extends Controller
                 'loc-contact-empresa.sitioWebEmp' => 'url',
                 // 'loc-contact-empresa.sitioWebEmp' => 'url|active_url',
 
-                // 'sectores' => 'required|array',
                 'sectores.sectores' => 'required|array',
                 'sectores.sectores.*' => 'required|integer|exists:sectores,id_aut_sector',
                 // 'sectores.sectores' => 'required|array',
@@ -503,10 +497,6 @@ class EmpresaController extends Controller
             $representante->telefono_movil = $request['datos-resp']['telefonoMovilResp'];
 
             $representante->correo_corporativo = $request['datos-resp']['emailCorpResp'];
-            // return response()->json([$representante, $request['datos-resp']['cargo']]);
-            // return response()->json(Cargo::find(request('rep_id_cargo'))->firstOrFail());
-            // return response()->json($representante);
-            // return response()->json([$user, $empresa, $representanteLegal, $representante]);
             $ids = array();
             // return response()->json($request['sectores']['sectores']);
             foreach ($request['sectores']['sectores'] as $sect) {
@@ -566,5 +556,10 @@ class EmpresaController extends Controller
         }
 
         return response()->json($data, $code);
+    }
+
+    public function uploadFiles(Request $request)
+    {
+        return response()->json($request->allFiles());
     }
 }

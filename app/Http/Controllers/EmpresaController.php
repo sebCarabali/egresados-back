@@ -90,7 +90,7 @@ class EmpresaController extends Controller
         return response()->json($data, $code);
     }
 
-    public function update(Request $request)
+    public function update($id, Request $request)
     {
         // // Recoger los datos por POST
         // $json = $request->input('json', null);
@@ -126,8 +126,9 @@ class EmpresaController extends Controller
         // }
         // return response()->json($data, $code);
 
+        // return response()->json($request->all(), 404);
 
-        $empresa = Empresa::first();
+        $empresa = Empresa::find($id);
         // return response()->json($empresa->administrador->id_aut_user);
         if (!$empresa) {
             return response()->json($empresa);
@@ -144,7 +145,7 @@ class EmpresaController extends Controller
                 'datos-generales-empresa.razonSocial' => 'required|string',
                 'datos-generales-empresa.nombreEmpresa' => 'required|unique:empresas,nombre,' . $empresa->id_aut_empresa . ',id_aut_empresa',
                 'datos-generales-empresa.anioCreacion' => 'required|numeric|between:1900,' . Carbon::now()->format("Y"),
-                'datos-generales-empresa.numEmpleados' => 'required|integer',
+                'datos-generales-empresa.numEmpleados' => 'required|string',
                 'datos-generales-empresa.ingresosEmp' => 'required|string',
                 'datos-generales-empresa.descripcionEmpresa' => 'required|string',
 
@@ -152,7 +153,7 @@ class EmpresaController extends Controller
                 'loc-contact-empresa.direccionEmp' => 'required|string',
                 'loc-contact-empresa.barrioEmp' => 'required|string',
                 'loc-contact-empresa.codigoPostalEmp' => 'integer',
-                'loc-contact-empresa.telefonoEmp' => 'integer',
+                'loc-contact-empresa.telefonoEmp' => 'string',
                 'loc-contact-empresa.emailEmp' => 'email',
                 'loc-contact-empresa.sitioWebEmp' => 'url',
                 // 'loc-contact-empresa.sitioWebEmp' => 'url|active_url',

@@ -55,7 +55,7 @@ Route::get('programas/{idFacultad}', 'API\ProgramaController@getByFacultad');
 //});
 
 Route::post('users/validar/{codigo}', function ($id) {
-    
+
 });
 
 // --------------------------------------------------------------------------------
@@ -66,7 +66,7 @@ Route::post('empresas/store', 'EmpresaController@store');
 /**
  * Actualización  de una empresa
  */
-Route::post('empresas/update', 'EmpresaController@update');
+// Route::post('empresas/update', 'EmpresaController@update');
 /**
  * Obtiene los sectores
  */
@@ -143,4 +143,3 @@ Route::get('programas', 'API\ProgramaController@getAll');
 Route::get('cargos', 'CargoController@getAll');
 
 Route::post('ofertas/store', 'OfertaController@storeOferta');
-

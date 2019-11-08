@@ -54,6 +54,7 @@ class EmpresaController extends Controller
             $empresa->direccion->ciudad->load('departamento');
             $empresa->direccion->ciudad->departamento->load('pais');
 
+            // return response()->json($empresa, 200);
             $empresa->administrador->load('direccion', 'user', 'cargo');
 
             $sectores = [];
@@ -147,7 +148,7 @@ class EmpresaController extends Controller
                 'datos-generales-empresa.ingresosEmp' => 'required|string',
                 'datos-generales-empresa.descripcionEmpresa' => 'required|string',
 
-                'loc-contact-empresa.ciudadEmp' => 'required|exists:ciudades,id_aut_ciudad',
+                'loc-contact-empresa.idCiudad' => 'required|exists:ciudades,id_aut_ciudad',
                 'loc-contact-empresa.direccionEmp' => 'required|string',
                 'loc-contact-empresa.barrioEmp' => 'required|string',
                 'loc-contact-empresa.codigoPostalEmp' => 'integer',
@@ -185,7 +186,7 @@ class EmpresaController extends Controller
             if (!empty($request['datos-cuenta']['contrasenia'])) {
                 $user->password = bcrypt($request['datos-cuenta']['contrasenia']);
             }
-            // return response()->json($user); 
+            // return response()->json($user);
 
             $direccionEmpr = $empresa->direccion;
             // return response()->json($direccionEmpr);
@@ -194,7 +195,7 @@ class EmpresaController extends Controller
             }
             $direccionEmpr->direccion = $request['loc-contact-empresa']['direccionEmp'];
             $direccionEmpr->barrio = $request['loc-contact-empresa']['barrioEmp'];
-            $direccionEmpr->ciudad()->associate(Ciudad::find($request['loc-contact-empresa']['ciudadEmp']));
+            $direccionEmpr->ciudad()->associate(Ciudad::find($request['loc-contact-empresa']['idCiudad']));
             // return response()->json($direccionEmpr);
 
             // $empresa = new Empresa();
@@ -230,7 +231,7 @@ class EmpresaController extends Controller
             $direccionAdministrador->direccion = $request['datos-resp']['direccionTrabajoResp'];
             // $direccionAdministrador->barrio = $request['datos-resp']['barrioResp'];
             $direccionAdministrador->barrio = $request['loc-contact-empresa']['barrioEmp'];
-            $direccionAdministrador->ciudad()->associate(Ciudad::find($request['loc-contact-empresa']['ciudadEmp']));
+            $direccionAdministrador->ciudad()->associate(Ciudad::find($request['loc-contact-empresa']['idCiudad']));
             // return response()->json($direccionAdministrador);
             // if (!$dir_empresa) { }
 
@@ -321,36 +322,45 @@ class EmpresaController extends Controller
     public function updateEstado($id, Request $request)
     {
         // Recoger los datos por PUT
-        $json = $request->input('json', null);
-        $params_array = json_decode($json, true);
+        // $json = $request->input('json', null);
+        // $params_array = json_decode($json, true);
 
-        // Código de error por defecto
-        $code = 400;
-        $data = null;
+        // Validador
+        try{
+            $this->validate(request(), [
+                'estado' => 'required',
+            ]);
+            // Código de error por defecto
+            $code = 400;
+            $data = null;
 
-        if (!empty($params_array)) {
-            // Buscar el registro
-            $empresa = Empresa::find($id);
+            //if (!empty($params_array)) {
+                // Buscar el registro
+                $empresa = Empresa::find($id);
 
-            if (!empty($empresa) && is_object($empresa)) {
+                if (!empty($empresa) && is_object($empresa)) {
 
-                if ($params_array['estado'] == 'Activo' && !empty($params_array['limite_publicaciones'])) {
-                    // Actualizar el registro en concreto
+                    if ($request['estado'] == 'Activo' && !empty($request['limite_publicaciones'])) {
+                        // Actualizar el registro en concreto
 
-                    $empresa->update([
-                        'estado' => $params_array['estado'],
-                        'limite_publicaciones' => $params_array['limite_publicaciones'],
-                        'fecha_activacion' => Carbon::now('-5:00'),
-                    ]);
-                    $data = $empresa;
-                    $code = 200;
-                } else if ($params_array['estado'] == 'En espera' || $params_array['estado'] == 'Inactivo') {
-                    // Actualizar el registro en concreto
-                    $empresa->update(['estado' => $params_array['estado']]);
-                    $data = $empresa;
-                    $code = 200;
+                        $empresa->update([
+                            'estado' => $request['estado'],
+                            'limite_publicaciones' => $request['limite_publicaciones'],
+                            'fecha_activacion' => Carbon::now('-5:00'),
+                        ]);
+                        $data = $empresa;
+                        $code = 200;
+                    } else if ($request['estado'] == 'En espera' || $request['estado'] == 'Inactivo') {
+                        // Actualizar el registro en concreto
+                        $empresa->update(['estado' => $request['estado']]);
+                        $data = $empresa;
+                        $code = 200;
+                    }
                 }
-            }
+        } catch (ValidationException $ev) {
+            return response()->json($ev->validator->errors(), 400);
+        } catch (Exception $e) {
+            return response()->json($e);
         }
         return response()->json($data, $code);
     }
@@ -371,7 +381,7 @@ class EmpresaController extends Controller
         try {
             // $files = requ
             // return response()->json([$request['archivos']['camaraycomercio'], "AQUI"], 400);
-            
+
             $this->validate($request, [
                 'datos-cuenta.email' => 'required|max:255|email|unique:users,email',
                 'datos-cuenta.contrasenia' => 'required|string|min:6',

@@ -84,7 +84,7 @@ class EmpresaFormRequest extends FormRequest
                         'datos-resp.telefonoMovilResp'  => 'required|digits_between:1,16',
                         'datos-resp.horarioContactoResp'  => 'nullable|string',
                         'datos-resp.direccionTrabajoResp' => 'required|string',
-                        'datos-resp.emailCorpResp'  => 'required|email',
+                        'datos-resp.emailCorpResp'  => 'required|email|unique:administrador_empresa,correo_corporativo',
 
                         // 'archivos.logo' => 'image',
                         // 'archivos.camaraycomercio' => 'required|mimes:pdf',
@@ -92,8 +92,10 @@ class EmpresaFormRequest extends FormRequest
                 }
             case 'PUT': {
                     $empresa = $this->route()->id;
-                    // $id = $this->route()->id;
-                    
+                    // // $id = $this->route()->id;
+                    // throw new HttpResponseException(response()->json([$this->all()]));
+                    // throw new HttpResponseException(response()->json([$this->parameters()]));
+                    // throw new HttpResponseException(response()->json([$empresa]));
                     // $empresa = Empresa::find($id);
 
                     // if (!$empresa) {
@@ -140,7 +142,7 @@ class EmpresaFormRequest extends FormRequest
                         'datos-resp.telefonoMovilResp'  => 'required|integer',
                         'datos-resp.horarioContactoResp'  => 'required|string',
                         'datos-resp.direccionTrabajoResp' => 'required|string',
-                        'datos-resp.emailCorpResp'  => 'required|email',
+                        'datos-resp.emailCorpResp'  => 'required|email|unique:administrador_empresa,correo_corporativo,' . $empresa->id_aut_empresa . ',id_empresa',
                     ];
                 }
             case 'PATCH': {
@@ -172,17 +174,17 @@ class EmpresaFormRequest extends FormRequest
     //  *
     //  * @throws \Illuminate\Validation\ValidationException
     //  */
-    // protected function failedValidation(Validator $validator)
-    // {
-    //     // throw new ValidationException($validator);
-    //     $errors = (new ValidationException($validator))->errors();
-    //     throw new HttpResponseException(response()->json([
-    //         "status" => "failure",
-    //         "status_code" => 422,
-    //         "message" => __("The given data was invalid."),
-    //         'errors' => $errors
-    //     ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY));
-    // }
+    protected function failedValidation(Validator $validator)
+    {
+        // throw new ValidationException($validator);
+        $errors = (new ValidationException($validator))->errors();
+        throw new HttpResponseException(response()->json([
+            "status" => "failure",
+            "status_code" => 422,
+            "message" => __("The given data was invalid."),
+            'errors' => $errors
+        ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY));
+    }
 
     // public function notExists()
     // {

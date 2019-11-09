@@ -91,7 +91,7 @@ class EmpresaController extends Controller
     }
 
     // public function update($id,Request $request)
-    public function update(Empresa $id, EmpresaFormRequest $request)
+    public function update(EmpresaFormRequest $request, Empresa $id)
     {
         // // Recoger los datos por POST
         // $json = $request->input('json', null);
@@ -129,16 +129,16 @@ class EmpresaController extends Controller
 
         // return response()->json($request->all(), 404);
 
-        return $this->fail("PASO LAS VALIDACIONES");
+        // return $this->fail("PASO LAS VALIDACIONES");
         // return response()->json($request);
         $empresa = $id;
         // return response()->json($empresa->administrador->id_aut_user);
-        if (!$empresa) {
-            return $this->fail("No se encontro la empresa");
-        }
-        try {
+        // if (!$empresa) {
+        //     return $this->fail("No se encontro la empresa");
+        // }
+        // try {
             // $this->validate(request(), );
-            return response()->json(request());
+            // return response()->json(request());
             $user = $empresa->administrador->user;
             // return response()->json($user);
             // $user->email = request('datos-cuenta.email');
@@ -266,14 +266,15 @@ class EmpresaController extends Controller
             // });
 
             DB::commit();
-            return response()->json($empresa, 200);
-        } catch (ValidationException $ev) {
-            return response()->json($ev->validator->errors(), $code);
-        } catch (Exception $e) {
-            return response()->json($e);
-        }
+            return $this->success($empresa);
+            // return response()->json($empresa, 200);
+        // } catch (ValidationException $ev) {
+        //     return response()->json($ev->validator->errors(), $code);
+        // } catch (Exception $e) {
+        //     return response()->json($e);
+        // }
 
-        return response()->json($data, $code);
+        // return response()->json($data, $code);
     }
 
 

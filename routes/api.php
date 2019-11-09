@@ -63,10 +63,11 @@ Route::post('users/validar/{codigo}', function ($id) {
  * Registro de una empresa
  */
 Route::post('empresas/store', 'EmpresaController@store');
+Route::post('empresas/storeArchivos', 'EmpresaController@uploadFiles');
 /**
  * Actualización  de una empresa
  */
-Route::post('empresas/update', 'EmpresaController@update');
+// Route::post('empresas/update/{id}', 'EmpresaController@update');
 /**
  * Obtiene los sectores
  */
@@ -121,7 +122,8 @@ Route::put('/empresa/estado/{id}', 'EmpresaController@updateEstado');//->middlew
 /**
  * update general de empresa
  */
-Route::put('/empresa/{id}', 'EmpresaController@update');//->middleware('api.auth:1');
+// Route::put('/empresa/{id}', 'EmpresaController@update');//->middleware('api.auth:1');
+Route::put('/empresa/{id}', 'EmpresaController@update')->where(['id' => '[0-9]+']);//->middleware('api.auth:1');
 /**
  * Obtiene todas las ofertas de una empresa
  */

@@ -89,7 +89,8 @@ class EmpresaController extends Controller
         return response()->json($data, $code);
     }
 
-    public function update(Request $request)
+    // public function update($id,Request $request)
+    public function update(Empresa $id, EmpresaFormRequest $request)
     {
         // // Recoger los datos por POST
         // $json = $request->input('json', null);
@@ -126,58 +127,16 @@ class EmpresaController extends Controller
         // return response()->json($data, $code);
 
 
-        $empresa = Empresa::first();
+        return $this->fail("PASO LAS VALIDACIONES");
+        // return response()->json($request);
+        $empresa = Empresa::find($id);
         // return response()->json($empresa->administrador->id_aut_user);
         if (!$empresa) {
-            return response()->json($empresa);
+            return $this->fail("No se encontro la empresa");
         }
         try {
-            // return response()->json($request);
-            $this->validate(request(), [
-
-                'datos-cuenta.email' => 'required|max:255|email|unique:users,email,' . $empresa->administrador->id_aut_user . ',id_aut_user',
-                'datos-cuenta.contrasenia' => 'string|min:6',
-
-                // Datos empresa
-                'datos-generales-empresa.NIT' => 'required|integer|digits:8|unique:empresas,nit,' . $empresa->id_aut_empresa . ',id_aut_empresa',
-                'datos-generales-empresa.razonSocial' => 'required|string',
-                'datos-generales-empresa.nombreEmpresa' => 'required|unique:empresas,nombre,' . $empresa->id_aut_empresa . ',id_aut_empresa',
-                'datos-generales-empresa.anioCreacion' => 'required|numeric|between:1900,' . Carbon::now()->format("Y"),
-                'datos-generales-empresa.numEmpleados' => 'required|integer',
-                'datos-generales-empresa.ingresosEmp' => 'required|string',
-                'datos-generales-empresa.descripcionEmpresa' => 'required|string',
-
-                'loc-contact-empresa.ciudadEmp' => 'required|exists:ciudades,id_aut_ciudad',
-                'loc-contact-empresa.direccionEmp' => 'required|string',
-                'loc-contact-empresa.barrioEmp' => 'required|string',
-                'loc-contact-empresa.codigoPostalEmp' => 'integer',
-                'loc-contact-empresa.telefonoEmp' => 'integer',
-                'loc-contact-empresa.emailEmp' => 'email',
-                'loc-contact-empresa.sitioWebEmp' => 'url',
-                // 'loc-contact-empresa.sitioWebEmp' => 'url|active_url',
-
-                // 'sectores' => 'required|array',
-                'sectores.sectores' => 'required|array',
-                'sectores.sectores.*.subSectores.*.idSector' => 'required|integer|exists:sectores,id_aut_sector',
-                // 'sectores.sectores.*' => 'required|integer|exists:sectores,id_aut_sector',
-                // //datos representante
-                'datos-resp.nombrereplegal'  => 'required|string',
-                'datos-resp.apellidoreplegal'  => 'required|string',
-                'datos-resp.telefonoreplegal'  => 'integer',
-                'datos-resp.telefonoMovilreplegal'  => 'required|integer',
-                // 'datos-resp.barrioResp' => 'required|string',
-                // 'datos-resp.ciudadResp' => 'required|exists:ciudades,id_aut_ciudad',
-                // 'datos-resp.codigoPostalResp' => 'required|integer',
-                'datos-resp.nombreResp' => 'required|string',
-                'datos-resp.apellidoResp'  => 'required|string',
-                'datos-resp.cargo'  => 'required|string',
-                'datos-resp.telefonoResp'  => 'integer',
-                'datos-resp.telefonoMovilResp'  => 'required|integer',
-                'datos-resp.horarioContactoResp'  => 'required|string',
-                'datos-resp.direccionTrabajoResp' => 'required|string',
-                'datos-resp.emailCorpResp'  => 'required|email',
-            ]);
-            // return response()->json(request());
+            // $this->validate(request(), );
+            return response()->json(request());
             $user = $empresa->administrador->user;
             // return response()->json($user);
             // $user->email = request('datos-cuenta.email');
@@ -194,7 +153,7 @@ class EmpresaController extends Controller
             }
             $direccionEmpr->direccion = $request['loc-contact-empresa']['direccionEmp'];
             $direccionEmpr->barrio = $request['loc-contact-empresa']['barrioEmp'];
-            $direccionEmpr->ciudad()->associate(Ciudad::find($request['loc-contact-empresa']['ciudadEmp']));
+            $direccionEmpr->ciudad()->associate(Ciudad::find($request['loc-contact-empresa']['idCiudad']));
             // return response()->json($direccionEmpr);
 
             // $empresa = new Empresa();
@@ -230,7 +189,7 @@ class EmpresaController extends Controller
             $direccionAdministrador->direccion = $request['datos-resp']['direccionTrabajoResp'];
             // $direccionAdministrador->barrio = $request['datos-resp']['barrioResp'];
             $direccionAdministrador->barrio = $request['loc-contact-empresa']['barrioEmp'];
-            $direccionAdministrador->ciudad()->associate(Ciudad::find($request['loc-contact-empresa']['ciudadEmp']));
+            $direccionAdministrador->ciudad()->associate(Ciudad::find($request['loc-contact-empresa']['idCiudad']));
             // return response()->json($direccionAdministrador);
             // if (!$dir_empresa) { }
 
@@ -260,9 +219,7 @@ class EmpresaController extends Controller
 
             $ids = array();
             foreach ($request['sectores']['sectores'] as $sect) {
-                foreach ($sect["subSectores"] as $subs) {
-                    array_push($ids, $subs["idSector"]);
-                }
+                array_push($ids, $sect);
             }
             // return response()->json($ids);
             // return response()->json($request['sectores']['sectores'][0]['subSectores'][0]['idSector']);
@@ -363,61 +320,12 @@ class EmpresaController extends Controller
      * @return \Illuminate\Http\Response
      */
     // public function store(EmpresaFormRequest $request)
-    public function store(Request $request)
+    public function store(EmpresaFormRequest $request)
     {
         // Código de error por defecto
         $code = 400;
         $data = null;
         try {
-            // $files = requ
-            // return response()->json([$request['archivos']['camaraycomercio'], "AQUI"], 400);
-            
-            $this->validate($request, [
-                'datos-cuenta.email' => 'required|max:255|email|unique:users,email',
-                'datos-cuenta.contrasenia' => 'required|string|min:6',
-
-                // Datos empresa
-                'datos-generales-empresa.NIT' => 'required|integer||digits_between:8,16|unique:empresas,nit',
-                'datos-generales-empresa.razonSocial' => 'required|string',
-                'datos-generales-empresa.nombreEmpresa' => 'required|unique:empresas,nombre',
-                'datos-generales-empresa.anioCreacion' => 'required|numeric|between:1900,' . Carbon::now()->format("Y"),
-                'datos-generales-empresa.numEmpleados' => 'required|string',
-                'datos-generales-empresa.ingresosEmp' => 'required|string',
-                'datos-generales-empresa.descripcionEmpresa' => 'required|string',
-
-                'loc-contact-empresa.ciudadEmp' => 'required|exists:ciudades,id_aut_ciudad',
-                'loc-contact-empresa.direccionEmp' => 'required|string',
-                'loc-contact-empresa.barrioEmp' => 'required|string',
-                'loc-contact-empresa.codigoPostalEmp' => 'numeric',
-                'loc-contact-empresa.telefonoEmp' => 'integer',
-                'loc-contact-empresa.emailEmp' => 'email',
-                'loc-contact-empresa.sitioWebEmp' => 'url',
-                // 'loc-contact-empresa.sitioWebEmp' => 'url|active_url',
-
-                'sectores.sectores' => 'required|array',
-                'sectores.sectores.*' => 'required|integer|exists:sectores,id_aut_sector',
-                // 'sectores.sectores' => 'required|array',
-                // 'sectores.sectores.*.subSectores.*.idSector' => 'required|integer|exists:sectores,id_aut_sector',
-                // //datos representante
-                'datos-resp.nombrereplegal'  => 'required|string',
-                'datos-resp.apellidoreplegal'  => 'required|string',
-                'datos-resp.telefonoreplegal'  => 'numeric|digits_between:1,16',
-                'datos-resp.telefonoMovilreplegal'  => 'required|numeric|digits_between:1,16',
-                // 'datos-resp.barrioResp' => 'required|string',
-                // 'datos-resp.ciudadResp' => 'required|exists:ciudades,id_aut_ciudad',
-                // 'datos-resp.codigoPostalResp' => 'required|integer',
-                'datos-resp.nombreResp' => 'required|string',
-                'datos-resp.apellidoResp'  => 'required|string',
-                'datos-resp.cargo'  => 'required|string',
-                'datos-resp.telefonoResp'  => 'numeric|digits_between:1,16',
-                'datos-resp.telefonoMovilResp'  => 'required|digits_between:1,16',
-                'datos-resp.horarioContactoResp'  => 'string',
-                'datos-resp.direccionTrabajoResp' => 'required|string',
-                'datos-resp.emailCorpResp'  => 'required|email',
-
-                'archivos.logo' => 'image',
-                'archivos.camaraycomercio' => 'required|mimes:pdf',
-            ]);
             // return response()->json(request());
             $user = new User();
             // $user->email = request('datos-cuenta.email');
@@ -549,8 +457,6 @@ class EmpresaController extends Controller
             // });
             DB::commit();
             return response()->json($empresa, 201);
-        } catch (ValidationException $ev) {
-            return response()->json($ev->validator->errors(), 422);
         } catch (Exception $e) {
             return response()->json($e);
         }

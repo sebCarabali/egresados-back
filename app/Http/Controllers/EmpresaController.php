@@ -54,6 +54,7 @@ class EmpresaController extends Controller
             $empresa->direccion->ciudad->load('departamento');
             $empresa->direccion->ciudad->departamento->load('pais');
 
+            // return response()->json($empresa, 200);
             $empresa->administrador->load('direccion', 'user', 'cargo');
 
             $sectores = [];
@@ -126,10 +127,11 @@ class EmpresaController extends Controller
         // }
         // return response()->json($data, $code);
 
+        // return response()->json($request->all(), 404);
 
         return $this->fail("PASO LAS VALIDACIONES");
         // return response()->json($request);
-        $empresa = Empresa::find($id);
+        $empresa = $id;
         // return response()->json($empresa->administrador->id_aut_user);
         if (!$empresa) {
             return $this->fail("No se encontro la empresa");
@@ -144,7 +146,7 @@ class EmpresaController extends Controller
             if (!empty($request['datos-cuenta']['contrasenia'])) {
                 $user->password = bcrypt($request['datos-cuenta']['contrasenia']);
             }
-            // return response()->json($user); 
+            // return response()->json($user);
 
             $direccionEmpr = $empresa->direccion;
             // return response()->json($direccionEmpr);
@@ -278,36 +280,45 @@ class EmpresaController extends Controller
     public function updateEstado($id, Request $request)
     {
         // Recoger los datos por PUT
-        $json = $request->input('json', null);
-        $params_array = json_decode($json, true);
+        // $json = $request->input('json', null);
+        // $params_array = json_decode($json, true);
 
-        // Código de error por defecto
-        $code = 400;
-        $data = null;
+        // Validador
+        try{
+            $this->validate(request(), [
+                'estado' => 'required',
+            ]);
+            // Código de error por defecto
+            $code = 400;
+            $data = null;
 
-        if (!empty($params_array)) {
-            // Buscar el registro
-            $empresa = Empresa::find($id);
+            //if (!empty($params_array)) {
+                // Buscar el registro
+                $empresa = Empresa::find($id);
 
-            if (!empty($empresa) && is_object($empresa)) {
+                if (!empty($empresa) && is_object($empresa)) {
 
-                if ($params_array['estado'] == 'Activo' && !empty($params_array['limite_publicaciones'])) {
-                    // Actualizar el registro en concreto
+                    if ($request['estado'] == 'Activo' && !empty($request['limite_publicaciones'])) {
+                        // Actualizar el registro en concreto
 
-                    $empresa->update([
-                        'estado' => $params_array['estado'],
-                        'limite_publicaciones' => $params_array['limite_publicaciones'],
-                        'fecha_activacion' => Carbon::now('-5:00'),
-                    ]);
-                    $data = $empresa;
-                    $code = 200;
-                } else if ($params_array['estado'] == 'En espera' || $params_array['estado'] == 'Inactivo') {
-                    // Actualizar el registro en concreto
-                    $empresa->update(['estado' => $params_array['estado']]);
-                    $data = $empresa;
-                    $code = 200;
+                        $empresa->update([
+                            'estado' => $request['estado'],
+                            'limite_publicaciones' => $request['limite_publicaciones'],
+                            'fecha_activacion' => Carbon::now('-5:00'),
+                        ]);
+                        $data = $empresa;
+                        $code = 200;
+                    } else if ($request['estado'] == 'En espera' || $request['estado'] == 'Inactivo') {
+                        // Actualizar el registro en concreto
+                        $empresa->update(['estado' => $request['estado']]);
+                        $data = $empresa;
+                        $code = 200;
+                    }
                 }
-            }
+        } catch (ValidationException $ev) {
+            return response()->json($ev->validator->errors(), 400);
+        } catch (Exception $e) {
+            return response()->json($e);
         }
         return response()->json($data, $code);
     }

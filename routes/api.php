@@ -55,7 +55,7 @@ Route::get('programas/{idFacultad}', 'API\ProgramaController@getByFacultad');
 //});
 
 Route::post('users/validar/{codigo}', function ($id) {
-    
+
 });
 
 // --------------------------------------------------------------------------------
@@ -145,4 +145,3 @@ Route::get('programas', 'API\ProgramaController@getAll');
 Route::get('cargos', 'CargoController@getAll');
 
 Route::post('ofertas/store', 'OfertaController@storeOferta');
-

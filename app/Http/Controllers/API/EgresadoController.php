@@ -364,12 +364,8 @@ class EgresadoController extends Controller
         if($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
-
         $egresadosEnExcel = $this->getCollection($file);
         $aceptados = $this->_procesarExcel($egresadosEnExcel);
-        /*if(count($errors) > 0) {
-            return response()->json($validator->errors(), 422);
-        }*/
         return response()->json($aceptados, 200);
     }
 
@@ -387,9 +383,8 @@ class EgresadoController extends Controller
                     // cambiar estado.
                     $egresadoYaRegistrado->estado = 'ACTIVO_LOGUEADO';
                     $egresadoYaRegistrado->save();
-                    //array_push($resultado, $e);
+                    array_push($resultado, $e);
                 }
-                array_push($resultado, $e);
             }
             $fisrtRow = false;
         }

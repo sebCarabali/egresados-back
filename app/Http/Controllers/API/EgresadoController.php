@@ -126,6 +126,27 @@ class EgresadoController extends Controller
         return $this->_guardarInformacionBasica($egresado, $localizacion, $grado);
     }
 
+    private function _crearUsuario($egresado)    {
+        $user = new User([
+            'email' => $egresado->correo,
+            'codigo_verificacion' => Hash::make($egresado->correo)
+        ]);
+        $user->rol()->associate(Rol::where('nombre', 'User')->first());
+        $user->save();
+        return $user;
+    }
+
+    private function _enviarMensajeActivacion(User $usuario)
+    {
+        //
+        $correo = $usuario->email;
+        Mail::send('mail.confirmation', ['codigo' => $usuario->codigo_confirmacion], 
+                function ($message) use ($correo){
+            $message->from('sebastiancc@unicauca.edu.co', 'Egresados');
+            $message->to($correo)->subject('Nuevo usuario');
+        });
+    }
+
     private function _guardarInformacionBasica(Egresado $egresado, Localizacion $localizacion,
              array $grado)
     {

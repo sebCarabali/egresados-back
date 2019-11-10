@@ -43,18 +43,71 @@ class OfertaController extends Controller
         return response()->json($ofertas, 200);
     }
 
-    public function getOfertasActivasEmpresa($id)
+    public function updateEstado($id)
     {
-        $ofertas = Oferta::where([
-            'id_empresa' => $id,
-            'estado' => 'Aceptada'
-        ])->get();
+        // Código de error por defecto
+        $code = 400;
+        $data = null;
+        try {
+            $this->validate(request(), [
+                'estado' => 'required|string',
+            ]);
 
-        foreach ($ofertas as $oferta) {
-            // Obtener el nombre del cargo
-            $oferta['nombreCargo'] = Cargo::find($oferta->id_cargo)->first()->nombre;
+            // Buscar el registro
+            $oferta = Oferta::find($id);
+
+            if (!empty($oferta) && is_object($oferta)) {
+                switch ($request['estado']) {
+                    case 'Aceptada':
+                    case 'Rechazada':
+                    case 'Pendiente':
+                        $oferta->update('estado', $request['estado']);
+                        $data = $oferta;
+                        $code = 200;
+                        break;
+                }
+            }
+        } catch (ValidationException $ev) {
+            return response()->json($ev->validator->errors(), 400);
+        } catch (Exception $e) {
+            return response()->json($e);
         }
-        return response()->json($ofertas, 200);
+        return response()->json($data, $code);
+    }
+
+    public function updateEstadoProceso($id)
+    {
+        // Código de error por defecto
+        $code = 400;
+        $data = null;
+        try {
+            $this->validate(request(), [
+                'estado' => 'required|string',
+            ]);
+
+            // Buscar el registro
+            $oferta = Oferta::find($id);
+
+            if (!empty($oferta) && is_object($oferta) &&
+                ($oferta['estado'] != 'Pendiente' || $oferta['estado'] != null)) {
+                switch ($request['estado']) {
+                    case 'Activa':
+                    case 'En selección':
+                    case 'Finalizada con contratación':
+                    case 'Finalizada sin contratación':
+                    case 'Expirada':
+                        $oferta->update('estado_proceso', $request['estado']);
+                        $data = $oferta;
+                        $code = 200;
+                        break;
+                }
+            }
+        } catch (ValidationException $ev) {
+            return response()->json($ev->validator->errors(), 400);
+        } catch (Exception $e) {
+            return response()->json($e);
+        }
+        return response()->json($data, $code);
     }
 
     public function storeOferta(Request $request)

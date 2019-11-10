@@ -322,42 +322,37 @@ class EmpresaController extends Controller
 
     public function updateEstado($id, Request $request)
     {
-        // Recoger los datos por PUT
-        // $json = $request->input('json', null);
-        // $params_array = json_decode($json, true);
+        // Código de error por defecto
+        $code = 400;
+        $data = null;
 
         // Validador
         try{
             $this->validate(request(), [
                 'estado' => 'required',
             ]);
-            // Código de error por defecto
-            $code = 400;
-            $data = null;
 
-            //if (!empty($params_array)) {
-                // Buscar el registro
-                $empresa = Empresa::find($id);
+            // Buscar el registro
+            $empresa = Empresa::find($id);
 
-                if (!empty($empresa) && is_object($empresa)) {
+            if (!empty($empresa) && is_object($empresa)) {
+                if ($request['estado'] == 'Activo' && !empty($request['limite_publicaciones'])) {
+                    // Actualizar el registro en concreto
 
-                    if ($request['estado'] == 'Activo' && !empty($request['limite_publicaciones'])) {
-                        // Actualizar el registro en concreto
-
-                        $empresa->update([
-                            'estado' => $request['estado'],
-                            'limite_publicaciones' => $request['limite_publicaciones'],
-                            'fecha_activacion' => Carbon::now('-5:00'),
-                        ]);
-                        $data = $empresa;
-                        $code = 200;
-                    } else if ($request['estado'] == 'En espera' || $request['estado'] == 'Inactivo') {
-                        // Actualizar el registro en concreto
-                        $empresa->update(['estado' => $request['estado']]);
-                        $data = $empresa;
-                        $code = 200;
-                    }
+                    $empresa->update([
+                        'estado' => $request['estado'],
+                        'limite_publicaciones' => $request['limite_publicaciones'],
+                        'fecha_activacion' => Carbon::now('-5:00'),
+                    ]);
+                    $data = $empresa;
+                    $code = 200;
+                } else if ($request['estado'] == 'En espera' || $request['estado'] == 'Inactivo') {
+                    // Actualizar el registro en concreto
+                    $empresa->update(['estado' => $request['estado']]);
+                    $data = $empresa;
+                    $code = 200;
                 }
+            }
         } catch (ValidationException $ev) {
             return response()->json($ev->validator->errors(), 400);
         } catch (Exception $e) {

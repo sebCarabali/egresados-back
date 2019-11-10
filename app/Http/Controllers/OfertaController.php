@@ -20,6 +20,7 @@ class OfertaController extends Controller
 
         $ofertas->load('empresa');
         $ofertas->load('areasConocimiento');
+        $ofertas->load('salario');
 
         // Se borra el atributo pivot, el cual no es necesario
         foreach ($ofertas as $oferta) {
@@ -67,17 +68,22 @@ class OfertaController extends Controller
         $contrato->tipo_contrato = ""; //Enum ('Término indefinido', 'Contrato de aprendizaje', 'Prestación de servicios', 'Obra a labor determinada', 'Término fijo')
         $contrato->jornada_laboral = ""; //Enum ('Medio tiempo', 'Tiempo completo', 'Tiempo parcial');
         $contrato->horario = "";
+        // si existe
         $contrato->comentarios_salario = "";
 
         // Salario que tendrá la oferta
         $salario = new Salario();
-        $salario->minimo = "";
-        $salario->maximo = "";
-        $salario->forma_pago = ""; // Enum  ('Moneda local', 'US Dolar')
+        // $salario->minimo = "";
+        // $salario->maximo = "";
+        // $salario->forma_pago = ""; // Enum  ('Moneda local', 'US Dolar')
+        $salario->id_aut_salario = ""; // Enum  ('Moneda local', 'US Dolar')
+
 
         $oferta = new Oferta();
         $oferta->nombre_oferta = ""; //
         $oferta->descripcion = ""; //
+        // "idCargo": 1,
+        // "otroCArgo": "",
         $oferta->numero_vacantes = ""; //
         $oferta->experiencia = ""; // Enum ('Sin experiencia', 'Igual a', 'Mayor o igual que', 'Menor o igual que')
         $oferta->anios_experiencia = ""; //
@@ -89,14 +95,17 @@ class OfertaController extends Controller
         $oferta->licencia_conduccion = ""; // Enum ('A1', 'A2', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3')
         $oferta->requisitos_minimos = ""; // TEsto descriptivo
         $oferta->id_discapacidad = ""; // Id consultado de la tabla discapacidad
+        $oferta->dias_vigencia = ""; // Dias de la oferta Max 30
+        // "idRequisitosMinimos": 1, // NIvel Programa
 
-        
+
+
 
         // Asigna los id de las ciudades donde va a estar disponible la oferta
-        $oferta->ubicaciones()->attach($ubicaione); // Ids consultados de la tabla discapacidad
+        $oferta->ubicaciones()->attach($ubicaiones); // Ids consultados de la tabla discapacidad
 
         // Asigna los id de las areas de conocimientos requeridos por la oferta
-        $oferta->ubicaciones()->attach($areas); // Ids consultados de la tabla areas de conocimiento
+        $oferta->areasConocimiento()->attach($areas); // Ids consultados de la tabla areas de conocimiento
 
         // Asigna los id de los idioma requeridos en la oferta
         foreach ($idimoas as $idioma) {
@@ -114,6 +123,8 @@ class OfertaController extends Controller
             $s->nombre = $soft['nivel']; // Enum ('Ninguno', 'Nivel bajo', 'Nivel usuario', 'Nivel usuario avanzado', 'Nivel técnico', 'Nivel profesional', 'Nivel experto');
             $oferta->software()->save($s);
         }
+
+        // PREGUNTAS
     }
 }
 // Contratos ---

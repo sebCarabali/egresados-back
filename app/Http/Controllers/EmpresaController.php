@@ -5,24 +5,22 @@ namespace App\Http\Controllers;
 use App\AdministradorEmpresa;
 use App\Cargo;
 use App\Ciudad;
-use App\Departamento;
 use Illuminate\Http\Request;
 
 use App\Empresa;
 use App\Helpers\JwtAuth;
-use App\Http\Requests\EmpresaFormRequest;
+use App\Http\Requests\EmpresaStoreRequest;
+use App\Http\Requests\EmpresaUpdateRequest;
 use App\Localizacion;
 use App\RepresentanteEmpresa;
 use App\Role;
 use App\Sector;
-use App\SubSector;
 use App\User;
 use Exception;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\ValidationException;
 
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class EmpresaController extends Controller
 {
@@ -90,9 +88,11 @@ class EmpresaController extends Controller
         return response()->json($data, $code);
     }
 
-    // public function update($id,Request $request)
-    public function update(EmpresaFormRequest $request, Empresa $id)
+    // public function update(Empresa $id,Request $request)
+    public function update(EmpresaUpdateRequest $request, Empresa $id)
     {
+
+        // $empresa = $id;
         // // Recoger los datos por POST
         // $json = $request->input('json', null);
         // $params_array = json_decode($json, true);
@@ -129,7 +129,7 @@ class EmpresaController extends Controller
 
         // return response()->json($request->all(), 404);
 
-        // return $this->fail("PASO LAS VALIDACIONES");
+        return $this->fail("PASO LAS VALIDACIONES");
         // return response()->json($request);
         $empresa = $id;
         // return response()->json($empresa->administrador->id_aut_user);
@@ -332,7 +332,7 @@ class EmpresaController extends Controller
      * @return \Illuminate\Http\Response
      */
     // public function store(EmpresaFormRequest $request)
-    public function store(EmpresaFormRequest $request)
+    public function store(EmpresaStoreRequest $request)
     {
         // Código de error por defecto
         $code = 400;
@@ -419,6 +419,9 @@ class EmpresaController extends Controller
             $representante->correo_corporativo = $request['datos-resp']['emailCorpResp'];
             $ids = array();
             // return response()->json($request['sectores']['sectores']);
+            if(empty($request['sectores']['sectores'])){
+                $this->fail("No se ingresaron sectores");
+            }
             foreach ($request['sectores']['sectores'] as $sect) {
                 // foreach ($sect["subSectores"] as $subs) {
                 // return response()->json($sect);

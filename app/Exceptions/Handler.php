@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -72,11 +73,6 @@ class Handler extends ExceptionHandler
             else if($exception instanceof NotFoundHttpException){
                 $this->response($exception,null,500);
             }
-            // else if($exception instanceof ErrorException){
-            //     $this->response();
-            //     // $this->response($exception, $exception->getMessage());
-            //     // $this->response($exception, "An error has occurred on the server.");
-            // }
         }
         return parent::render($request, $exception);
     }

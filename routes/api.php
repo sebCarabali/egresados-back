@@ -54,9 +54,8 @@ Route::get('programas/{idFacultad}', 'API\ProgramaController@getByFacultad');
     Route::post('egresados/verificar', 'API\EgresadoController@validateExcel');
 //});
 
-Route::post('users/validar/{codigo}', function ($id) {
-
-});
+Route::post('users/validar/{codigo}', 'UserController@activarCuenta');
+Route::get('users/validar/{codigo}', 'UserController@esUsuarioActivoPorCodigo');
 
 // --------------------------------------------------------------------------------
 /**

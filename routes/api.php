@@ -63,7 +63,7 @@ Route::post('users/validar/{codigo}', function ($id) {
  * Registro de una empresa
  */
 Route::post('empresas/store', 'EmpresaController@store');
-Route::post('empresas/storeArchivos', 'EmpresaController@uploadFiles');
+Route::post('empresas/storeArchivos/{empresa}', 'EmpresaController@uploadFiles')->where(['id' => '[0-9]+']);
 /**
  * Actualización  de una empresa
  */

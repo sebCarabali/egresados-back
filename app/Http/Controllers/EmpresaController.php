@@ -52,14 +52,15 @@ class EmpresaController extends Controller
             $empresa->direccion->ciudad->load('departamento');
             $empresa->direccion->ciudad->departamento->load('pais');
 
-            // return response()->json($empresa, 200);
+
             $empresa->administrador->load('direccion', 'user', 'cargo');
 
             $sectores = [];
 
             //Por cada subsector obtengo el sector
             foreach ($empresa->subSectores as $subSector) {
-                $res = Sector::find($subSector->id_sectores)->first();
+                $res = Sector::find($subSector->id_sectores);
+                
                 if (!isset($sectores->$res)) {
                     $sectores[] = $res;
                 }

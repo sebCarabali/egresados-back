@@ -474,7 +474,7 @@ class EmpresaController extends Controller
             $representanteLegal->save();
             // });
             DB::commit();
-            return response()->json($empresa, 201);
+            return $this->success($empresa->id_aut_empresa);
         } catch (Exception $e) {
             return response()->json($e);
         }

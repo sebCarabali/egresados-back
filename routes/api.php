@@ -20,7 +20,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 /**
  * Guarda la información básica de un egresado.
  */
-Route::post('egresados', 'API\EgresadoController@storeBasicInfo');
+Route::post('egresados', 'API\EgresadoController@guardarInformacionBasica');
 
 Route::put('completeEgresados/{idEgresado}', 'API\EgresadoController@fullInfo');
 /**
@@ -54,16 +54,15 @@ Route::get('programas/{idFacultad}', 'API\ProgramaController@getByFacultad');
     Route::post('egresados/verificar', 'API\EgresadoController@validateExcel');
 //});
 
-Route::post('users/validar/{codigo}', function ($id) {
-
-});
+Route::post('users/validar/{codigo}', 'UserController@activarCuenta');
+Route::get('users/validar/{codigo}', 'UserController@esUsuarioActivoPorCodigo');
 
 // --------------------------------------------------------------------------------
 /**
  * Registro de una empresa
  */
 Route::post('empresas/store', 'EmpresaController@store');
-Route::post('empresas/storeArchivos', 'EmpresaController@uploadFiles');
+Route::post('empresas/storeArchivos/{empresa}', 'EmpresaController@uploadFiles')->where(['id' => '[0-9]+']);
 /**
  * Actualización  de una empresa
  */

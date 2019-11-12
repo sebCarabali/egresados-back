@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-
+use Illuminate\Support\Facades\Validator;
 use App\User;
 use App\Helpers\JwtAuth;
 
@@ -71,12 +71,29 @@ class UserController extends Controller
         // Obtener usuario con el código de confirmación
         $usuario = User::where('codigo_verificacion', $codigo)->first();
         if(!$usuario) {
-            return response()->json(false, 400);
+            return response()->json([
+                "mensaje" => "No se ha encontrado un usuario con código " + $codigo,
+                "status" => false
+            ], 400);
         }
 
-        $usuario->activado = true;
+        $usuario->activo = true;
+        $usuario->password = Hash::make($request->get('password'));
         $usuario->save();
         return response()->json(true, 200);
+    }
+
+    public function esUsuarioActivoPorCodigo($codigo) {
+        $usuario = User::where('codigo_verificacion', $codigo)->first();
+        $status = 200;
+        $res = true;
+        if(!$usuario) {
+            $res = false;
+            $status = 400;
+        } else {
+            $res = $usuario->activo;
+        }
+        return response()->json($res, $status);
     }
 
     public function esUsuarioActivo($email)

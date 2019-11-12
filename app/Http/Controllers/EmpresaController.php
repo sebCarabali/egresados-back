@@ -490,17 +490,21 @@ class EmpresaController extends Controller
             "logoInput" => "image"
         ]);
 
-        $pdf = Storage::disk('files')->put('/empresas/pdfs', $request->file('fileInput'));
+        // $pdf = Storage::disk('files')->put('/empresas/pdfs', $request->file('fileInput'));
+        $pdf = $request->file('fileInput')->storePublicly('/empresas/pdfs');
         $empresa->url_doc_camaracomercio = $pdf;
         if ($request->file('logoInput')) {
-            $image_s = Storage::disk('public')->put('/empresas/logos', $request->file('logoInput'));
+            // $image_s = Storage::disk('public')->put('/empresas/logos', $request->file('logoInput'));
+            // $image_s2 = $request->file('logoInput')->store('/empresas/logos');
+            // $image_s3 = $request->file('logoInput')->storePublicly('/empresas/logos');
+            $image_s = $request->file('logoInput')->store('/empresas/logos', 'files');
             $empresa->url_logo = $image_s;
             $empresa->save();
-            return $this->success([asset($image_s), asset($pdf)]);
+            // return $this->success([ $image_s, $image_s2, $image_s3, $pdf]);
+            return $this->success([ $image_s, $pdf]);
         }
         $empresa->save();
         return $this->success([asset($pdf), $pdf]);
         // return response()->json(["esto llego", $request]);
-        // $image_s = $request->file('logo')->storePubliclyAs('public/empresas/pdfs',"123.png");
     }
 }

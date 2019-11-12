@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Carbon;
 
 class EmpresaStoreRequest extends FormRequest
@@ -24,12 +25,13 @@ class EmpresaStoreRequest extends FormRequest
      */
     public function rules()
     {
+
         return [
             'datos-cuenta.email' => 'required|max:255|email|unique:users,email',
             'datos-cuenta.contrasenia' => 'required|string|min:6',
 
             // Datos empresa
-            'datos-generales-empresa.NIT' => 'required|integer||digits_between:8,16|unique:empresas,nit',
+            'datos-generales-empresa.NIT' => 'required|integer||digits_between:8,15|unique:empresas,nit',
             'datos-generales-empresa.razonSocial' => 'required|string',
             'datos-generales-empresa.nombreEmpresa' => 'required|unique:empresas,nombre',
             'datos-generales-empresa.anioCreacion' => 'required|numeric|between:1900,' . Carbon::now()->format("Y"),
@@ -46,18 +48,15 @@ class EmpresaStoreRequest extends FormRequest
             'loc-contact-empresa.sitioWebEmp' => 'nullable|url',
             // 'loc-contact-empresa.sitioWebEmp' => 'url|active_url',
 
-            'sectores.sectores' => 'required|array',
-            'sectores.sectores.*' => 'required|distinct|integer|exists:sectores,id_aut_sector',
-            // 'sectores.sectores' => 'required|array',
-            // 'sectores.sectores.*.subSectores.*.idSector' => 'required|integer|exists:sectores,id_aut_sector',
-            // //datos representante
+
+            'sectores.*' => 'required|array|min:1',
+            'sectores.*.*' => 'required|distinct|integer|exists:sectores,id_aut_sector',
+            
             'datos-resp.nombrereplegal'  => 'required|string',
             'datos-resp.apellidoreplegal'  => 'required|string',
             'datos-resp.telefonoreplegal'  => 'nullable|numeric|digits_between:1,16',
             'datos-resp.telefonoMovilreplegal'  => 'required|numeric|digits_between:1,16',
-            // 'datos-resp.barrioResp' => 'required|string',
-            // 'datos-resp.ciudadResp' => 'required|exists:ciudades,id_aut_ciudad',
-            // 'datos-resp.codigoPostalResp' => 'required|integer',
+            
             'datos-resp.nombreResp' => 'required|string',
             'datos-resp.apellidoResp'  => 'required|string',
             'datos-resp.cargo'  => 'required|string',

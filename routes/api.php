@@ -131,6 +131,14 @@ Route::get('/ofertas/empresa/{id}', 'OfertaController@getOfertasEmpresa');
  * Obtiene todas las ofertas que están en espera, vista desde administrador
  */
 Route::get('/ofertas/empresas', 'OfertaController@getOfertasEnEspera');
+/**
+ * Cambia el estado de una oferta desde la empresa
+ */
+Route::put('/ofertas/estado/{id}', 'OfertaController@updateEstado');
+/**
+ * Cambia el estado de una oferta desde la empresa
+ */
+Route::put('/ofertas/estado-proceso/{id}', 'OfertaController@updateEstadoProceso');
 
 
 
@@ -142,5 +150,5 @@ Route::get('cargos', 'CargoController@getAll');
 Route::post('ofertas/store', 'OfertaController@storeOferta');
 
 Route::fallback(function(){
-    
+
 });

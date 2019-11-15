@@ -13,7 +13,7 @@ class Oferta extends Model
     protected $fillable = [
         'id_empresa', 'nombre', 'descripcion', 'id_cargo', 'id_contrato',
         'numero_vacantes', 'salario', 'experiencia', 'anios_experiencia',
-        'fecha_publicacion', 'fecha_cierre', 'estado'
+        'fecha_publicacion', 'fecha_cierre', 'estado', 'estado_proceso'
     ];
 
     public function contrato()

@@ -71,7 +71,7 @@ class Handler extends ExceptionHandler
                 $this->response($exception, "The given data was invalid.", 422, $exception->errors());
             }
             else if($exception instanceof NotFoundHttpException){
-                $this->response($exception,null,500);
+                $this->response($exception,"The route does not exist!",404);
             }
         }
         return parent::render($request, $exception);

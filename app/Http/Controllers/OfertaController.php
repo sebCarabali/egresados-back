@@ -83,21 +83,20 @@ class OfertaController extends Controller
 
         try {
             $this->validate(request(), [
-                'estado' => 'required|string',
+                'estado_proceso' => 'required|string',
             ]);
-
             // Buscar el registro
             $oferta = Oferta::find($id);
 
             if (!empty($oferta) && is_object($oferta) && $oferta['estado'] != 'Pendiente') {
-                switch ($request['estado']) {
+                switch ($request['estado_proceso']) {
                     case 'En espera':
                     case 'Activa':
                     case 'En selección':
                     case 'Finalizada con contratación':
                     case 'Finalizada sin contratación':
                     case 'Expirada':
-                        $oferta->update(['estado_proceso' => $request['estado']]);
+                        $oferta->update(['estado_proceso' => $request['estado_proceso']]);
                         $data = $oferta;
                         $code = 200;
                         break;

@@ -57,6 +57,9 @@ Route::get('programas/{idFacultad}', 'API\ProgramaController@getByFacultad');
 Route::post('users/validar/{codigo}', 'UserController@activarCuenta');
 Route::get('users/validar/{codigo}', 'UserController@esUsuarioActivoPorCodigo');
 
+Route::get('facultades/{idSede}', 'API\FacultadController@getBySede');
+Route::get('programas/{idSede}/{idFacultad}/{idNivelEstudio}', 'API\ProgramaController@getBySedeAndFacultadAndNivelEstudio');
+Route::get('sedes', 'API\SedesController@getAll');
 // --------------------------------------------------------------------------------
 /**
  * Registro de una empresa
@@ -148,3 +151,8 @@ Route::get('programas', 'API\ProgramaController@getAll');
 Route::get('cargos', 'CargoController@getAll');
 
 Route::post('ofertas/store', 'OfertaController@storeOferta');
+Route::post('login', 'AuthController@login');
+
+Route::group(['middleware' => ['jwt.verify']], function() {
+    /*AÑADE AQUI LAS RUTAS QUE QUIERAS PROTEGER CON JWT*/
+});

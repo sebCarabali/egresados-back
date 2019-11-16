@@ -151,3 +151,8 @@ Route::get('programas', 'API\ProgramaController@getAll');
 Route::get('cargos', 'CargoController@getAll');
 
 Route::post('ofertas/store', 'OfertaController@storeOferta');
+Route::post('login', 'AuthController@login');
+
+Route::group(['middleware' => ['jwt.verify']], function() {
+    /*AÑADE AQUI LAS RUTAS QUE QUIERAS PROTEGER CON JWT*/
+});

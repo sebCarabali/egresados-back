@@ -3,9 +3,13 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Tymon\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
-class User extends Model
+class User extends Authenticatable implements JWTSubject
 {
+    use Notifiable;
 
     protected $table = 'users';
     protected $primaryKey = 'id_aut_user';
@@ -33,5 +37,15 @@ class User extends Model
     public function administradores()
     {
         return $this->hasMany('App\AdministradorEmpresa', 'id_aut_user', 'id_aut_user');
+    }
+
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+    
+    public function getJWTCustomClaims()
+    {
+        return [];
     }
 }

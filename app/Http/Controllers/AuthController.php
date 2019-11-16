@@ -25,9 +25,7 @@ class AuthController extends Controller
     private function responseWithToken($token)
     {
         return response()->json([
-            'access_token' => $token,
-            'user_email' => auth()->user()->email,
-            'user_rol' => auth()->user()->rol()->first()->nombre
+            'access_token' => $token
         ], 200);
     }
 }

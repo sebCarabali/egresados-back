@@ -65,6 +65,7 @@ Route::get('sedes', 'API\SedesController@getAll');
  * Registro de una empresa
  */
 Route::post('empresas/store', 'EmpresaController@store');
+Route::post('empresas/oferta/store/{empresa}', 'OfertaController@storeOferta');
 Route::post('empresas/storeArchivos/{empresa}', 'EmpresaController@uploadFiles')->where(['id' => '[0-9]+']);
 /**
  * Actualización  de una empresa
@@ -148,6 +149,10 @@ Route::put('/ofertas/estado-proceso/{id}', 'OfertaController@updateEstadoProceso
 Route::get('idiomas', 'IdiomaController@getAll');
 Route::get('discapacidades', 'DiscapacidadController@getAll');
 Route::get('programas', 'API\ProgramaController@getAll');
+Route::get('programas/nivel_programa/{idNivelPrograma}', 'API\ProgramaController@getByNivelPrograma');
 Route::get('cargos', 'CargoController@getAll');
+Route::get('salarios/{moneda}', 'OfertaController@getSalarioPorModena');
+// Route::get('salarios', 'OfertaController@getAllSalario');
+Route::get('areasConocimiento', 'OfertaController@getAllAreas');
 
 Route::post('ofertas/store', 'OfertaController@storeOferta');

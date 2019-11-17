@@ -13,8 +13,9 @@ class PreguntaOferta extends Model
     protected $fillable = [
         'pregunta'
     ];
+    
     public function oferta()
     {
-        return $this->hasOne(Oferta::class, 'id_contrato', 'id_aut_contrato');
+        return $this->belongsTo(Oferta::class, 'id_oferta', 'id_aut_oferta');
     }
 }

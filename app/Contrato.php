@@ -15,8 +15,9 @@ class Contrato extends Model
         'mostrar_salario', 'comentarios_salario'
     ];
 
-    public function ofertas()
+    public function oferta()
     {
-        return $this->hasMany('App\Oferta', 'id_contrato', 'id_aut_contrato');
+        return $this->hasOne(Oferta::class, 'id_contrato', 'id_aut_contrato');
     }
+
 }

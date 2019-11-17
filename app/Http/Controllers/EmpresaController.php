@@ -155,7 +155,7 @@ class EmpresaController extends Controller
 
         $administradorEmp->correo_corporativo = $request['datos-resp']['emailCorpResp'];
         $ids = array();
-        foreach ($request['sectores']['sectores'] as $sect) {
+        foreach ($request['sectores']['subsectores'] as $sect) {
             array_push($ids, $sect);
         }
 
@@ -307,7 +307,7 @@ class EmpresaController extends Controller
             $representante->correo_corporativo = $request['datos-resp']['emailCorpResp'];
 
             $ids = array();
-            foreach ($request['sectores']['sectores'] as $sect) {
+            foreach ($request['sectores']['subsectores'] as $sect) {
                 // foreach ($sect["subSectores"] as $subs) {
                 // return response()->json($sect);
                 // array_push($ids, $subs["idSubSector"]);
@@ -344,7 +344,7 @@ class EmpresaController extends Controller
             DB::commit();
             return $this->success($empresa->id_aut_empresa);
         } catch (Exception $e) {
-            return $this->fail($e->getMessage());
+            return $this->fail("Registro Empresa=>". $e->getMessage());
         }
     }
 

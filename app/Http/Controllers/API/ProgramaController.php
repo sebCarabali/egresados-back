@@ -17,6 +17,10 @@ class ProgramaController extends Controller
                 ->where('id_facultad', $idFacultad)->get();
         return response()->json($programas, 200);
     }
+    public function getByNivelPrograma($idNivelPrograma)
+    {
+        return ProgramaResource::collection(Programa::whereIdNivelprogra($idNivelPrograma)->get());
+    }
 
     public function getAll()
     {

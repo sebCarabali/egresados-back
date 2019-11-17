@@ -48,14 +48,19 @@ class Oferta extends Model
 
     public function idiomas()
     {
-        return $this->belongsToMany(Idioma::class, 'ofertas_idiomas')
-            ->withPivot(['id_oferta', 'id_idioma', 'nivel_escritura', 'nivel_lectura', 'nivel_conversacion'])
-            ->withTimestamps();
+        return $this->belongsToMany(Idioma::class, 'ofertas_idiomas', 'id_oferta', 'id_idioma')
+            ->withPivot([ 'nivel_escritura', 'nivel_lectura', 'nivel_conversacion']);
     }
+
 
     public function salario()
     {
         return $this->belongsTo(Salario::class, 'id_forma_pago', 'id_aut_salario');
+    }
+
+    public function preguntas()
+    {
+        return $this->hasMany(PreguntaOferta::class, 'id_oferta', 'id_aut_oferta');
     }
 
 

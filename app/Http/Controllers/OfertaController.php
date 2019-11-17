@@ -236,7 +236,7 @@ class OfertaController extends Controller
     }
   }
 
-  public function updateOferta(Oferta $oferta, Request $request)
+  public function updateOferta(Oferta $oferta, OfertaStoreRequest $request)
   {
     try {
 

@@ -43,13 +43,13 @@ class Oferta extends Model
 
     public function ubicaciones()
     {
-        return $this->belongsToMany(Ciudad::class, 'ubicacion_oferta','id_oferta', 'id_ciudad');
+        return $this->belongsToMany(Ciudad::class, 'ubicacion_oferta', 'id_oferta', 'id_ciudad');
     }
 
     public function idiomas()
     {
         return $this->belongsToMany(Idioma::class, 'ofertas_idiomas', 'id_oferta', 'id_idioma')
-            ->withPivot([ 'nivel_escritura', 'nivel_lectura', 'nivel_conversacion']);
+            ->withPivot(['nivel_escritura', 'nivel_lectura', 'nivel_conversacion']);
     }
 
 
@@ -63,5 +63,9 @@ class Oferta extends Model
         return $this->hasMany(PreguntaOferta::class, 'id_oferta', 'id_aut_oferta');
     }
 
-
+    public function postulaciones()
+    {
+        return $this->belongsToMany(Egresado::class, 'postulaciones', 'id_aut_oferta', 'id_aut_egresado')
+            ->withPivot(['fecha_postulacion', 'fecha_revision_empresa', 'estado']);
+    }
 }

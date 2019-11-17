@@ -68,6 +68,7 @@ Route::post('empresas/store', 'EmpresaController@store');
 Route::post('empresas/oferta/store/{empresa}', 'OfertaController@storeOferta');
 Route::post('empresas/oferta/update/{oferta}', 'OfertaController@updateOferta');
 Route::post('empresas/storeArchivos/{empresa}', 'EmpresaController@uploadFiles')->where(['id' => '[0-9]+']);
+Route::get('ofertas/postulados/{oferta}', 'OfertaController@getAllPostulados');
 /**
  * Actualización  de una empresa
  */

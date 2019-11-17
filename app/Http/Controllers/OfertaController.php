@@ -357,4 +357,9 @@ class OfertaController extends Controller
       return $this->fail("Registro oferta => " . $e->getMessage());
     }
   }
+
+  public function getAllPostulados(Oferta $oferta)
+  {
+    return $this->success($oferta->postulaciones);
+  }
 }

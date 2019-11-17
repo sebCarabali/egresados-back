@@ -156,3 +156,8 @@ Route::get('salarios/{moneda}', 'OfertaController@getSalarioPorModena');
 Route::get('areasConocimiento', 'OfertaController@getAllAreas');
 
 Route::post('ofertas/store', 'OfertaController@storeOferta');
+Route::post('login', 'AuthController@login');
+
+Route::group(['middleware' => ['jwt.verify']], function() {
+    /*AÑADE AQUI LAS RUTAS QUE QUIERAS PROTEGER CON JWT*/
+});

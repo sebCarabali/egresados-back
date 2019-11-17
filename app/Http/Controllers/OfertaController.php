@@ -9,6 +9,7 @@ use App\Oferta;
 use App\Cargo;
 use App\Contrato;
 use App\CategoriaCargo;
+use App\ContactoHV;
 use App\Empresa;
 use App\Http\Requests\OfertaStoreRequest;
 use App\Http\Resources\AreaConocimientoResource;
@@ -229,6 +230,17 @@ class OfertaController extends Controller
       }
 
 
+      $contacto = new ContactoHV();
+      $contacto->fill([
+        "correo" => $request['contactoHV']['correo'],
+        "nombres" => $request['contactoHV']['nombres'],
+        "apellidos" => $request['contactoHV']['apellidos'],
+        "telefono_movil" => $request['contactoHV']['telefonoMovil']
+      ]);
+
+      $oferta->contacto_hv()->save($contacto);
+
+
       DB::commit();
       return $this->success($oferta);
     } catch (Exception $e) {
@@ -350,6 +362,15 @@ class OfertaController extends Controller
       $oferta->preguntas()->delete();
       $oferta->preguntas()->saveMany($array_preguntas);
 
+      $contacto = $oferta->contacto_hv;
+      $contacto->fill([
+        "correo" => $request['contactoHV']['correo'],
+        "nombres" => $request['contactoHV']['nombres'],
+        "apellidos" => $request['contactoHV']['apellidos'],
+        "telefono_movil" => $request['contactoHV']['telefonoMovil']
+      ]);
+
+      $oferta->contacto_hv()->save($contacto);
 
       DB::commit();
       return $this->success($oferta);

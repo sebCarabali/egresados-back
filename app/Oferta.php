@@ -68,4 +68,10 @@ class Oferta extends Model
         return $this->belongsToMany(Egresado::class, 'postulaciones', 'id_aut_oferta', 'id_aut_egresado')
             ->withPivot(['fecha_postulacion', 'fecha_revision_empresa', 'estado']);
     }
+
+    public function contacto_hv()
+    {
+        return $this->hasOne(ContactoHV::class, 'id_oferta', 'id_aut_oferta');
+    }
+
 }

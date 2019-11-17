@@ -57,7 +57,11 @@ class OfertaStoreRequest extends FormRequest
             'requisitos.softwareOferta.*.nombre' => 'required|string',
             'requisitos.softwareOferta.*.nivel' => 'required|string',
             'requisitos.preguntasCandidato' => 'nullable|array',
-            'requisitos.preguntasCandidato.*' => 'string',
+
+            'contactoHV.correo' => 'required|email',
+            'contactoHV.nombres' => 'required|string',
+            'contactoHV.apellidos' => 'required|string',
+            'contactoHV.telefonoMovil' => 'required|numeric|digits_between:1,16',
         ];
     }
 }

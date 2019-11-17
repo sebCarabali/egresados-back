@@ -18,7 +18,7 @@ class Oferta extends Model
 
     public function contrato()
     {
-        return $this->belongsTo('App\Contrato', 'id_contrato', 'id_aut_contrato');
+        return $this->hasOne('App\Contrato', 'id_oferta', 'id_aut_oferta');
     }
 
     public function cargo()

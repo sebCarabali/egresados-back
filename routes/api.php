@@ -51,7 +51,7 @@ Route::get('programas/{idFacultad}', 'API\ProgramaController@getByFacultad');
  * Verifica el excel de egresados dato por secretaria.
  */
 //Route::group(['middleware' => 'cors'], function () {
-    Route::post('egresados/verificar', 'API\EgresadoController@validateExcel');
+Route::post('egresados/verificar', 'API\EgresadoController@validateExcel');
 //});
 
 Route::post('users/validar/{codigo}', 'UserController@activarCuenta');
@@ -66,6 +66,7 @@ Route::get('sedes', 'API\SedesController@getAll');
  */
 Route::post('empresas/store', 'EmpresaController@store');
 Route::post('empresas/oferta/store/{empresa}', 'OfertaController@storeOferta');
+Route::post('empresas/oferta/update/{oferta}', 'OfertaController@updateOferta');
 Route::post('empresas/storeArchivos/{empresa}', 'EmpresaController@uploadFiles')->where(['id' => '[0-9]+']);
 /**
  * Actualización  de una empresa
@@ -121,12 +122,12 @@ Route::get('empresa/{id}', 'EmpresaController@showAllInfo');
 /**
  * Cambia el estado de una empresa
  */
-Route::put('/empresa/estado/{id}', 'EmpresaController@updateEstado');//->middleware('api.auth:0');
+Route::put('/empresa/estado/{id}', 'EmpresaController@updateEstado'); //->middleware('api.auth:0');
 /**
  * update general de empresa
  */
 // Route::put('/empresa/{id}', 'EmpresaController@update');//->middleware('api.auth:1');
-Route::put('/empresa/{id}', 'EmpresaController@update')->where(['id' => '[0-9]+']);//->middleware('api.auth:1');
+Route::put('/empresa/{id}', 'EmpresaController@update')->where(['id' => '[0-9]+']); //->middleware('api.auth:1');
 /**
  * Obtiene todas las ofertas de una empresa
  */
@@ -158,6 +159,5 @@ Route::get('areasConocimiento', 'OfertaController@getAllAreas');
 Route::post('ofertas/store', 'OfertaController@storeOferta');
 Route::post('login', 'AuthController@login');
 
-Route::group(['middleware' => ['jwt.verify']], function() {
-    /*AÑADE AQUI LAS RUTAS QUE QUIERAS PROTEGER CON JWT*/
-});
+Route::group(['middleware' => ['jwt.verify']], function () {
+    /*AÑADE AQUI LAS RUTAS QUE QUIERAS PROTEGER CON JWT*/ });

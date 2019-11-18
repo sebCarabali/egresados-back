@@ -91,7 +91,9 @@ class EgresadoController extends Controller
             'fecha_grado' => date('m/d/Y', strtotime($request->get('fecha_grado'))),
             'anio_graduacion' => $request->get('anio_graduacion')
         );
-        return $this->_guardarInformacionBasica($egresado, $localizacion, $grado);
+
+        $discapacidad = $request->get('discapacidad');
+        return $this->_guardarInformacionBasica($egresado, $localizacion, $grado, $discapacidad);
     }
 
     private function _completarInformacionBasica(Egresado $egresado, Request $request)
@@ -124,7 +126,8 @@ class EgresadoController extends Controller
             'fecha_grado' => date('m/d/Y', strtotime($request->get('fecha_grado'))),
             'anio_graduacion' => $request->get('anio_graduacion')
         );
-        return $this->_guardarInformacionBasica($egresado, $localizacion, $grado);
+        $discapacidad = $request->get('discapacidad');
+        return $this->_guardarInformacionBasica($egresado, $localizacion, $grado, $discapacidad);
     }
 
     private function _crearUsuario($egresado)
@@ -185,10 +188,10 @@ class EgresadoController extends Controller
         });
     }
 
-    private function _guardarInformacionBasica(Egresado $egresado, Localizacion $localizacion, array $grado)
+    private function _guardarInformacionBasica(Egresado $egresado, Localizacion $localizacion, array $grado, array $discapacidad)
     {
         // save all data and response egresados object in json format
-        return DB::transaction(function () use ($egresado, $localizacion, $grado) {
+        return DB::transaction(function () use ($egresado, $localizacion, $grado, $discapacidad) {
             $localizacion->save();
             $usuario = $this->_crearUsuario($egresado);
             $egresado->user()->associate($usuario);
@@ -203,6 +206,9 @@ class EgresadoController extends Controller
                 //'docente_influencia' => array_key_exists('docente_influencia', $grado) ? $grado['docente_influencia'] : '',
                 'anio_graduacion' => $grado['anio_graduacion']
             ]);
+            foreach($discapacidad as $d) {
+                $egresado->discapacidades()->attach($d);
+            }
             $this->_enviarMensajeActivacion($usuario);
             return $egresado;
         });

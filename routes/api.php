@@ -1,5 +1,6 @@
 <?php
 
+use App\NivelPrograma;
 use Illuminate\Http\Request;
 
 /*
@@ -53,6 +54,9 @@ Route::get('programas/{idFacultad}', 'API\ProgramaController@getByFacultad');
 //Route::group(['middleware' => 'cors'], function () {
 Route::post('egresados/verificar', 'API\EgresadoController@validateExcel');
 //});
+Route::get('nivelesPrograma', function(){
+    return response()->json(NivelPrograma::all(), 200);
+});
 
 Route::post('users/validar/{codigo}', 'UserController@activarCuenta');
 Route::get('users/validar/{codigo}', 'UserController@esUsuarioActivoPorCodigo');

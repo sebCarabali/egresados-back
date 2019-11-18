@@ -46,6 +46,10 @@ class Egresado extends Model
                     'docente_influencia');*/
   }
 
+  public function discapacidades() {
+    return $this->belongsToMany('App\Discapacidad', 'egresados_discapacidades', 'id_egresado', 'id_discapacidad');
+  }
+
   public function referidos()
   {
     return $this->belognsToMany('App\Referido', 'referidos_egresados', 'id_egresados', 'id_referidos');

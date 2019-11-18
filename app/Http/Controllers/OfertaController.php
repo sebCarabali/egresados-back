@@ -40,6 +40,19 @@ class OfertaController extends Controller
     return response()->json($ofertas, 200);
   }
 
+  public function getOfertasEmpresa(Request $request, $id)
+  {
+    $ofertas = Oferta::where('id_empresa', $id)->get();
+
+    foreach ($ofertas as $oferta) {
+      $nombre = $oferta->cargo->nombre;
+      unset($oferta['cargo']);
+      $oferta['cargo_nombre'] = $nombre;
+    }
+
+    return response()->json($ofertas, 200);
+  }
+
   public function updateEstado(Request $request, $id)
   {
     // Código de error por defecto
@@ -54,6 +67,13 @@ class OfertaController extends Controller
       if (!empty($oferta) && is_object($oferta)) {
         switch ($request['estado']) {
           case 'Aceptada':
+            $oferta->update([
+              'estado' => $request['estado'],
+              'estado_proceso' => 'Activa'
+            ]);
+            $data = $oferta;
+            $code = 200;
+            break;
           case 'Rechazada':
           case 'Pendiente':
             $oferta->update(['estado' => $request['estado']]);
@@ -253,7 +273,7 @@ class OfertaController extends Controller
     try {
 
       // if($oferta->postulaciones()->count){
-      //   return $this->fail("La oferta no se puede modificar porque ya cuenta con postulaciones!", 400);  
+      //   return $this->fail("La oferta no se puede modificar porque ya cuenta con postulaciones!", 400);
       // }
 
       DB::beginTransaction();

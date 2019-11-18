@@ -39,8 +39,6 @@ class Egresado extends Model
 
     public function programas() {
       return $this->belongsToMany('App\Programa', 'grados', 'id_estudiante', 'id_programa');
-        /*->withPivot('tipo', 'mension_honor', 'titulo_especial', 'comentarios', 'fecha_graduacion',
-                    'docente_influencia');*/
     }
 
     public function referidos() {
@@ -49,6 +47,10 @@ class Egresado extends Model
 
     public function experiencia() {
       return $this->hasMany('App\Experiencia', 'id_egresado');       
+    }
+
+    public function discapacidad(){
+      return $this->hasMany('App\Discapacidad','egresados_discapacidades','id_egresado','id_discapacidad');
     }
 }
 

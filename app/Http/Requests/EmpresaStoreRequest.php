@@ -50,7 +50,7 @@ class EmpresaStoreRequest extends FormRequest
 
 
             'sectores.*' => 'required|array|min:1',
-            'sectores.*.*' => 'required|distinct|integer|exists:sectores,id_aut_sector',
+            'sectores.*.*' => 'required|distinct|integer|exists:sub_sectores,id_aut_sub_sector',
             
             'datos-resp.nombrereplegal'  => 'required|string',
             'datos-resp.apellidoreplegal'  => 'required|string',

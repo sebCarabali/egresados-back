@@ -478,7 +478,7 @@ class EgresadoController extends Controller
         }*/
         $egresadosEnExcel = $this->getCollection($file);
         $aceptados = $this->_procesarExcel($egresadosEnExcel);
-        return response()->json(['aceptados' => $aceptados], 200, [], JSON_UNESCAPED_UNICODE);
+        return response()->json($aceptados, 200, [], JSON_UNESCAPED_UNICODE);
     }
 
     private function _procesarExcel($egresados)

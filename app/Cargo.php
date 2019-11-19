@@ -15,11 +15,6 @@ class Cargo extends Model
         'nombre', 'id_categoria', 'estado'
     ];
 
-    public function categoria()
-    {
-        return $this->belongsTo('App\CategoriaCargo', 'id_categoria', 'id_aut_cate_cargo');
-    }
-
     public function administradores()
     {
         return $this->hasMany('App\AdministradorEmpresa', 'id_cargo', 'id_aut_cargos');

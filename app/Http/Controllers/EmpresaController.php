@@ -150,6 +150,10 @@ class EmpresaController extends Controller
         $administradorEmp = $empresa->administrador;
         $administradorEmp->nombres = $request['datos-resp']['nombreResp'];
         $administradorEmp->apellidos = $request['datos-resp']['apellidoResp'];
+        if($request['datos-resp']['horarioContactoResp']){
+            $administradorEmp->horario_contacto = $request['datos-resp']['horarioContactoResp'];
+
+        }
         if (!empty($request['datos-resp']['telefonoResp'])) {
             $administradorEmp->telefono = $request['datos-resp']['telefonoResp'];
         }
@@ -303,6 +307,13 @@ class EmpresaController extends Controller
             $representante = new AdministradorEmpresa();
             $representante->nombres = $request['datos']['datos-resp']['nombreResp'];
             $representante->apellidos = $request['datos']['datos-resp']['apellidoResp'];
+
+            if($request['datos']['datos-resp']['horarioContactoResp']){
+
+                $representante->horario_contacto = $request['datos']['datos-resp']['horarioContactoResp'];
+            }
+
+
             if ($request['datos']['datos-resp']['telefonoResp']) {
                 $representante->telefono = $request['datos']['datos-resp']['telefonoResp'];
             }

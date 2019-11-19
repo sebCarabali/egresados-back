@@ -130,6 +130,8 @@ class EmpresaController extends Controller
         if (!empty($request['loc-contact-empresa']['emailEmp'])) {
             $empresa->correo = $request['loc-contact-empresa']['emailEmp'];
         }
+        $empresa->descripcion = $request['datos-generales-empresa']['descripcionEmpresa'];
+
 
         $direccionAdministrador = $empresa->administrador->direccion;
         $direccionAdministrador->codigo_postal = $request['loc-contact-empresa']['codigoPostalEmp'];
@@ -283,6 +285,7 @@ class EmpresaController extends Controller
             $empresa->total_publicaciones = 0;
             $empresa->limite_publicaciones = 0;
             $empresa->num_publicaciones_actuales = 0;
+            $empresa->descripcion = $request['datos-generales-empresa']['descripcionEmpresa'];
 
             $direccionAdministrador = new Localizacion();
             $direccionAdministrador->codigo_postal = $request['loc-contact-empresa']['codigoPostalEmp'];

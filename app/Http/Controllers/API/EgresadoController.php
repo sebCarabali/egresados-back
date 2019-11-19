@@ -17,7 +17,6 @@ use App\Programa;
 use App\NivelEstudio;
 use App\Referido;
 use App\Cargo;
-use App\CategoriaCargo;
 use Validator;
 use Excel;
 use App\Imports\EgresadosImport;
@@ -208,131 +207,200 @@ class EgresadoController extends Controller
         });
     }
 
-    private function guardarinformacionReferido(array $padre, array $madre, array $esposo, $idEgresado)
-    {
-        return DB::transaction(function () use ($padre, $madre, $esposo, $idEgresado) {
-
-            $referido_esposo = new Referido();
-            //Informcion Esposo (a)
-            $referido_esposo->nombres = $esposo['nombres'];
-            $referido_esposo->es_egresado = $esposo['es_egresado'];
-            $referido_esposo->niveles_estudio()->associate(NivelEstudio::where('id_aut_estudio', $esposo['id_nivel_educativo'])->firstOrFail());
-            $referido_esposo->telefono_movil = $esposo['telefono_movil'];
-            $referido_esposo->programa()->associate(Programa::where('id_aut_programa', $esposo['id_aut_programa'])->firstOrFail());
-            $referido_esposo->parentesco = $esposo['parentesco'];
-            $referido_esposo->correo = $esposo['correo'];
-
-            $referido_esposo->save();
-            $referido_esposo->egresados()->attach($idEgresado);
-
-            //Informcion Madre
-            $referido_madre = new Referido();
-            $referido_madre->nombres = $madre['nombres'];
-            $referido_madre->es_egresado = $madre['es_egresado'];
-            $referido_madre->telefono_movil = $madre['telefono_movil'];
-            $referido_madre->parentesco = $madre['parentesco'];
-            $referido_madre->correo = $madre['correo'];
-            $referido_madre->programa()->associate(Programa::where('id_aut_programa', $madre['id_aut_programa'])->firstOrFail());
-            $referido_madre->save();
-            $referido_madre->egresados()->attach($idEgresado);
-
-            //Informcion Padre
-            $referido_padre = new Referido();
-            $referido_padre->nombres = $padre['nombres'];
-            $referido_padre->es_egresado = $padre['es_egresado'];
-            $referido_padre->telefono_movil = $padre['telefono_movil'];
-            $referido_padre->parentesco = $padre['parentesco'];
-            $referido_padre->correo = $padre['correo'];
-            $referido_padre->programa()->associate(Programa::where('id_aut_programa', $padre['id_aut_programa'])->firstOrFail());
-            $referido_padre->save();
-            $referido_padre->egresados()->attach($idEgresado);
+    //Metodo que permite almacenar una lista de Referidos de un egresado
+    private function guardarinformacionReferido(array $referidos, $idEgresado){
+        return DB::transaction(function () use($referidos, $idEgresado){
+            foreach($referidos as $ref) {
+                $referido = new Referido();
+                $referido->nombres = $ref['nombres'];
+                $referido->parentesco = $ref['parentesco'];
+                $referido->es_egresado = $ref['es_egresado'];
+                $referido->niveles_estudio()->associate(NivelEstudio::where('id_aut_estudio',$ref['id_nivel_educativo'])->firstOrFail());
+                $referido->programa()->associate(Programa::where('id_aut_programa', $ref['id_aut_programa'])->firstOrFail());
+                $referido->telefono_movil = $ref['telefono_movil'];
+                $referido->correo = $ref['correo'];
+            
+                $referido->save();
+                $referido->egresados()->attach($idEgresado);
+            }
         });
     }
 
-    public function guardarInfoExperiencia(array $experiencia_pasada, array $experiencia_actual)
-    {
-        return DB::transaction(function () use ($experiencia_pasada, $experiencia_actual) {
 
-
+    //Metodo que permite almacenar una lista de experiencias de un egresado
+    public function guardarInfoExperiencia(array $experiencias, $idEgresado){
+        return DB::transaction(function () use($experiencias,$idEgresado){
+           
             //Informacion experiencias pasada
-            $exp_pasada = new Experiencia();
-            $exp_pasada->nombre_empresa = $experiencia_pasada['nombre_empresa'];
-            $exp_pasada->trabajo_en_su_area = $experiencia_pasada['trabajo_en_su_area'];
-
-            $cargo = new Cargo();
-            $cargo->nombre = $experiencia_pasada['cargo_nombre'];
-            $cargo->estado = false;
-
-            $categoria = CategoriaCargo::create([
-                'nombre' => 'fffffff'
-            ]);
-
-            $cargo->categoria()->associate($categoria);
-            $cargo->save();
-
-            $exp_pasada->cargos()->associate($cargo);
-            $exp_pasada->save();
-
-
-
-
-            //Informacion experiencias actual
-            $exp_actul = new Experiencia();
-            $exp_actul->nombre_empresa = $experiencia_actual['nombre_empresa'];
-            $exp_actul->dir_empresa = $experiencia_actual['dir_empresa'];
-            $exp_actul->trabajo_en_su_area = $experiencia_actual['trabajo_en_su_area'];
-            $exp_actul->ciudad()->associate(Ciudad::where('id_aut_ciudad', $experiencia_actual['id_ciudad'])->firstOrFail());
-            $exp_actul->tel_trabajo = $experiencia_actual['tel_trabajo'];
-            $exp_actul->rango_salario = $experiencia_actual['rango_salario'];
-            $exp_actul->tipo_contrato = $experiencia_actual['tipo_contrato'];
-            $exp_actul->sector = $experiencia_actual['sector'];
-
-            $cargo = new Cargo();
-            $cargo->nombre = $experiencia_actual['cargo_nombre'];
-            $cargo->estado = true;
-
-            $categoria = CategoriaCargo::create([
-                'nombre' => 'ffffffwf'
-            ]);
-
-            $cargo->categoria()->associate($categoria);
-            $cargo->save();
-
-            $exp_actul->cargos()->associate($cargo);
-            $exp_actul->save();
+            foreach($experiencias as $exp) {
+                 //Informacion experiencias actual
+                $experiencia = new Experiencia();
+                $experiencia->tipo_trabajo = $exp['tipo_trabajo'];
+                $experiencia->nombre_empresa = $exp['nombre_empresa'];
+                $experiencia->ciudad()->associate(Ciudad::where('id_aut_ciudad',$exp['id_ciudad'])->firstOrFail());
+                $experiencia->dir_empresa = $exp['dir_empresa'];
+                $experiencia->tel_trabajo=$exp['tel_trabajo'];
+                $experiencia->cargos()->associate(Cargo::where('id_aut_cargos',$exp['id_cargo'])->firstOrFail());
+                $experiencia->rango_salario=$exp['rango_salario'];
+                $experiencia->fecha_inicio=$exp['fecha_inicio'];
+                $experiencia->fecha_fin=$exp['fecha_fin'];
+                $experiencia->tipo_contrato=$exp['tipo_contrato'];
+                $experiencia->sector=$exp['sector'];
+                $experiencia->trabajo_en_su_area=$exp['trabajo_en_su_area'];
+                
+                $experiencia->save();
+            }
         });
     }
+    //Carga los atributos de un egresado especifico para actualizar
+    
+    public function edit($idEgresado){
+        
 
-    public function fullInfo($idEgresado, Request $request)
+        $expedicion = DB::table('egresados')
+            ->join('ciudades', 'egresados.id_lugar_expedicion', '=', 'ciudades.id_aut_ciudad')
+            ->join('departamentos', 'departamentos.id_aut_departamento', '=', 'ciudades.id_departamento')
+            ->join('pais', 'pais.id_aut_pais', '=', 'departamentos.id_aut_dep')
+            ->select('paises.nombre', 'departamentos.nombre', 'ciudades.nombre')
+            ->get();
+        
+        $residencia = DB::table('egresados')
+            ->join('localizacion', 'egresado.id_lugar_residencia', '=', 'localizacion.id_aut_localizacion')
+            ->join('ciudades', 'localizacion.id_ciudad', '=', 'ciudades.id_aut_ciudad')
+            ->join('departamentos', 'departamentos.id_aut_departamento', '=', 'ciudades.id_departamento')
+            ->join('pais', 'pais.id_aut_pais', '=', 'departamentos.id_aut_dep')
+            ->select('localizacion.barrio','localizacion.direccion','localizacion.codigo_postal','paises.nombre', 'departamentos.nombre', 'ciudades.nombre')
+            ->get();        
+        
+        $nivelEstudio=DB::table('egresados')
+            ->join('niveles_estudio', 'egresados.id_nivel_educativo', '=', 'niveles_estudio.id_aut_estudio')
+            ->select('niveles_estudio.nombre')
+            ->get();
+
+        $nacimiento = DB::table('egresados')
+            ->join('ciudades', 'egresados.id_lugar_expedicion', '=', 'ciudades.id_aut_ciudad')
+            ->join('departamentos', 'departamentos.id_aut_departamento', '=', 'ciudades.id_departamento')
+            ->join('pais', 'pais.id_aut_pais', '=', 'departamentos.id_aut_dep')
+            ->select('paises.nombre', 'departamentos.nombre', 'ciudades.nombre')
+            ->get();
+
+        return response()->json();
+    }
+
+    public function update(Request $request,$idEgresado){
+        $egresado=Egresado::find($idEgresado);
+        
+        //Obteniendo discapacidades del formulario
+        $discapacidades=$request->get('discapacidades');
+            
+        $nuevaDiscapacidad=new Discapacidad();
+        $nuevaDiscapacidad=$request->get('otra_discapacidad');
+
+        $egresado->estado_civil=$request->get('estado_civil');
+        $egresado->celular=$request->get('celular');
+        
+        // get lugar_residencia data
+        $localizacion = new Localizacion();
+        $localizacion->codigo_postal = $request->get('codigo_postal');
+        $localizacion->direccion = $request->get('direccion');
+        $localizacion->barrio=$request->get('barrio');
+        $localizacion->ciudad()->associate(Ciudad::where('id_aut_ciudad', $request->get('id_lugar_residencia'))->first());
+
+        //get nivel de estudio
+        $egresado->niveles_estudio()->associate(NivelEstudio::where('id_aut_estudio',$idEgresado)->firstOrFail());
+        $egresado->correo=$request->get('correo');
+        $egresado->correo_alternativo=$request->get('correo_alternativo');
+        $egresado->telefono_fijo=$request->get('telefono_fijo');
+        $egresado->num_hijos=$request->get('num_hijos');
+        
+        //Obtener lista de referidos para modificación
+        $referidosUpdate=$request->get('referidos');     
+        
+        //Obtener lista de experiencias laboral para modificación
+
+        $experienciasUpdate=$request->get('experiencias');
+        _updateInformation($egresado,$discapacidades,$nuevaDiscapacidad,$localizacion,$referidosUpdate,$experienciasUpdate);
+    }
+
+    //Permite asocias las incapacidades seleccionadas al egresado
+    private function _updateInformation(Egresado $egresado,array $discapacidades,$nuevaDiscapacidad,$localizacion,$referidosUpdate,$experienciasUpdate){
+        return DB::transaction(function() use($egresado,$discapacidades,$nuevaDiscapacidad,$localizacion,$referidosUpdate,$experienciasUpdate){
+
+            //Asociando listado de discapacidades de egresado
+            foreach($discapacidades as $discapacidad){
+                $egresado->discapacidad()->attach($discapacida['id_discapacidad']);
+            }
+
+            //Agregando nuevas discapacidades de egresado
+            $nuevaDiscapacidad->save();
+            $nuevaDiscapacidad->egresado()->attach($egresado->get('id_aut_egresado'));
+            
+            //Guardar nueva localización de egresado
+            $localizacion->save();
+            $egresado->lugarResidencia()->associate($localizacion);
+
+            //Desvincular listado de referidos anteriores del egresado.
+            $referidosAnteriores=Referido::first();
+            $referidosAnteriores->egresados();
+            foreach($referidosAnteriores as $ref){
+                $ref->egresado()->deattach($egresado('id_aut_egresado'));
+            }
+            
+            
+            //Asociando listado  de referidos
+            foreach($referidosUpdate as $ref){
+                $referido = new Referido();
+                $referido->nombres = $ref['nombres'];
+                $referido->parentesco = $ref['parentesco'];
+                $referido->es_egresado = $ref['es_egresado'];
+                $referido->niveles_estudio()->associate(NivelEstudio::where('id_aut_estudio',$ref['id_nivel_educativo'])->firstOrFail());
+                $referido->programa()->associate(Programa::where('id_aut_programa', $ref['id_aut_programa'])->firstOrFail());
+                $referido->telefono_movil = $ref['telefono_movil'];
+                $referido->correo = $ref['correo'];
+            
+                $referido->save();
+                $egresado->referido()->attach($referido);
+            }
+
+            //Asociando nuevas experiencias para un egresado
+            $this->guardarInfoExperiencia($experiencias,$idEgresado);
+        });        
+    }
+
+    //Recupera numero de hijos y estado civil de un egresado
+    public function getStateAndChildren($idEgresado){
+        $egresado=DB::table('egresados')->where('id_aut_egresdo',$idEgresado)->value('num_hijos','num_hijos');
+        return $egresado;
+    }
+    
+    //Recupera niveles de estudio
+
+    public function getAllLevelStudy()
     {
-        // Código de error por defecto
-        $code = 400;
-        $data = null;
+        $levels=BD::table('niveles_estudio')->get();
+        return response()->json($levels, 205);
+    }
 
+    public function fullInfo(Request $request, $idEgresado){
+        
         //Actualizacion numero de hijos
-        $this->validate($request, ['num_hijos' => 'required']);
         $egresado = Egresado::find($idEgresado);
-        $egresado->num_hijos = $request->get('num_hijos');
-        $egresado->ha_trabajado = $request->get('ha_trabajado');
-        $egresado->trabaja_actualmente = $request->get('trabaja_actualmente');
+        $egresado->num_hijos=$request->get('num_hijos');
+        $egresado->ha_trabajado=$request->get('ha_trabajado');
+
+        $egresado->trabaja_actualmente=$request->get('trabaja_actualmente');
         $egresado->save();
 
+        
 
+        
+        // Obteniendo informacion de los referidos de un egresado
+        $referidos = $request->get('referidos');
+        $this->guardarinformacionReferido($referidos,$idEgresado);
 
-
-
-        // Obteniendo informacion de los referidos
-        //Referido Madre 
-        $padre = $request->get('padre');
-        $madre = $request->get('madre');
-        $esposo = $request->get('esposo');
-
-        $this->guardarinformacionReferido($padre, $madre, $esposo, $idEgresado);
-
-        $experiencia_pasada = $request->get('exp_pasada');
-        $experiencia_actual = $request->get('exp_actual');
-
-        $this->guardarInfoExperiencia($experiencia_pasada, $experiencia_actual);
+        // Obteniendo informacion de las experiencias de un egresado
+        $experiencias = $request->get('experiencias');
+        $this->guardarInfoExperiencia($experiencias,$idEgresado);
 
         return response()->json($egresado, 202);
     }

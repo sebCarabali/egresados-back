@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Carbon;
 
 class EmpresaUpdateRequest extends FormRequest
@@ -24,6 +25,8 @@ class EmpresaUpdateRequest extends FormRequest
      */
     public function rules()
     {
+        // throw new HttpResponseException(response()->json($this->all()));
+        
         $empresa = $this->route()->id;
         return [
             'datos-cuenta.email' => 'present|max:255|email|unique:users,email,' . $empresa->administrador->id_aut_user . ',id_aut_user',
@@ -48,8 +51,8 @@ class EmpresaUpdateRequest extends FormRequest
             // 'loc-contact-empresa.sitioWebEmp' => 'url|active_url',
 
             // 'sectores' => 'required',
-            'sectores.*' => 'required|array|min:1',
-            'sectores.*.*' => 'required|distinct|integer|exists:sub_sectores,id_aut_sub_sector',
+            'sectores.subsectores' => 'required|array|min:1',
+            'sectores.subsectores.*' => 'required|distinct|integer|exists:sub_sectores,id_aut_sub_sector',
             // //datos representante
             'datos-resp.nombrereplegal'  => 'required|string',
             'datos-resp.apellidoreplegal'  => 'required|string',
@@ -63,7 +66,7 @@ class EmpresaUpdateRequest extends FormRequest
             'datos-resp.cargo'  => 'required|string',
             'datos-resp.telefonoResp'  => 'nullable|numeric|digits_between:1,16',
             'datos-resp.telefonoMovilResp'  => 'required|numeric|digits_between:1,16',
-            'datos-resp.horarioContactoResp'  => 'required|string',
+            'datos-resp.horarioContactoResp'  => 'nullable|string',
             'datos-resp.direccionTrabajoResp' => 'required|string',
             'datos-resp.emailCorpResp'  => 'required|email|unique:administrador_empresa,correo_corporativo,' . $empresa->id_aut_empresa . ',id_empresa',
         

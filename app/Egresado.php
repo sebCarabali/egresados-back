@@ -41,6 +41,10 @@ class Egresado extends Model
       return $this->belongsToMany('App\Programa', 'grados', 'id_estudiante', 'id_programa');
     }
 
+  public function discapacidades() {
+    return $this->belongsToMany('App\Discapacidad', 'egresados_discapacidades', 'id_egresado', 'id_discapacidad');
+  }
+
   public function referidos()
   {
     return $this->belognsToMany('App\Referido', 'referidos_egresados', 'id_egresados', 'id_referidos');

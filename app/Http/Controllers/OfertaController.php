@@ -75,6 +75,10 @@ class OfertaController extends Controller
             $code = 200;
             break;
           case 'Rechazada':
+            $oferta->update(['estado' => $request['estado']]);
+            $data = $oferta;
+            $code = 200;
+            break;
           case 'Pendiente':
             $oferta->update(['estado' => $request['estado']]);
             $data = $oferta;

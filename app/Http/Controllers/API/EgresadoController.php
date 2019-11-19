@@ -205,7 +205,7 @@ class EgresadoController extends Controller
                 //'docente_influencia' => array_key_exists('docente_influencia', $grado) ? $grado['docente_influencia'] : '',
                 'anio_graduacion' => $grado['anio_graduacion']
             ]);
-            foreach($discapacidad as $d) {
+            foreach ($discapacidad as $d) {
                 $egresado->discapacidades()->attach($d);
             }
             $this->_enviarMensajeActivacion($usuario);
@@ -473,12 +473,12 @@ class EgresadoController extends Controller
         ];
         $validator = Validator::make($input, $rules, $messages);
 
-        if ($validator->fails()) {
+        /* if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
-        }
+        }*/
         $egresadosEnExcel = $this->getCollection($file);
         $aceptados = $this->_procesarExcel($egresadosEnExcel);
-        return response()->json($aceptados, 200);
+        return response()->json($aceptados, 200, [], JSON_UNESCAPED_UNICODE);
     }
 
     private function _procesarExcel($egresados)
@@ -489,13 +489,16 @@ class EgresadoController extends Controller
         foreach ($egresados as $e) {
             if (!$fisrtRow) {
                 // Si el egresado ya ha realizado el pre-registro, cambiar estado de EN_ESPERA a ACTIVO LOGUEADO.
-                $egresadoYaRegistrado = Egresado::where('identificacion', $e['identificacion'])
-                    ->where('estado', 'EN_ESPERA')->first();
-                if ($egresadoYaRegistrado) {
-                    // cambiar estado.
-                    $egresadoYaRegistrado->estado = 'ACTIVO_LOGUEADO';
-                    $egresadoYaRegistrado->save();
-                    array_push($resultado, $e);
+                if (!empty($e['identificacion'])) {
+                    $egresadoYaRegistrado = Egresado::where('identificacion', $e['identificacion'])
+                        ->where('estado', '=', 'EN_ESPERA')->first();
+                    if ($egresadoYaRegistrado) {
+                        // cambiar estado.
+                        $egresadoYaRegistrado->estado = 'ACTIVO_LOGUEADO';
+                        $egresadoYaRegistrado->save();
+                        //$e['fecha_grado'] = date_format($e['fecha_grado'], 'm/d/Y');
+                        array_push($resultado, $e);
+                    }
                 }
             }
             $fisrtRow = false;

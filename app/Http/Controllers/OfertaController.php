@@ -29,11 +29,15 @@ class OfertaController extends Controller
     $ofertas->load('empresa');
     $ofertas->load('areasConocimiento');
     $ofertas->load('salario');
+    $ofertas->load('ubicaciones');
 
     // Se borra el atributo pivot, el cual no es necesario
     foreach ($ofertas as $oferta) {
       foreach ($oferta->areasConocimiento as $areacon) {
         unset($areacon['pivot']);
+      }
+      foreach ($oferta->ubicaciones as $ubicacion) {
+        unset($ubicacion['pivot']);
       }
     }
 
@@ -42,7 +46,7 @@ class OfertaController extends Controller
 
   public function getOfertasEmpresa(Request $request, $id)
   {
-    $ofertas = Oferta::where('id_empresa', $id)->get();
+    $ofertas = Oferta::orderBy('fecha_publicacion', 'ASC')->where('id_empresa', $id)->get();
 
     foreach ($ofertas as $oferta) {
       $nombre = $oferta->cargo->nombre;

@@ -109,6 +109,11 @@ Route::get('validarUsuario/{email}', 'ValidadorController@validateEmail');
  * @param nit
  */
 Route::get('validarNIT/{nit}', 'ValidadorController@validateNit');
+/**
+ * Valida si en nombre de la empresa ya esta registrado
+ * @param nit
+ */
+Route::get('validarNombreEmpresa/{nombre}', 'ValidadorController@validateNombreEmpresa');
 
 
 

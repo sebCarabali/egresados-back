@@ -16,22 +16,31 @@ class ValidadorController extends Controller
         if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $user = User::whereEmail($email)->first();
             if ($user) {
-                return response()->json("El correo electrónico ya existe", 200);
+                return $this->fail("El correo electrónico ya existe", 422);
             }
-            return response()->json("Correcto", 200);
+            return $this->success("Correcto");
         } else {
-            return response()->json("No es un correo electrónico!", 200);
+            return $this->fail("No es un correo electrónico!", 422);
         }
     }
 
     public function validateNit($nit)
     {
         // dd($request);
-        $user = Empresa::whereNit($nit)->first();
-        if ($user) {
-            return response()->json("El correo NIT existe", 200);
+        $empresa = Empresa::whereNit($nit)->first();
+        if ($empresa) {
+            return $this->fail("El NIT ya existe!", 422);
         }
-        return response()->json("Correcto", 200);
+        return $this->success("Correcto");
+    }
+    public function validateNombreEmpresa($nombre)
+    {
+        // dd($request);
+        $empresa = Empresa::whereNombre($nombre)->first();
+        if ($empresa) {
+            return $this->fail("El nombre ya existe!", 422);
+        }
+        return $this->success("Correcto");
     }
     
 }

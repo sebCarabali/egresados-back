@@ -105,6 +105,11 @@ Route::get('ciudades/{dep}', 'DepartamentoController@getAllCitiesDepartment');
  */
 Route::get('validarUsuario/{email}', 'ValidadorController@validateEmail');
 /**
+ * Valida si el correo ya esta registrado
+ * @param email
+ */
+Route::get('validarEmailAdmin/{email}', 'ValidadorController@validateEmailAdmin');
+/**
  * Valida si en NIT ya esta registrado
  * @param nit
  */

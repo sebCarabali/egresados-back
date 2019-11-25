@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\AdministradorEmpresa;
 use App\Empresa;
 use App\User;
 use Illuminate\Http\Request;
@@ -41,6 +42,21 @@ class ValidadorController extends Controller
             return $this->fail("El nombre ya existe!", 422);
         }
         return $this->success("Correcto");
+    }
+
+    public function validateEmailAdmin($email)
+    {
+        // dd($request);
+
+        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $user = AdministradorEmpresa::whereEmail($email)->first();
+            if ($user) {
+                return $this->fail("El correo electrónico ya existe", 422);
+            }
+            return $this->success("Correcto");
+        } else {
+            return $this->fail("No es un correo electrónico!", 422);
+        }
     }
     
 }

@@ -116,11 +116,6 @@ Route::get('validarNIT/{nit}', 'ValidadorController@validateNit');
 Route::get('validarNombreEmpresa/{nombre}', 'ValidadorController@validateNombreEmpresa');
 
 
-
-/**
- * Ruta para el login
- */
-Route::post('/login', 'UserController@login');
 /**
  * Obtiene las empresas que están en estado de espera
  */
@@ -142,6 +137,10 @@ Route::put('/empresa/{id}', 'EmpresaController@update')->where(['id' => '[0-9]+'
  * Obtiene todas las ofertas de una empresa
  */
 Route::get('/ofertas/empresa/{id}', 'OfertaController@getOfertasEmpresa');
+/**
+ * Obtiene todas las ofertas, vistas desde administrador
+ */
+Route::get('/ofertas', 'OfertaController@getAllOfertas');
 /**
  * Obtiene todas las ofertas que están en espera, vista desde administrador
  */

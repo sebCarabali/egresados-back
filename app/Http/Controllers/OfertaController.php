@@ -37,6 +37,36 @@ class OfertaController extends Controller
         unset($areacon['pivot']);
       }
       foreach ($oferta->ubicaciones as $ubicacion) {
+        $nombre = $ubicacion->departamento->nombre;
+        unset($ubicacion->departamento);
+        unset($ubicacion->id_departamento);
+        $ubicacion['departamento'] = $nombre;
+        unset($ubicacion['pivot']);
+      }
+    }
+
+    return response()->json($ofertas, 200);
+  }
+
+  public function getAllOfertas()
+  {
+    $ofertas = Oferta::all();
+
+    $ofertas->load('empresa');
+    $ofertas->load('areasConocimiento');
+    $ofertas->load('salario');
+    $ofertas->load('ubicaciones');
+
+    // Se borra el atributo pivot, el cual no es necesario
+    foreach ($ofertas as $oferta) {
+      foreach ($oferta->areasConocimiento as $areacon) {
+        unset($areacon['pivot']);
+      }
+      foreach ($oferta->ubicaciones as $ubicacion) {
+        $nombre = $ubicacion->departamento->nombre;
+        unset($ubicacion->departamento);
+        unset($ubicacion->id_departamento);
+        $ubicacion['departamento'] = $nombre;
         unset($ubicacion['pivot']);
       }
     }

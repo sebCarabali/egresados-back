@@ -17,11 +17,11 @@ class ValidadorController extends Controller
         if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $user = User::whereEmail($email)->first();
             if ($user) {
-                return $this->fail("El correo electrónico ya existe", 422);
+                return $this->fail("El correo electrónico ya existe", 200);
             }
             return $this->success("Correcto");
         } else {
-            return $this->fail("No es un correo electrónico!", 422);
+            return $this->fail("No es un correo electrónico!", 200);
         }
     }
 
@@ -30,7 +30,7 @@ class ValidadorController extends Controller
         // dd($request);
         $empresa = Empresa::whereNit($nit)->first();
         if ($empresa) {
-            return $this->fail("El NIT ya existe!", 422);
+            return $this->fail("El NIT ya existe!", 200);
         }
         return $this->success("Correcto");
     }
@@ -39,7 +39,7 @@ class ValidadorController extends Controller
         // dd($request);
         $empresa = Empresa::whereNombre($nombre)->first();
         if ($empresa) {
-            return $this->fail("El nombre ya existe!", 422);
+            return $this->fail("El nombre ya existe!", 200);
         }
         return $this->success("Correcto");
     }
@@ -51,11 +51,11 @@ class ValidadorController extends Controller
         if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $user = AdministradorEmpresa::whereCorreoCorporativo($email)->first();
             if ($user) {
-                return $this->fail("El correo electrónico ya existe", 422);
+                return $this->fail("El correo electrónico ya existe", 200);
             }
             return $this->success("Correcto");
         } else {
-            return $this->fail("No es un correo electrónico!", 422);
+            return $this->fail("No es un correo electrónico!", 200);
         }
     }
     

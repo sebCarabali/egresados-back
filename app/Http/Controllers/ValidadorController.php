@@ -49,7 +49,7 @@ class ValidadorController extends Controller
         // dd($request);
 
         if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $user = AdministradorEmpresa::whereEmail($email)->first();
+            $user = AdministradorEmpresa::whereCorreoCorporativo($email)->first();
             if ($user) {
                 return $this->fail("El correo electrónico ya existe", 422);
             }

@@ -8,12 +8,12 @@ class Departamento extends Model
 {
     protected $table = 'departamentos';
     protected $primaryKey = 'id_aut_dep';
-    protected $guarded = ['id'];
+    protected $guarded = ['id_aut_dep'];
     public $timestamps = false;
 
     public function ciudades()
     {
-      return $this->hasMany('App\Ciudad', 'id_departamento', 'id');
+      return $this->hasMany('App\Ciudad', 'id_departamento', 'id_aut_dep');
     }
 
     public function pais()

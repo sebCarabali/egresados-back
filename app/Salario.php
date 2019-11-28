@@ -10,7 +10,7 @@ class Salario extends Model
     protected $primaryKey = 'id_aut_salario';
     public $timestamps = false;
 
-    
+
     protected $fillable = [
         "minimo", "maximo", "forma_pago"
     ];
@@ -39,21 +39,26 @@ class Salario extends Model
 
     public function getMinimoAttribute($value)
     {
+
         if($this->forma_pago == "US Dolar"){
-            
-            return $value. ' US$';
+            setlocale(LC_MONETARY, 'en_US');
+            return money_format('%i', $value).'\n';
         }else if($this->forma_pago == "Moneda local"){
-            return '$'.$value;
+            setlocale(LC_MONETARY, 'es_CO');
+            // return '$'.$value;
+            return money_format('%i', $value).'\n';
         }
     }
     public function getMaximoAttribute($value)
     {
         if($this->forma_pago == "US Dolar"){
-            
-            return $value. ' US$';
+            setlocale(LC_MONETARY, 'en_US');
+            return money_format('%i', $value).'\n';
+            //return $value. ' US$';
         }else if($this->forma_pago == "Moneda local"){
-            return '$'.$value
-            ;
+          setlocale(LC_MONETARY, 'es_CO');
+          // return '$'.$value;
+          return money_format('%n', $value).'\n';
         }
     }
 }

@@ -29,6 +29,10 @@ Route::put('completeEgresados/{idEgresado}', 'API\EgresadoController@fullInfo');
  */
 Route::get('ciudades/{idDepartamento}', 'CiudadController@getByDepartamento');
 /**
+ * Obtiene todas la ciudades de un pais.
+ */
+Route::get('ciudadesPais/{idPais}', 'CiudadController@getAllCitiesWithDeparments');
+/**
  * Obtiene todos los departamentos de un país.
  */
 Route::get('departamentos/{idPais}', 'DepartamentoController@getByPais');

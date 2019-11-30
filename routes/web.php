@@ -11,6 +11,13 @@
 |
 */
 
+/*
+  Authorization Middlewares:
+  0: Administrador
+  1: Empresa
+  2: Egresado
+*/
 Route::get('/', function () {
+    // dd(\App\Departamento::all());
     return view('welcome');
 });

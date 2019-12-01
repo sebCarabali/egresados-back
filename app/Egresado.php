@@ -64,6 +64,13 @@ class Egresado extends Model
     return $this->belongsToMany(Oferta::class, 'postulaciones', 'id_aut_egresado', 'id_aut_oferta')
       ->withPivot(['fecha_postulacion', 'fecha_revision_empresa', 'estado']);
   }
+
+
+  public function carnetizaciones()
+  {
+    return $this->belongsToMany('App\Carnetizacion', 'solicita', 'id_egresados', 'id_carnetizacion');
+  }
+
 }
 
   

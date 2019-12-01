@@ -30,7 +30,11 @@ Route::put('completeEgresados/{idEgresado}', 'API\EgresadoController@fullInfo');
 /*
 *Validación de carnetización de egresado
 */
-Route::get('carnetizacion/{idEgresado}','API\EgresadoControllo@validarCarnetizacion');
+Route::get('carnetizacion/{correo}','CarnetizacionController@validarCarnetizacion');
+/*
+*Obteniendo solicitudes de carnet pendientes
+*/
+Route::get('carnetizacion','CarnetizacionController@getAll');
 /**
  * Obtiene todas la ciudades de un departamento.
  */

@@ -10,7 +10,7 @@ class Egresado extends Model
     //protected $guraded = ['id'];
     protected $primaryKey = 'id_aut_egresado';
     //protected $fillable = ['nombres'];
-
+    protected $guarded = ['id_aut_egresado'];
 
     public $timestamps = false;
 

@@ -47,7 +47,7 @@ class Egresado extends Model
 
   public function referidos()
   {
-    return $this->belognsToMany('App\Referido', 'referidos_egresados', 'id_egresados', 'id_referidos');
+    return $this->belongsToMany('App\Referido', 'referidos_egresados', 'id_egresados', 'id_referidos');
   }
 
     public function experiencia() {

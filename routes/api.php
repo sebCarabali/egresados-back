@@ -23,8 +23,14 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
  * Guarda la información básica de un egresado.
  */
 Route::post('egresados', 'API\EgresadoController@guardarInformacionBasica');
-
+/*
+* Completa la información de un egresado,(Experieincias laboral, Referidos,trabajo Actual)
+*/
 Route::put('completeEgresados/{idEgresado}', 'API\EgresadoController@fullInfo');
+/*
+*Validación de carnetización de egresado
+*/
+Route::get('carnetizacion/{idEgresado}','API\EgresadoControllo@validarCarnetizacion');
 /**
  * Obtiene todas la ciudades de un departamento.
  */

@@ -1,5 +1,6 @@
 <?php
 
+use App\NivelEstudio;
 use App\NivelPrograma;
 use Illuminate\Http\Request;
 
@@ -56,10 +57,10 @@ Route::get('programas/{idFacultad}', 'API\ProgramaController@getByFacultad');
  * Verifica el excel de egresados dato por secretaria.
  */
 //Route::group(['middleware' => 'cors'], function () {
-Route::post('egresados/verificar', 'API\EgresadoController@validateExcel');
+Route::post('egresados/verificar', 'API\VerificarEgresadoController@verificar');
 //});
 Route::get('nivelesPrograma', function(){
-    return response()->json(NivelPrograma::all(), 200);
+    return response()->json(NivelEstudio::where('pertenece_u', 1)->get(), 200);
 });
 
 Route::post('users/validar/{codigo}', 'UserController@activarCuenta');

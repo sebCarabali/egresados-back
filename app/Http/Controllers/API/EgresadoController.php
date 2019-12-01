@@ -104,14 +104,14 @@ class EgresadoController extends Controller
         $egresado->fecha_nacimiento = date('m/d/Y', strtotime($request->get('fecha_nacimiento')));
         $egresado->lugarExpedicion()->associate(Ciudad::where('id_aut_ciudad', $request->get('id_lugar_expedicion'))->first());
         $egresado->ciudadNacimiento()->associate(Ciudad::where('id_aut_ciudad', $request->get('id_lugar_nacimiento'))->first());
-        $egresado->nivelEducativo()->associate(NivelEstudio::find($request->get('id_nivel_educativo'))->first());
+        //$egresado->nivelEducativo()->associate(NivelEstudio::find($request->get('id_nivel_educativo'))->first());
         //$egresado->discapacidad = $request->get('discapacidad');
         $egresado->telefono_fijo = $request->get('telefono_fijo');
         $egresado->celular = $request->get('celular');
         $egresado->estado_civil = $request->get('estado_civil');
         $egresado->genero = $request->get('genero');
         //TODO: Cambio de estados
-        $egresado->estado = 'ACTIVO_LOGUEADO';
+        $egresado->estado = 'ACTIVO';
         // get lugar_residencia data
         $localizacion = new Localizacion();
         $localizacion->codigo_postal = $request->get('codigo_postal');
@@ -135,7 +135,7 @@ class EgresadoController extends Controller
             'email' => $egresado->correo,
             'codigo_verificacion' => $this->_generarCodigoConfirmacion()
         ]);
-        $user->rol()->associate(Rol::where('nombre', 'User')->first());
+        $user->rol()->associate(Rol::where(DB::raw('upper(nombre)'), 'EGRESADO')->first());
         $user->save();
         return $user;
     }

@@ -522,13 +522,7 @@ class EgresadoController extends Controller
         return response()->json($aceptados, 200, [], JSON_UNESCAPED_UNICODE);
     }
 
-    public function validarCarnetizacion($idEgresado){
-        $egresado = Egresado::find($idEgresado);
-        if($egresado->ha_trabajdo!=null){
-
-        }
-
-    }
+    
 
     private function _procesarExcel($egresados)
     {

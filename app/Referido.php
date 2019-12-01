@@ -8,7 +8,7 @@ class Referido extends Model
 {
     protected $table = 'referidos';
     protected $primaryKey = 'id_aut_referido';
-    protected $fillable = ['nombres','apellidos','telefono_movil','correo','parentesco','es_egresado'];
+    protected $fillable = ['nombres','telefono_movil','correo','parentesco','es_egresado'];
     public $timestamps = false;
 
     public function egresados() {

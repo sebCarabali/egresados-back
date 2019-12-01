@@ -1,5 +1,6 @@
 <?php
 
+use App\NivelEstudio;
 use App\NivelPrograma;
 use Illuminate\Http\Request;
 
@@ -22,8 +23,14 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
  * Guarda la información básica de un egresado.
  */
 Route::post('egresados', 'API\EgresadoController@guardarInformacionBasica');
-
+/*
+* Completa la información de un egresado,(Experieincias laboral, Referidos,trabajo Actual)
+*/
 Route::put('completeEgresados/{idEgresado}', 'API\EgresadoController@fullInfo');
+/*
+*Validación de carnetización de egresado
+*/
+Route::get('carnetizacion/{idEgresado}','API\EgresadoControllo@validarCarnetizacion');
 /**
  * Obtiene todas la ciudades de un departamento.
  */
@@ -56,10 +63,10 @@ Route::get('programas/{idFacultad}', 'API\ProgramaController@getByFacultad');
  * Verifica el excel de egresados dato por secretaria.
  */
 //Route::group(['middleware' => 'cors'], function () {
-Route::post('egresados/verificar', 'API\EgresadoController@validateExcel');
+Route::post('egresados/verificar', 'API\VerificarEgresadoController@verificar');
 //});
 Route::get('nivelesPrograma', function(){
-    return response()->json(NivelPrograma::all(), 200);
+    return response()->json(NivelEstudio::where('pertenece_u', 1)->get(), 200);
 });
 
 Route::post('users/validar/{codigo}', 'UserController@activarCuenta');

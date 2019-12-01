@@ -12,6 +12,7 @@ class EgresadosImport implements ToCollection
 
     public $egresados;
     public $len;
+    private $primeraLinea = true;
 
     public function __construct()
     {
@@ -25,16 +26,23 @@ class EgresadosImport implements ToCollection
     public function collection(Collection $rows)
     {
         foreach($rows as $row) {
-            $egresado = [
-                'nombres' => $row[6],
-                'apellidos' => $row[7],
-                'identificacion' => $this->_obtenerIdentificacion($row[8]),
-                'titulo' => $row[5],
-                'fecha_grado' => $this->_obtenerFechaGrado($row[2])
-                // TODO: Obtener demas datos del excel.
-            ];
-            array_push($this->egresados, $egresado);
-            $this->len += 1;
+            if(!$this->primeraLinea) {
+                $fechaGrado = $this->_obtenerFechaGrado($row[2]);
+                $egresado = [
+                    'consecutivo' => $row[0],
+                    'actaYFecha' => $row[1],
+                    'fechaGrado' => $fechaGrado,
+                    'nombres' => mb_strtoupper($row[3]),
+                    'apellidos' => mb_strtoupper($row[4]),
+                    'cedula' => $this->_obtenerIdentificacion($row[5]),
+                    'titulo' => mb_strtoupper($row[6]),
+                    'mencion' => mb_strtoupper($row[7]),
+                    'programa' => mb_strtoupper($row[8]),
+                    'anioGrado' => explode('/', $fechaGrado)[2]
+                ];
+                array_push($this->egresados, $egresado);
+            }
+            $this->primeraLinea = false;
         }
     }
 
@@ -66,7 +74,7 @@ class EgresadosImport implements ToCollection
             $datestr = $mes . '/' . $dia . '/' . $anio;
             return date('m/d/Y', strtotime($datestr));
         }
-        return null;
+        throw new Exception('No es posible transformar la fecha de grado: ' . $fecha);
     }
 
     private function _obtenerIdentificacion($identificacion)

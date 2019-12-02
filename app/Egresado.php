@@ -10,7 +10,7 @@ class Egresado extends Model
     //protected $guraded = ['id'];
     protected $primaryKey = 'id_aut_egresado';
     //protected $fillable = ['nombres'];
-
+    protected $guarded = ['id_aut_egresado'];
 
     public $timestamps = false;
 
@@ -47,7 +47,7 @@ class Egresado extends Model
 
   public function referidos()
   {
-    return $this->belognsToMany('App\Referido', 'referidos_egresados', 'id_egresados', 'id_referidos');
+    return $this->belongsToMany('App\Referido', 'referidos_egresados', 'id_egresados', 'id_referidos');
   }
 
     public function experiencia() {
@@ -64,6 +64,13 @@ class Egresado extends Model
     return $this->belongsToMany(Oferta::class, 'postulaciones', 'id_aut_egresado', 'id_aut_oferta')
       ->withPivot(['fecha_postulacion', 'fecha_revision_empresa', 'estado']);
   }
+
+
+  public function carnetizaciones()
+  {
+    return $this->belongsToMany('App\Carnetizacion', 'solicita', 'id_egresados', 'id_carnetizacion');
+  }
+
 }
 
   

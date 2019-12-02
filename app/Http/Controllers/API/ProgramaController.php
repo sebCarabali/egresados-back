@@ -19,7 +19,7 @@ class ProgramaController extends Controller
     }
     public function getByNivelPrograma($idNivelPrograma)
     {
-        return ProgramaResource::collection(Programa::whereIdNivelprogra($idNivelPrograma)->get());
+        return ProgramaResource::collection(Programa::whereIdNivelestudio($idNivelPrograma)->get());
     }
 
     public function getAll()

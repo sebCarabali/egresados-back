@@ -31,10 +31,14 @@ Route::put('completeEgresados/{idEgresado}', 'API\EgresadoController@fullInfo');
 */
 Route::get('carnetizacion/{correo}','CarnetizacionController@validarCarnetizacion');
 /*
-*Obteniendo solicitudes de carnet pendientes
+*Obteniendo todas las solicitudes de carnet pendientes para el Administrador
 */
 Route::get('carnetizacion','CarnetizacionController@getAll');
-/**
+/*
+*Administrador la fecha de respuesta y el estado a "Solicitado" a "respondido" de carnet por egresados
+*/
+Route::get('carnetizacion','CarnetizacionController@updateAdmin');
+/*
  * Obtiene todas la ciudades de un departamento.
  */
 Route::get('ciudades/{idDepartamento}', 'CiudadController@getByDepartamento');

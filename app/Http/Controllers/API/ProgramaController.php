@@ -32,7 +32,7 @@ class ProgramaController extends Controller
             $programas = DB::table('programas')
                 ->where('id_sede', $idSede)
                 ->where('id_facultad', $idFacultad)
-                ->where('id_nivelprogra', $idNivelEstudio)
+                ->where('id_nivelestudio', $idNivelEstudio)
                 ->get();
             return response()->json($programas, 200);
         } catch(Exception $e) {

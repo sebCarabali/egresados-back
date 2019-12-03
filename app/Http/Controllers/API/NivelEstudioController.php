@@ -12,4 +12,9 @@ class NivelEstudioController extends Controller
     {
         return response()->json(NivelEstudio::all(), 200);
     }
+
+    public function getAllU()
+    {
+        return response()->json(NivelEstudio::where('pertenece_u',true)->get(), 200);
+    }
 }

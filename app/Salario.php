@@ -41,24 +41,17 @@ class Salario extends Model
     {
 
         if($this->forma_pago == "US Dolar"){
-            setlocale(LC_MONETARY, 'en_US');
-            return money_format('%i', $value).'\n';
+          return $value. ' US$';
         }else if($this->forma_pago == "Moneda local"){
-            setlocale(LC_MONETARY, 'es_CO');
-            // return '$'.$value;
-            return money_format('%i', $value).'\n';
+            return '$'.$value;
         }
     }
     public function getMaximoAttribute($value)
     {
         if($this->forma_pago == "US Dolar"){
-            setlocale(LC_MONETARY, 'en_US');
-            return money_format('%i', $value).'\n';
-            //return $value. ' US$';
+            return $value. ' US$';
         }else if($this->forma_pago == "Moneda local"){
-          setlocale(LC_MONETARY, 'es_CO');
-          // return '$'.$value;
-          return money_format('%n', $value).'\n';
+          return '$'.$value;
         }
     }
 }

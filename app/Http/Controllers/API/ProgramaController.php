@@ -19,7 +19,7 @@ class ProgramaController extends Controller
     }
     public function getByNivelPrograma($idNivelPrograma)
     {
-        return ProgramaResource::collection(Programa::whereIdNivelprogra($idNivelPrograma)->get());
+        return ProgramaResource::collection(Programa::whereIdNivelestudio($idNivelPrograma)->get());
     }
 
     public function getAll()
@@ -32,7 +32,7 @@ class ProgramaController extends Controller
             $programas = DB::table('programas')
                 ->where('id_sede', $idSede)
                 ->where('id_facultad', $idFacultad)
-                ->where('id_nivelprogra', $idNivelEstudio)
+                ->where('id_nivelestudio', $idNivelEstudio)
                 ->get();
             return response()->json($programas, 200);
         } catch(Exception $e) {

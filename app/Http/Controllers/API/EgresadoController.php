@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
 use App\Http\Requests\GuardarInformacionBasicaRequest;
+//use App\Http\Requests\CompletarInformacionRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -104,14 +105,14 @@ class EgresadoController extends Controller
         $egresado->fecha_nacimiento = date('m/d/Y', strtotime($request->get('fecha_nacimiento')));
         $egresado->lugarExpedicion()->associate(Ciudad::where('id_aut_ciudad', $request->get('id_lugar_expedicion'))->first());
         $egresado->ciudadNacimiento()->associate(Ciudad::where('id_aut_ciudad', $request->get('id_lugar_nacimiento'))->first());
-        $egresado->nivelEducativo()->associate(NivelEstudio::find($request->get('id_nivel_educativo'))->first());
+        //$egresado->nivelEducativo()->associate(NivelEstudio::find($request->get('id_nivel_educativo'))->first());
         //$egresado->discapacidad = $request->get('discapacidad');
         $egresado->telefono_fijo = $request->get('telefono_fijo');
         $egresado->celular = $request->get('celular');
         $egresado->estado_civil = $request->get('estado_civil');
         $egresado->genero = $request->get('genero');
         //TODO: Cambio de estados
-        $egresado->estado = 'ACTIVO_LOGUEADO';
+        $egresado->estado = 'ACTIVO';
         // get lugar_residencia data
         $localizacion = new Localizacion();
         $localizacion->codigo_postal = $request->get('codigo_postal');
@@ -135,7 +136,7 @@ class EgresadoController extends Controller
             'email' => $egresado->correo,
             'codigo_verificacion' => $this->_generarCodigoConfirmacion()
         ]);
-        $user->rol()->associate(Rol::where('nombre', 'User')->first());
+        $user->rol()->associate(Rol::where(DB::raw('upper(nombre)'), 'EGRESADO')->first());
         $user->save();
         return $user;
     }
@@ -214,39 +215,54 @@ class EgresadoController extends Controller
     }
 
     //Metodo que permite almacenar una lista de Referidos de un egresado
-    private function guardarinformacionReferido(array $referidos, $idEgresado){
-        return DB::transaction(function () use($referidos, $idEgresado){
+    private function guardarReferido(array $referidos, $idEgresado){
+        
             foreach($referidos as $ref) {
-                $referido = new Referido();
-                $referido->nombres = $ref['nombres'];
-                $referido->parentesco = $ref['parentesco'];
-                $referido->es_egresado = $ref['es_egresado'];
-                $referido->niveles_estudio()->associate(NivelEstudio::where('id_aut_estudio',$ref['id_nivel_educativo'])->firstOrFail());
-                $referido->programa()->associate(Programa::where('id_aut_programa', $ref['id_aut_programa'])->firstOrFail());
-                $referido->telefono_movil = $ref['telefono_movil'];
-                $referido->correo = $ref['correo'];
-            
+            try{
+                if($ref['es_egresado']){
+                    
+                    $referido = new Referido();
+                    $referido->nombres = $ref['nombres'];
+                    $referido->parentesco = $ref['parentesco'];
+                    $referido->es_egresado = $ref['es_egresado'];                    
+                    $referido->niveles_estudio()->associate(NivelEstudio::where('id_aut_estudio',$ref['id_nivel_educativo'])->firstOrFail());
+                    $referido->programa()->associate(Programa::where('id_aut_programa', $ref['id_aut_programa'])->first());
+                    $referido->telefono_movil = $ref['telefono_movil'];
+                    $referido->correo = $ref['correo'];
+                                
+                }else{
+                    $referido = new Referido();
+                    $referido->nombres = $ref['nombres'];
+                    $referido->parentesco = $ref['parentesco'];
+                    $referido->es_egresado = $ref['es_egresado'];                                
+                    $referido->telefono_movil = $ref['telefono_movil'];
+                    $referido->correo = $ref['correo'];                    
+                }
                 $referido->save();
-                $referido->egresados()->attach($idEgresado);
-            }
-        });
+                
+                $referido->egresados()->attach($idEgresado);                
+                }catch(Exeption $e){
+                    return respose()->json(['error' => 'Error agregando referido'], 400);
+                }
+    
+                
+            }        
     }
 
 
     //Metodo que permite almacenar una lista de experiencias de un egresado
-    public function guardarInfoExperiencia(array $experiencias, $idEgresado){
-        return DB::transaction(function () use($experiencias,$idEgresado){
-           
+    public function guardarInfoExperiencia(array $experiencias, $idEgresado){     
+            
             //Informacion experiencias pasada
+            
             foreach($experiencias as $exp) {
                  //Informacion experiencias actual
                 $experiencia = new Experiencia();
-                $experiencia->tipo_trabajo = $exp['tipo_trabajo'];
                 $experiencia->nombre_empresa = $exp['nombre_empresa'];
-                $experiencia->ciudad()->associate(Ciudad::where('id_aut_ciudad',$exp['id_ciudad'])->firstOrFail());
+                $experiencia->ciudad()->associate(Ciudad::where('id_aut_ciudad',$exp['id_ciudad'])->first());
+                
                 $experiencia->dir_empresa = $exp['dir_empresa'];
                 $experiencia->tel_trabajo=$exp['tel_trabajo'];
-                $experiencia->cargos()->associate(Cargo::where('id_aut_cargos',$exp['id_cargo'])->firstOrFail());
                 $experiencia->rango_salario=$exp['rango_salario'];
                 $experiencia->fecha_inicio=$exp['fecha_inicio'];
                 $experiencia->fecha_fin=$exp['fecha_fin'];
@@ -254,12 +270,36 @@ class EgresadoController extends Controller
                 $experiencia->sector=$exp['sector'];
                 $experiencia->trabajo_en_su_area=$exp['trabajo_en_su_area'];
                 
-                $experiencia->save();
+                $cargo=new Cargo();
+                $cargo->nombre=$exp["cargo_nombre"];
+                $cargo->estado=false;
+                $cargo->save();
+                
+                try {
+                    $experiencia->cargos()->associate($cargo);
+                    $experiencia->egresados()->associate(Egresado::where('id_aut_egresado',$idEgresado)->first());
+                    $experiencia->save();
+                }catch(Exception $e) {
+                    return response()->json(['error' => $e], 400);
+                }
+                return response()->json($experiencias, 202);
+                
             }
-        });
     }
+
+    public function getEgresadoEmail($email){
+        try {
+            $idEgresado = Egresado::where("correo","=",$email)
+            ->select("id_aut_egresado")->get();
+            return response()->json($idEgresado,200);
+
+        }catch(Exeption $e){
+            return response()->json(['error' => $e], 400);
+        }
+    }
+
+
     //Carga los atributos de un egresado especifico para actualizar
-    
     public function edit($idEgresado){
         
 
@@ -386,29 +426,55 @@ class EgresadoController extends Controller
         $levels=BD::table('niveles_estudio')->get();
         return response()->json($levels, 205);
     }
-
+    //Metodo para completar la informacion de un egresdao
+    //Se agrega: Regeridos
+    //           Experiencias
+    //           Datos personales especificos
+    //CompletarInformacionRequest
     public function fullInfo(Request $request, $idEgresado){
-        
-        //Actualizacion numero de hijos
-        $egresado = Egresado::find($idEgresado);
-        $egresado->num_hijos=$request->get('num_hijos');
-        $egresado->ha_trabajado=$request->get('ha_trabajado');
 
-        $egresado->trabaja_actualmente=$request->get('trabaja_actualmente');
-        $egresado->save();
+       
+       return DB::transaction(function()use($request,$idEgresado){
+            
+            try{
+                
+                $egresado = Egresado::find($idEgresado);                
+                
+                $egresado->ha_trabajado=$request->get('ha_trabajado');
+                $egresado->trabaja_actualmente=$request->get('trabaja_actualmente');
+                $egresado->save();
 
-        
+                // Obteniendo informacion de los referidos de un egresado
+                $referidos = $request->get('referidos');
 
-        
-        // Obteniendo informacion de los referidos de un egresado
-        $referidos = $request->get('referidos');
-        $this->guardarinformacionReferido($referidos,$idEgresado);
+                if($referidos && count($referidos)>0){
+                    
+                    $this->guardarReferido($referidos,$idEgresado);
+                    //return response()->json($request->all(), 202);
+                }
+                
+               
+                // Obteniendo informacion de las experiencias de un egresado
+                $expAnterior = $request->get('expAnterior');
+                
+                $expActual = $request->get('expActual');
+               
+                
+                if($expAnterior && count($expAnterior)>0){
+                    $this->guardarInfoExperiencia($expAnterior,$idEgresado);
+                    //return response()->json( $this->guardarInfoExperiencia($expAnterior,$idEgresado)->all(), 202);
+                }
 
-        // Obteniendo informacion de las experiencias de un egresado
-        $experiencias = $request->get('experiencias');
-        $this->guardarInfoExperiencia($experiencias,$idEgresado);
+               if($expActual && count($expActual)>0){
+                    $this->guardarInfoExperiencia($expActual,$idEgresado);
+                }
+                
+            }catch(Exception $e){
+                return response()->json($e->all(), 400);
+            }
 
-        return response()->json($egresado, 202);
+            return response()->json($idEgresado, 202);
+        });
     }
 
     /**
@@ -480,6 +546,8 @@ class EgresadoController extends Controller
         $aceptados = $this->_procesarExcel($egresadosEnExcel);
         return response()->json($aceptados, 200, [], JSON_UNESCAPED_UNICODE);
     }
+
+    
 
     private function _procesarExcel($egresados)
     {

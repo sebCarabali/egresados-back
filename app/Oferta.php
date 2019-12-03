@@ -52,6 +52,10 @@ class Oferta extends Model
             ->withPivot(['nivel_escritura', 'nivel_lectura', 'nivel_conversacion']);
     }
 
+    public function programas()
+    {
+        return $this->belongsToMany(Programa::class,'programas_ofertas', 'id_oferta', 'id_programa');
+    }
 
     public function salario()
     {

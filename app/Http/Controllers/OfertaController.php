@@ -245,47 +245,54 @@ class OfertaController extends Controller
       DB::beginTransaction();
       // Se busca o crea el cargo
 
-      $id_cargo = null;
-      if (isset($request['informacion-principal']['idCargo'])) {
-        $id_cargo = $request['informacion-principal']['idCargo'];
-      } else {
-        $cargo = new Cargo();
-        $cargo->nombre = $request['informacion-principal']['otroCargo'];
-        $cargo->estado = false;
-        $current_id = DB::table('cargos')->max('id_aut_cargos');
-        $cargo->id_aut_cargos = $current_id + 1;
-        $cargo->save();
-        $id_cargo =  $cargo->id_aut_cargos;
+      // $id_cargo = null;
+
+      // if (isset($request['informacionPrincipal']['cargo'])) {
+      //   $id_cargo = $request['informacionPrincipal']['cargo'];
+      // } else {
+      //   $cargo = new Cargo();
+      //   $cargo->nombre = $request['informacionPrincipal']['otroCargo'];
+      //   $cargo->estado = false;
+      //   $current_id = DB::table('cargos')->max('id_aut_cargos');
+      //   $cargo->id_aut_cargos = $current_id + 1;
+      //   $cargo->save();
+      //   $id_cargo =  $cargo->id_aut_cargos;
+      // }
+
+      $cargo = Cargo::whereNombre($request['informacionPrincipal']['cargo'])->first();
+      if(!$cargo){
+        $cargo = Cargo::create(["nombre" => $request['informacionPrincipal']['cargo']]);
       }
+      $id_cargo = $cargo->id_aut_cargos;
 
       $oferta = new Oferta();
       $oferta->id_empresa = $empresa->id_aut_empresa;
-      $oferta->nombre_oferta = $request['informacion-principal']['nombreOferta']; //
-      $oferta->descripcion = $request['informacion-principal']['descripcion']; //
+      $oferta->nombre_oferta = $request['informacionPrincipal']['nombreOferta']; //
+      $oferta->descripcion = $request['informacionPrincipal']['descripcion']; //
       $oferta->id_cargo = $id_cargo;
 
-      $oferta->numero_vacantes = $request['informacion-principal']['numVacantes']; //
-      $oferta->id_forma_pago = $request['contrato']['formaPago'];
+      $oferta->numero_vacantes = $request['informacionPrincipal']['numVacantes']; //
+      $oferta->id_forma_pago = $request['contrato']['idRangoSalarial'];
       $oferta->experiencia = $request['requisitos']['experienciaLaboral']; // Enum ('Sin experiencia', 'Igual a', 'Mayor o igual que', 'Menor o igual que')
       $oferta->anios_experiencia = $request['requisitos']['anios']; //
       // $oferta->fecha_publicacion = ""; //
       // $oferta->fecha_cierre = ""; //
       $oferta->estado = "Pendiente"; // Enum ('Aceptada', 'Rechazada', 'Pendiente');  --Administrador
       $oferta->estado_proceso = "En espera"; // ('En seleccion', 'Desactivada', 'Expirada');  --Empresa
-      $oferta->id_sector = $request['informacion-principal']['idSector'];
-      if (isset($request['informacion-principal']['nombreTempEmpresa'])) {
-        $oferta->nombre_temporal_empresa = $request['informacion-principal']['nombreTempEmpresa']; //
+      $oferta->id_sector = $request['informacionPrincipal']['idSector'];
+      if (isset($request['informacionPrincipal']['nombreTempEmpresa'])) {
+        $oferta->nombre_temporal_empresa = $request['informacionPrincipal']['nombreTempEmpresa']; //
       }
       if (isset($request['requisitos']['licenciaConduccion'])) {
         $oferta->licencia_conduccion = $request['requisitos']['licenciaConduccion']; // Enum ('A1', 'A2', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3')
       }
-      $oferta->requisitos_minimos = $request['requisitos']['requisitosMinimos']; // TEsto descriptivo
+      $oferta->requisitos_minimos = $request['requisitos']['requisitosMinimos']; // Texto descriptivo
       if (isset($request['requisitos']['idDiscapacidad'])) {
         $oferta->id_discapacidad = $request['requisitos']['idDiscapacidad']; // Id consultado de la tabla discapacidad
       }
-      $oferta->num_dias_oferta = $request['informacion-principal']['vigenciaDias']; // Dias de la oferta Max 30
+      $oferta->num_dias_oferta = $request['informacionPrincipal']['vigenciaDias']; // Dias de la oferta Max 30
 
-      $oferta->id_aut_nivprog = $request['requisitos']['idrequisitosMinimos']; // NIvel Programa
+      $oferta->id_aut_nivestud = $request['requisitos']['idrequisitosMinimos']; // NIvel Programa
 
       $oferta->save();
 
@@ -316,19 +323,20 @@ class OfertaController extends Controller
       $oferta->idiomas()->sync($array_idiomas);
 
       // Asigna los id de las ciudades donde va a estar disponible la oferta
-      $oferta->ubicaciones()->sync($request['informacion-principal']['ubicacion']); // Ids consultados de la tabla discapacidad
+      $oferta->ubicaciones()->sync($request['informacionPrincipal']['idUbicaciones']); // Ids consultados de la tabla discapacidad
+      // $oferta->ubicaciones()->sync($request['informacionPrincipal']['ubicacion']); // Ids consultados de la tabla discapacidad
 
       // Asigna los id de las areas de conocimientos requeridos por la oferta
-      $oferta->areasConocimiento()->sync($request['informacion-principal']['idAreaConocimiento']); // Ids consultados de la tabla areas de conocimiento
+      $oferta->areasConocimiento()->sync($request['informacionPrincipal']['idAreaConocimiento']); // Ids consultados de la tabla areas de conocimiento
 
 
-        // // Asigna los id de los software requeridos en la oferta
-        // foreach ($request['requisitos']['softwareOferta'] as $soft) {
-        //   $software = new OfertaSoftware();
-        //   $software->nombre = $soft['nombre'];
-        //   $software->nivel = $soft['nivel'];
-        //   $oferta->software()->save($software);
-        // }
+      // // Asigna los id de los software requeridos en la oferta
+      // foreach ($request['requisitos']['softwareOferta'] as $soft) {
+      //   $software = new OfertaSoftware();
+      //   $software->nombre = $soft['nombre'];
+      //   $software->nivel = $soft['nivel'];
+      //   $oferta->software()->save($software);
+      // }
 
       // Asigna los id de los software requeridos en la oferta
       $array_software = array();
@@ -363,7 +371,8 @@ class OfertaController extends Controller
 
       DB::commit();
       return $this->success($oferta);
-    } catch (Exception $e) {
+    } 
+    catch (Exception $e) {
       return $this->fail("Registro oferta => " . $e->getMessage());
     }
   }
@@ -394,38 +403,44 @@ class OfertaController extends Controller
       $contrato->save();
       // Se busca o crea el cargo
 
-      $id_cargo = $oferta->contrato->id_aut_contrato;
-      if (isset($request['informacion-principal']['idCargo'])) {
-        if ($request['informacion-principal']['idCargo'] != $id_cargo) {
-          $id_cargo = $request['informacion-principal']['idCargo'];
-        }
-      } else {
-        $cargo = new Cargo();
-        $cargo->nombre = $request['informacion-principal']['otroCargo'];
-        $cargo->estado = false;
-        $current_id = DB::table('cargos')->max('id_aut_cargos');
-        $cargo->id_aut_cargos = $current_id + 1;
-        $cargo->save();
-        $id_cargo =  $cargo->id_aut_cargos;
+      // $id_cargo = $oferta->cargo->id_aut_cargos;
+      // if (isset($request['informacionPrincipal']['cargo'])) {
+      //   if ($request['informacionPrincipal']['cargo'] != $id_cargo) {
+      //     $id_cargo = $request['informacionPrincipal']['cargo'];
+      //   }
+      // } else {
+      //   $cargo = new Cargo();
+      //   $cargo->nombre = $request['informacionPrincipal']['otroCargo'];
+      //   $cargo->estado = false;
+      //   $current_id = DB::table('cargos')->max('id_aut_cargos');
+      //   $cargo->id_aut_cargos = $current_id + 1;
+      //   $cargo->save();
+      //   $id_cargo =  $cargo->id_aut_cargos;
+      // }
+
+      $cargo = Cargo::whereNombre($request['informacionPrincipal']['cargo'])->first();
+      if(!$cargo){
+        $cargo = Cargo::create(["nombre" => $request['informacionPrincipal']['cargo']]);
       }
+      $id_cargo = $cargo->id_aut_cargos;
 
       // $oferta->id_empresa = $empresa->id_aut_empresa;
-      $oferta->nombre_oferta = $request['informacion-principal']['nombreOferta']; //
-      $oferta->descripcion = $request['informacion-principal']['descripcion']; //
+      $oferta->nombre_oferta = $request['informacionPrincipal']['nombreOferta']; //
+      $oferta->descripcion = $request['informacionPrincipal']['descripcion']; //
       $oferta->id_cargo = $id_cargo;
       // $oferta->id_contrato = $contrato->id_aut_contrato;
 
-      $oferta->numero_vacantes = $request['informacion-principal']['numVacantes']; //
-      $oferta->id_forma_pago = $request['contrato']['formaPago'];
+      $oferta->numero_vacantes = $request['informacionPrincipal']['numVacantes']; //
+      $oferta->id_forma_pago = $request['contrato']['idRangoSalarial'];
       $oferta->experiencia = $request['requisitos']['experienciaLaboral']; // Enum ('Sin experiencia', 'Igual a', 'Mayor o igual que', 'Menor o igual que')
       $oferta->anios_experiencia = $request['requisitos']['anios']; //
       // $oferta->fecha_publicacion = ""; //
       // $oferta->fecha_cierre = ""; //
       // $oferta->estado = "Pendiente"; // Enum ('Aceptada', 'Rechazada', 'Pendiente');  --Administrador
       // $oferta->estado_proceso = "En espera"; // ('En seleccion', 'Desactivada', 'Expirada');  --Empresa
-      $oferta->id_sector = $request['informacion-principal']['idSector'];
-      if (isset($request['informacion-principal']['nombreTempEmpresa'])) {
-        $oferta->nombre_temporal_empresa = $request['informacion-principal']['nombreTempEmpresa']; //
+      $oferta->id_sector = $request['informacionPrincipal']['idSector'];
+      if (isset($request['informacionPrincipal']['nombreTempEmpresa'])) {
+        $oferta->nombre_temporal_empresa = $request['informacionPrincipal']['nombreTempEmpresa']; //
       }
       if (isset($request['requisitos']['licenciaConduccion'])) {
         $oferta->licencia_conduccion = $request['requisitos']['licenciaConduccion']; // Enum ('A1', 'A2', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3')
@@ -434,9 +449,9 @@ class OfertaController extends Controller
       if (isset($request['requisitos']['idDiscapacidad'])) {
         $oferta->id_discapacidad = $request['requisitos']['idDiscapacidad']; // Id consultado de la tabla discapacidad
       }
-      $oferta->num_dias_oferta = $request['informacion-principal']['vigenciaDias']; // Dias de la oferta Max 30
+      $oferta->num_dias_oferta = $request['informacionPrincipal']['vigenciaDias']; // Dias de la oferta Max 30
 
-      $oferta->id_aut_nivprog = $request['requisitos']['idrequisitosMinimos']; // NIvel Programa
+      $oferta->id_aut_nivestud = $request['requisitos']['idrequisitosMinimos']; // NIvel Programa
 
       $oferta->save();
       // $empresa->ofertas()->save($oferta);
@@ -453,10 +468,10 @@ class OfertaController extends Controller
       $oferta->idiomas()->sync($array_idiomas);
 
       // Asigna los id de las ciudades donde va a estar disponible la oferta
-      $oferta->ubicaciones()->sync($request['informacion-principal']['ubicacion']); // Ids consultados de la tabla discapacidad
+      $oferta->ubicaciones()->sync($request['informacionPrincipal']['idUbicaciones']); // Ids consultados de la tabla discapacidad
 
       // Asigna los id de las areas de conocimientos requeridos por la oferta
-      $oferta->areasConocimiento()->sync($request['informacion-principal']['idAreaConocimiento']); // Ids consultados de la tabla areas de conocimiento
+      $oferta->areasConocimiento()->sync($request['informacionPrincipal']['idAreaConocimiento']); // Ids consultados de la tabla areas de conocimiento
 
 
 

@@ -60,6 +60,10 @@ Route::get('paises', 'PaisController@getAll');
  */
 Route::get('nivelesEstudio', 'API\NivelEstudioController@getAll');
 /**
+ * Obtiene los niveles de estudio.
+ */
+Route::get('nivelesEstudioU', 'API\NivelEstudioController@getAllU');
+/**
  * Obtiene las facultades.
  */
 Route::get('facultades', 'API\FacultadController@getAll');

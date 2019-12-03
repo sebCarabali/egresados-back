@@ -28,17 +28,21 @@ Route::post('egresados', 'API\EgresadoController@guardarInformacionBasica');
 */
 Route::put('completeEgresados/{idEgresado}', 'API\EgresadoController@fullInfo');
 /*
+*Retorna el Id del egresado para inicio de sesion
+*/
+Route::get('getIdegresados/{correo}','API\EgresadoController@getEgresadoEmail');
+/*
 *Validación de carnetización de egresado
 */
-Route::get('carnetizacion/{correo}','CarnetizacionController@validarCarnetizacion');
+Route::get('carnetizacion/{correo}','API\CarnetizacionController@validarCarnetizacion');
 /*
 *Obteniendo todas las solicitudes de carnet pendientes para el Administrador
 */
-Route::get('carnetizacion','CarnetizacionController@getAll');
+Route::get('carnetizacion','API\CarnetizacionController@getAll');
 /*
 *Administrador la fecha de respuesta y el estado a "Solicitado" a "respondido" de carnet por egresados
 */
-Route::get('carnetizacion','CarnetizacionController@updateAdmin');
+Route::get('carnetizacionUpdateAdmin','API\CarnetizacionController@updateAdmin');
 /*
  * Obtiene todas la ciudades de un departamento.
  */
@@ -59,6 +63,10 @@ Route::get('paises', 'PaisController@getAll');
  * Obtiene los niveles de estudio.
  */
 Route::get('nivelesEstudio', 'API\NivelEstudioController@getAll');
+/**
+ * Obtiene los niveles de estudio.
+ */
+Route::get('nivelesEstudioU', 'API\NivelEstudioController@getAllU');
 /**
  * Obtiene las facultades.
  */
@@ -83,6 +91,17 @@ Route::get('users/validar/{codigo}', 'UserController@esUsuarioActivoPorCodigo');
 Route::get('facultades/{idSede}', 'API\FacultadController@getBySede');
 Route::get('programas/{idSede}/{idFacultad}/{idNivelEstudio}', 'API\ProgramaController@getBySedeAndFacultadAndNivelEstudio');
 Route::get('sedes', 'API\SedesController@getAll');
+/**
+ * Obtener los servicios
+ */
+Route::get('servicios', 'ServicioController@getAll');
+/**
+ * Gestión Apoyos
+ */
+Route::get('apoyos', 'ApoyoController@getAll');
+Route::get('apoyos/{idApoyo}', 'ApoyoController@getById');
+Route::post('apoyos', 'ApoyoController@save');
+Route::put('apoyos', 'ApoyoController@update');
 // --------------------------------------------------------------------------------
 /**
  * Registro de una empresa

@@ -98,7 +98,7 @@ class OfertaController extends Controller
       }
 
       // Informacion Principal
-      
+
 
 
 
@@ -245,17 +245,23 @@ class OfertaController extends Controller
       DB::beginTransaction();
       // Se busca o crea el cargo
 
-      $id_cargo = null;
-      if (isset($request['informacion-principal']['idCargo'])) {
-        $id_cargo = $request['informacion-principal']['idCargo'];
-      } else {
-        $cargo = new Cargo();
-        $cargo->nombre = $request['informacion-principal']['otroCargo'];
-        $cargo->estado = false;
-        $current_id = DB::table('cargos')->max('id_aut_cargos');
-        $cargo->id_aut_cargos = $current_id + 1;
-        $cargo->save();
-        $id_cargo =  $cargo->id_aut_cargos;
+      // $id_cargo = null;
+
+      // if (isset($request['informacionPrincipal']['cargo'])) {
+      //   $id_cargo = $request['informacionPrincipal']['cargo'];
+      // } else {
+      //   $cargo = new Cargo();
+      //   $cargo->nombre = $request['informacionPrincipal']['otroCargo'];
+      //   $cargo->estado = false;
+      //   $current_id = DB::table('cargos')->max('id_aut_cargos');
+      //   $cargo->id_aut_cargos = $current_id + 1;
+      //   $cargo->save();
+      //   $id_cargo =  $cargo->id_aut_cargos;
+      // }
+
+      $cargo = Cargo::whereNombre($request['informacionPrincipal']['cargo'])->first();
+      if (!$cargo) {
+        $cargo = Cargo::create(["nombre" => $request['informacionPrincipal']['cargo']]);
       }
 
       $oferta = new Oferta();
@@ -320,6 +326,9 @@ class OfertaController extends Controller
 
       // Asigna los id de las areas de conocimientos requeridos por la oferta
       $oferta->areasConocimiento()->sync($request['informacion-principal']['idAreaConocimiento']); // Ids consultados de la tabla areas de conocimiento
+
+      // Asigna los id de los programas requeridos por la oferta
+      $oferta->programas()->sync($request['requisitos']['idProgramas']);
 
 
         // // Asigna los id de los software requeridos en la oferta
@@ -394,19 +403,24 @@ class OfertaController extends Controller
       $contrato->save();
       // Se busca o crea el cargo
 
-      $id_cargo = $oferta->contrato->id_aut_contrato;
-      if (isset($request['informacion-principal']['idCargo'])) {
-        if ($request['informacion-principal']['idCargo'] != $id_cargo) {
-          $id_cargo = $request['informacion-principal']['idCargo'];
-        }
-      } else {
-        $cargo = new Cargo();
-        $cargo->nombre = $request['informacion-principal']['otroCargo'];
-        $cargo->estado = false;
-        $current_id = DB::table('cargos')->max('id_aut_cargos');
-        $cargo->id_aut_cargos = $current_id + 1;
-        $cargo->save();
-        $id_cargo =  $cargo->id_aut_cargos;
+      // $id_cargo = $oferta->cargo->id_aut_cargos;
+      // if (isset($request['informacionPrincipal']['cargo'])) {
+      //   if ($request['informacionPrincipal']['cargo'] != $id_cargo) {
+      //     $id_cargo = $request['informacionPrincipal']['cargo'];
+      //   }
+      // } else {
+      //   $cargo = new Cargo();
+      //   $cargo->nombre = $request['informacionPrincipal']['otroCargo'];
+      //   $cargo->estado = false;
+      //   $current_id = DB::table('cargos')->max('id_aut_cargos');
+      //   $cargo->id_aut_cargos = $current_id + 1;
+      //   $cargo->save();
+      //   $id_cargo =  $cargo->id_aut_cargos;
+      // }
+
+      $cargo = Cargo::whereNombre($request['informacionPrincipal']['cargo'])->first();
+      if (!$cargo) {
+        $cargo = Cargo::create(["nombre" => $request['informacionPrincipal']['cargo']]);
       }
 
       // $oferta->id_empresa = $empresa->id_aut_empresa;
@@ -458,7 +472,8 @@ class OfertaController extends Controller
       // Asigna los id de las areas de conocimientos requeridos por la oferta
       $oferta->areasConocimiento()->sync($request['informacion-principal']['idAreaConocimiento']); // Ids consultados de la tabla areas de conocimiento
 
-
+      // Asigna los id de los programas requeridos por la oferta
+      $oferta->programas()->sync($request['requisitos']['idProgramas']);
 
       // Asigna los id de los software requeridos en la oferta
       $array_software = array();

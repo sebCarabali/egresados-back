@@ -48,6 +48,68 @@ class OfertaController extends Controller
     return response()->json($ofertas, 200);
   }
 
+  public function getOferta($id)
+  {
+    // Codigo de error por defecto
+    $code = 404;
+    $oferta = Oferta::find($id);
+
+    if (is_object($oferta)) {
+
+      // Contacto HV
+      $oferta->load('contacto_hv');
+      if (!empty($oferta['contacto_hv'])){
+        $oferta['contactoHv'] = $oferta->contacto_hv;
+        unset($oferta['contacto_hv']);
+        unset($oferta['contactoHv']['id_aut_recepcionhv']);
+        unset($oferta['contactoHv']['id_oferta']);
+        $oferta['contactoHv']['telefonoMovil'] = $oferta['contactoHv']['telefono_movil'];
+        unset($oferta['contactoHv']['telefono_movil']);
+      } else {
+        $oferta['contactoHv'] = [];
+        unset($oferta['contacto_hv']);
+      }
+
+      // Contrato
+      $oferta->load('contrato');
+      if(!empty($oferta['contrato'])){
+        $oferta->load('salario');
+
+        $oferta['contrato']['comentariosSalario'] = $oferta['contrato']['comentarios_salario'];
+        unset($oferta['contrato']['comentarios_salario']);
+
+        $oferta['contrato']['formaPago'] = $oferta['salario']['forma_pago'];
+
+        $oferta['contrato']['idRangoSalarial'] = $oferta['salario']['id_aut_salario'];
+
+        $oferta['contrato']['jornada'] = $oferta['contrato']['jornada_laboral'];
+        unset($oferta['contrato']['jornada_laboral']);
+
+        $oferta['contrato']['rangoSalarial'] = $oferta['salario']['rango'];
+
+        $oferta['contrato']['tipoContrato'] = $oferta['contrato']['tipo_contrato'];
+        unset($oferta['contrato']['tipo_contrato']);
+
+        unset($oferta['contrato']['id_oferta']);
+        unset($oferta['contrato']['id_aut_contrato']);
+        unset($oferta['salario']);
+      } else {
+        $oferta['contrato'] = [];
+      }
+
+      // Informacion Principal
+
+
+
+
+
+      $data = $oferta;
+    } else {
+      $data = null;
+    }
+    return response()->json($data, $code);
+  }
+
   public function getAllOfertas()
   {
     $ofertas = Oferta::all();

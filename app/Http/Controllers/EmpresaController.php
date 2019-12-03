@@ -5,23 +5,23 @@ namespace App\Http\Controllers;
 use App\AdministradorEmpresa;
 use App\Cargo;
 use App\Ciudad;
-use App\Departamento;
 use Illuminate\Http\Request;
 
 use App\Empresa;
 use App\Helpers\JwtAuth;
+use App\Http\Requests\EmpresaStoreRequest;
+use App\Http\Requests\EmpresaUpdateRequest;
 use App\Localizacion;
 use App\RepresentanteEmpresa;
 use App\Role;
 use App\Sector;
-use App\SubSector;
 use App\User;
 use Exception;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\ValidationException;
 
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Storage;
 
 class EmpresaController extends Controller
 {
@@ -53,14 +53,16 @@ class EmpresaController extends Controller
             $empresa->direccion->ciudad->load('departamento');
             $empresa->direccion->ciudad->departamento->load('pais');
 
+
             $empresa->administrador->load('direccion', 'user', 'cargo');
 
             $sectores = [];
 
             //Por cada subsector obtengo el sector
             foreach ($empresa->subSectores as $subSector) {
-                $res = Sector::find($subSector->id_sectores)->first();
-                if (!isset($sectores->$res)){
+                $res = Sector::find($subSector->id_sectores);
+
+                if (!isset($sectores->$res)) {
                     $sectores[] = $res;
                 }
                 // Se borra el atributo pivot, el cual no es necesario
@@ -71,7 +73,7 @@ class EmpresaController extends Controller
             foreach ($empresa->sectores as $sector) {
                 $subsec = [];
                 foreach ($empresa->subSectores as $subSector) {
-                    if ($subSector->id_sectores == $sector->id_aut_sector){
+                    if ($subSector->id_sectores == $sector->id_aut_sector) {
                         $subsec[] = $subSector;
                     }
                 }
@@ -88,452 +90,309 @@ class EmpresaController extends Controller
         return response()->json($data, $code);
     }
 
-    public function update(Request $request)
+    // public function update(Empresa $id,Request $request)
+    public function update(EmpresaUpdateRequest $request, Empresa $id)
     {
-        // // Recoger los datos por POST
-        // $json = $request->input('json', null);
-        // $params_array = json_decode($json, true);
-
         // Código de error por defecto
         $code = 400;
         $data = null;
-
-        // if (!empty($params_array)) {
-
-        //     // Eliminar lo que no queremos actualizar
-        //     unset($params_array['id']);
-        //     unset($params_array['nombre']);
-        //     unset($params_array['razon_social']);
-        //     unset($params_array['anio_creacion']);
-        //     unset($params_array['fecha_registro']);
-        //     unset($params_array['fecha_activacion']);
-
-
-        //     // Buscar el registro
-        //     // $empresa = Empresa::where('id', $id)->first();
-        //     $empresa = Empresa::find($id);
-
-        //     if (!empty($empresa) && is_object($empresa)) {
-
-        //         // Actualizar el registro en concreto
-        //         $empresa->update($params_array);
-
-        //         $data = $empresa;
-        //         $code = 200;
-        //     }
-        // }
-        // return response()->json($data, $code);
-
-        if (request()->ajax()) {
-            $empresa = Empresa::firstOrFail();
-            // return response()->json($empresa->administrador->id_aut_user);
-            try {
-                // return response()->json($request);
-                $this->validate(request(), [
-
-                    'datos-cuenta.email' => 'required|max:255|email|unique:users,email,' . $empresa->administrador->id_aut_user . ',id_aut_user',
-                    'datos-cuenta.contrasenia' => 'string|min:6',
-
-                    // Datos empresa
-                    'datos-generales-empresa.NIT' => 'required|integer|digits:8|unique:empresas,nit,' . $empresa->id_aut_empresa . ',id_aut_empresa',
-                    'datos-generales-empresa.razonSocial' => 'required|string',
-                    'datos-generales-empresa.nombreEmpresa' => 'required|unique:empresas,nombre,' . $empresa->id_aut_empresa . ',id_aut_empresa',
-                    'datos-generales-empresa.anioCreacion' => 'required|numeric|between:1900,' . Carbon::now()->format("Y"),
-                    'datos-generales-empresa.numEmpleados' => 'required|integer',
-                    'datos-generales-empresa.ingresosEmp' => 'required|string',
-                    'datos-generales-empresa.descripcionEmpresa' => 'required|string',
-
-                    'loc-contact-empresa.ciudadEmp' => 'required|exists:ciudades,id_aut_ciudad',
-                    'loc-contact-empresa.direccionEmp' => 'required|string',
-                    'loc-contact-empresa.barrioEmp' => 'required|string',
-                    'loc-contact-empresa.codigoPostalEmp' => 'integer',
-                    'loc-contact-empresa.telefonoEmp' => 'integer',
-                    'loc-contact-empresa.emailEmp' => 'email',
-                    'loc-contact-empresa.sitioWebEmp' => 'url',
-                    // 'loc-contact-empresa.sitioWebEmp' => 'url|active_url',
-
-                    // 'sectores' => 'required|array',
-                    'sectores.sectores' => 'required|array',
-                    'sectores.sectores.*.subSectores.*.idSector' => 'required|integer|exists:sectores,id_aut_sector',
-                    // 'sectores.sectores.*' => 'required|integer|exists:sectores,id_aut_sector',
-                    // //datos representante
-                    'datos-resp.nombrereplegal'  => 'required|string',
-                    'datos-resp.apellidoreplegal'  => 'required|string',
-                    'datos-resp.telefonoreplegal'  => 'integer',
-                    'datos-resp.telefonoMovilreplegal'  => 'required|integer',
-                    // 'datos-resp.barrioResp' => 'required|string',
-                    // 'datos-resp.ciudadResp' => 'required|exists:ciudades,id_aut_ciudad',
-                    // 'datos-resp.codigoPostalResp' => 'required|integer',
-                    'datos-resp.nombreResp' => 'required|string',
-                    'datos-resp.apellidoResp'  => 'required|string',
-                    'datos-resp.cargo'  => 'required|string',
-                    'datos-resp.telefonoResp'  => 'integer',
-                    'datos-resp.telefonoMovilResp'  => 'required|integer',
-                    'datos-resp.horarioContactoResp'  => 'required|string',
-                    'datos-resp.direccionTrabajoResp' => 'required|string',
-                    'datos-resp.emailCorpResp'  => 'required|email',
-                ]);
-                // return response()->json(request());
-                $user = $empresa->administrador->user;
-                // return response()->json($user);
-                // $user->email = request('datos-cuenta.email');
-                $user->email = $request['datos-cuenta']['email'];
-                if($request['datos-cuenta']['contrasenia']){
-                    $user->password = bcrypt($request['datos-cuenta']['contrasenia']);
-                }
-                // return response()->json($user); 
-
-                $direccionEmpr = $empresa->direccion;
-                // return response()->json($direccionEmpr);
-                if ($request['loc-contact-empresa']['codigoPostalEmp']) {
-                    $direccionEmpr->codigo_postal = $request['loc-contact-empresa']['codigoPostalEmp'];
-                }
-                $direccionEmpr->direccion = $request['loc-contact-empresa']['direccionEmp'];
-                $direccionEmpr->barrio = $request['loc-contact-empresa']['barrioEmp'];
-                $direccionEmpr->ciudad()->associate(Ciudad::find($request['loc-contact-empresa']['ciudadEmp']));
-                // return response()->json($direccionEmpr);
-
-                // $empresa = new Empresa();
-                $empresa->nit = $request['datos-generales-empresa']['NIT'];
-                $empresa->nombre = $request['datos-generales-empresa']['nombreEmpresa'];
-                $empresa->razon_social = $request['datos-generales-empresa']['razonSocial'];
-                $empresa->numero_empleados = $request['datos-generales-empresa']['numEmpleados'];
-                $empresa->ingresos = $request['datos-generales-empresa']['ingresosEmp'];
-                if ($request['loc-contact-empresa']['sitioWebEmp']) {
-                    $empresa->sitio_web = $request['loc-contact-empresa']['sitioWebEmp'];
-                }
-                $empresa->anio_creacion = $request['datos-generales-empresa']['anioCreacion'];
-                $empresa->url_doc_camaracomercio = "url pdf camara y comercio";
-
-                if ($request['loc-contact-empresa']['telefonoEmp']) {
-                    $empresa->telefono = $request['loc-contact-empresa']['telefonoEmp'];
-                }
-                if ($request['loc-contact-empresa']['emailEmp']) {
-                    $empresa->correo = $request['loc-contact-empresa']['emailEmp'];
-                }
-                // return response()->json($empresa);
-
-                // $empresa->estado = "En espera";
-                // $empresa->fecha_registro = Carbon::now();
-                // $empresa->total_publicaciones = 0;
-                // $empresa->limite_publicaciones = 0;
-                // $empresa->num_publicaciones_actuales = 0;
-                // return response()->json($empresa);
-
-                $direccionAdministrador = $empresa->administrador->direccion;
-                // $direccionAdministrador->codigo_postal = $request['datos-resp']['codigoPostalResp'];
-                $direccionAdministrador->codigo_postal = $request['loc-contact-empresa']['codigoPostalEmp'];
-                $direccionAdministrador->direccion = $request['datos-resp']['direccionTrabajoResp'];
-                // $direccionAdministrador->barrio = $request['datos-resp']['barrioResp'];
-                $direccionAdministrador->barrio = $request['loc-contact-empresa']['barrioEmp'];
-                $direccionAdministrador->ciudad()->associate(Ciudad::find($request['loc-contact-empresa']['ciudadEmp']));
-                // return response()->json($direccionAdministrador);
-                // if (!$dir_empresa) { }
-
-                $representanteLegal = $empresa->representante;
-                $representanteLegal->nombre = $request['datos-resp']['nombrereplegal'];
-                $representanteLegal->apellidos = $request['datos-resp']['apellidoreplegal'];
-                if ($request['datos-resp']['telefonoreplegal']) {
-                    $representanteLegal->telefono = $request['datos-resp']['telefonoreplegal'];
-                }
-                $representanteLegal->telefono_movil = $request['datos-resp']['telefonoMovilreplegal'];
-                // return response()->json($representanteLegal);
-
-
-                $administradorEmp = $empresa->administrador;
-                $administradorEmp->nombres = $request['datos-resp']['nombreResp'];
-                $administradorEmp->apellidos = $request['datos-resp']['apellidoResp'];
-                if ($request['datos-resp']['telefonoResp']) {
-                    $administradorEmp->telefono = $request['datos-resp']['telefonoResp'];
-                }
-                $administradorEmp->telefono_movil = $request['datos-resp']['telefonoMovilResp'];
-
-                $administradorEmp->correo_corporativo = $request['datos-resp']['emailCorpResp'];
-                // return response()->json([$administradorEmp, $request['datos-resp']['cargo']]);
-                // return response()->json(Cargo::find(request('rep_id_cargo'))->firstOrFail());
-                // return response()->json($administradorEmp);
-                // return response()->json([$user, $empresa, $representanteLegal, $administradorEmp]);
-
-                $ids = array();
-                foreach ($request['sectores']['sectores'] as $sect) {
-                    foreach ($sect["subSectores"] as $subs) {
-                        array_push($ids, $subs["idSector"]);
-                    }
-                }
-                // return response()->json($ids);
-                // return response()->json($request['sectores']['sectores'][0]['subSectores'][0]['idSector']);
-
-                // DB::transaction(function () use ($user, $direccionEmpr, $empresa, $direccionAdministrador, $administradorEmp, $representanteLegal) {
-                DB::beginTransaction();
-                $user->update();
-                // return response()->json("aqui va");
-                $direccionEmpr->update();
-                // $empresa->direccion()->associate($direccionEmpr);
-                $empresa->update();
-
-                // $empresa->subSectores()->sync($request['sectores']['sectores']);
-                $empresa->subSectores()->sync($ids);
-
-
-                // if ($dir_empresa) {
-                //     $administradorEmp->direccion()->associate($direccionEmpr);
-                // } else {
-                $direccionAdministrador->update();
-                $cargo = Cargo::whereNombre($request['datos-resp']['cargo'])->first();
-                if (!$cargo) {
-                    $cargo->nombre = $request['datos-resp']['cargo'];
-                    $cargo->estado = false;
-                    $cargo->save();
-                }
-                // return response()->json($cargo);
-                // $administradorEmp->direccion()->associate($direccionAdministrador);
-                // $administradorEmp->user()->associate($user);
-                $administradorEmp->cargo()->associate($cargo);
-                // $administradorEmp->empresa()->associate($empresa);
-                // }
-                $administradorEmp->update();
-                // return response()->json($representante);
-
-                // $representanteLegal->empresa()->associate($empresa);
-                $representanteLegal->update();
-                // });
-
-                DB::commit();
-                return response()->json($empresa, 200);
-            } catch (ValidationException $ev) {
-                return response()->json($ev->validator->errors(), $code);
-            } catch (Exception $e) {
-                return response()->json($e);
-            }
+        // return $this->fail("PASO LAS VALIDACIONES");
+        $empresa = $id;
+        $user = $empresa->administrador->user;
+        $user->email = $request['datos-cuenta']['email'];
+        if (!empty($request['datos-cuenta']['contrasenia'])) {
+            $user->password = bcrypt($request['datos-cuenta']['contrasenia']);
         }
-        //
-        // abort(401);
-        return response()->json($data, $code);
+
+        $direccionEmpr = $empresa->direccion;
+        if (!empty($request['loc-contact-empresa']['codigoPostalEmp'])) {
+            $direccionEmpr->codigo_postal = $request['loc-contact-empresa']['codigoPostalEmp'];
+        }
+        $direccionEmpr->direccion = $request['loc-contact-empresa']['direccionEmp'];
+        $direccionEmpr->barrio = $request['loc-contact-empresa']['barrioEmp'];
+        $direccionEmpr->ciudad()->associate(Ciudad::find($request['loc-contact-empresa']['idCiudad']));
+
+        // $empresa = new Empresa();
+        $empresa->nit = $request['datos-generales-empresa']['NIT'];
+        $empresa->nombre = $request['datos-generales-empresa']['nombreEmpresa'];
+        $empresa->razon_social = $request['datos-generales-empresa']['razonSocial'];
+        $empresa->numero_empleados = $request['datos-generales-empresa']['numEmpleados'];
+        $empresa->ingresos = $request['datos-generales-empresa']['ingresosEmp'];
+        if (!empty($request['loc-contact-empresa']['sitioWebEmp'])) {
+            $empresa->sitio_web = $request['loc-contact-empresa']['sitioWebEmp'];
+        }
+        $empresa->anio_creacion = $request['datos-generales-empresa']['anioCreacion'];
+        $empresa->url_doc_camaracomercio = "url pdf camara y comercio";
+
+        if (!empty($request['loc-contact-empresa']['telefonoEmp'])) {
+            $empresa->telefono = $request['loc-contact-empresa']['telefonoEmp'];
+        }
+        if (!empty($request['loc-contact-empresa']['emailEmp'])) {
+            $empresa->correo = $request['loc-contact-empresa']['emailEmp'];
+        }
+        $empresa->descripcion = $request['datos-generales-empresa']['descripcionEmpresa'];
+
+
+        $direccionAdministrador = $empresa->administrador->direccion;
+        $direccionAdministrador->codigo_postal = $request['loc-contact-empresa']['codigoPostalEmp'];
+        $direccionAdministrador->direccion = $request['datos-resp']['direccionTrabajoResp'];
+        $direccionAdministrador->barrio = $request['loc-contact-empresa']['barrioEmp'];
+        $direccionAdministrador->ciudad()->associate(Ciudad::find($request['loc-contact-empresa']['idCiudad']));
+
+        $representanteLegal = $empresa->representante;
+        $representanteLegal->nombre = $request['datos-resp']['nombrereplegal'];
+        $representanteLegal->apellidos = $request['datos-resp']['apellidoreplegal'];
+        if (!empty($request['datos-resp']['telefonoreplegal'])) {
+            $representanteLegal->telefono = $request['datos-resp']['telefonoreplegal'];
+        }
+        $representanteLegal->telefono_movil = $request['datos-resp']['telefonoMovilreplegal'];
+
+        $administradorEmp = $empresa->administrador;
+        $administradorEmp->nombres = $request['datos-resp']['nombreResp'];
+        $administradorEmp->apellidos = $request['datos-resp']['apellidoResp'];
+        if($request['datos-resp']['horarioContactoResp']){
+            $administradorEmp->horario_contacto = $request['datos-resp']['horarioContactoResp'];
+
+        }
+        if (!empty($request['datos-resp']['telefonoResp'])) {
+            $administradorEmp->telefono = $request['datos-resp']['telefonoResp'];
+        }
+        $administradorEmp->telefono_movil = $request['datos-resp']['telefonoMovilResp'];
+
+        $administradorEmp->correo_corporativo = $request['datos-resp']['emailCorpResp'];
+        $ids = array();
+        foreach ($request['sectores']['subsectores'] as $sect) {
+            array_push($ids, $sect);
+        }
+
+        DB::beginTransaction();
+        $user->update();
+        $direccionEmpr->update();
+        $empresa->update();
+        $empresa->subSectores()->sync($ids);
+
+        $direccionAdministrador->update();
+
+        $cargo = Cargo::whereNombre($request['datos-resp']['cargo'])->first();
+        if (!$cargo) {
+            $cargo = new Cargo();
+            $cargo->nombre = $request['datos-resp']['cargo'];
+            $cargo->estado = false;
+            $current_id = DB::table('cargos')->max('id_aut_cargos');
+            $cargo->id_aut_cargos = $current_id + 1;
+            $cargo->save();
+        }
+        $administradorEmp->cargo()->associate($cargo);
+        $administradorEmp->update();
+
+        $representanteLegal->update();
+
+        DB::commit();
+        return $this->success($empresa);
     }
 
 
     public function updateEstado($id, Request $request)
     {
-        // Recoger los datos por PUT
-        $json = $request->input('json', null);
-        $params_array = json_decode($json, true);
-
         // Código de error por defecto
         $code = 400;
         $data = null;
 
-        if (!empty($params_array)) {
+        // Validador
+        try {
+            $this->validate(request(), [
+                'estado' => 'required',
+            ]);
+
+            //if (!empty($params_array)) {
             // Buscar el registro
             $empresa = Empresa::find($id);
 
             if (!empty($empresa) && is_object($empresa)) {
-
-                if ($params_array['estado'] == 'Activo' && !empty($params_array['limite_publicaciones'])) {
+                if ($request['estado'] == 'Activo' && !empty($request['limite_publicaciones'])) {
                     // Actualizar el registro en concreto
 
                     $empresa->update([
-                        'estado' => $params_array['estado'],
-                        'limite_publicaciones' => $params_array['limite_publicaciones'],
+                        'estado' => $request['estado'],
+                        'limite_publicaciones' => $request['limite_publicaciones'],
                         'fecha_activacion' => Carbon::now('-5:00'),
                     ]);
                     $data = $empresa;
                     $code = 200;
-                } else if ($params_array['estado'] == 'En espera' || $params_array['estado'] == 'Inactivo') {
+                } else if ($request['estado'] == 'En espera' || $request['estado'] == 'Inactivo') {
                     // Actualizar el registro en concreto
-                    $empresa->update(['estado' => $params_array['estado']]);
+                    $empresa->update(['estado' => $request['estado']]);
                     $data = $empresa;
                     $code = 200;
                 }
             }
+        } catch (ValidationException $ev) {
+            return response()->json($ev->validator->errors(), 400);
+        } catch (Exception $e) {
+            return response()->json($e);
         }
         return response()->json($data, $code);
     }
 
 
     /**
-     * Store a newly created resource in storage.
+     * Almacene un recurso recién creado en el almacenamiento.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(EmpresaStoreRequest $request)
+    // public function store(Request $request)
     {
-        // Código de error por defecto
         $code = 400;
         $data = null;
-        if (request()->ajax()) {
-            try {
-                // return response()->json($request);
-                $this->validate(request(), [
-                    //Datos usuario login
-                    // datos-cuenta
-                    // datos-generales-empresa
-                    // datos-resp
-                    // loc-contact-empresa
-                    // sectores
-                    'datos-cuenta.email' => 'required|max:255|email|unique:users,email',
-                    'datos-cuenta.contrasenia' => 'required|string|min:6',
 
-                    // Datos empresa
-                    'datos-generales-empresa.NIT' => 'required|integer|digits:8|unique:empresas,nit',
-                    'datos-generales-empresa.razonSocial' => 'required|string',
-                    'datos-generales-empresa.nombreEmpresa' => 'required|unique:empresas,nombre',
-                    'datos-generales-empresa.anioCreacion' => 'required|numeric|between:1900,' . Carbon::now()->format("Y"),
-                    'datos-generales-empresa.numEmpleados' => 'required|integer',
-                    'datos-generales-empresa.ingresosEmp' => 'required|string',
-                    'datos-generales-empresa.descripcionEmpresa' => 'required|string',
-
-                    'loc-contact-empresa.ciudadEmp' => 'required|exists:ciudades,id_aut_ciudad',
-                    'loc-contact-empresa.direccionEmp' => 'required|string',
-                    'loc-contact-empresa.barrioEmp' => 'required|string',
-                    'loc-contact-empresa.codigoPostalEmp' => 'integer',
-                    'loc-contact-empresa.telefonoEmp' => 'integer',
-                    'loc-contact-empresa.emailEmp' => 'email',
-                    'loc-contact-empresa.sitioWebEmp' => 'url',
-                    // 'loc-contact-empresa.sitioWebEmp' => 'url|active_url',
-
-                    // 'sectores' => 'required|array',
-                    'sectores.sectores' => 'required|array',
-                    'sectores.sectores.*' => 'required|integer|exists:sectores,id_aut_sector',
-                    // //datos representante
-                    'datos-resp.nombrereplegal'  => 'required|string',
-                    'datos-resp.apellidoreplegal'  => 'required|string',
-                    'datos-resp.telefonoreplegal'  => 'integer',
-                    'datos-resp.telefonoMovilreplegal'  => 'required|integer',
-                    // 'datos-resp.barrioResp' => 'required|string',
-                    // 'datos-resp.ciudadResp' => 'required|exists:ciudades,id_aut_ciudad',
-                    // 'datos-resp.codigoPostalResp' => 'required|integer',
-                    'datos-resp.nombreResp' => 'required|string',
-                    'datos-resp.apellidoResp'  => 'required|string',
-                    'datos-resp.cargo'  => 'required|string',
-                    'datos-resp.telefonoResp'  => 'integer',
-                    'datos-resp.telefonoMovilResp'  => 'required|integer',
-                    'datos-resp.horarioContactoResp'  => 'required|string',
-                    'datos-resp.direccionTrabajoResp' => 'required|string',
-                    'datos-resp.emailCorpResp'  => 'required|email',
-                ]);
-                // return response()->json(request());
-                $user = new User();
-                // $user->email = request('datos-cuenta.email');
-                $user->email = $request['datos-cuenta']['email'];
-                $user->password = bcrypt($request['datos-cuenta']['contrasenia']);
-                // return response()->json(request());
-                $user->rol()->associate(Role::whereNombre('Empresa')->firstOrFail());
-                // return response()->json($user);
-
-                $direccionEmpr = new Localizacion();
-                if ($request['loc-contact-empresa']['codigoPostalEmp']) {
-                    $direccionEmpr->codigo_postal = $request['loc-contact-empresa']['codigoPostalEmp'];
-                }
-                $direccionEmpr->direccion = $request['loc-contact-empresa']['direccionEmp'];
-                $direccionEmpr->barrio = $request['loc-contact-empresa']['barrioEmp'];
-                $direccionEmpr->ciudad()->associate(Ciudad::find($request['loc-contact-empresa']['ciudadEmp']));
-                // return response()->json($direccionEmpr);
-
-                $empresa = new Empresa();
-                $empresa->nit = $request['datos-generales-empresa']['NIT'];
-                $empresa->nombre = $request['datos-generales-empresa']['nombreEmpresa'];
-                $empresa->razon_social = $request['datos-generales-empresa']['razonSocial'];
-                $empresa->numero_empleados = $request['datos-generales-empresa']['numEmpleados'];
-                $empresa->ingresos = $request['datos-generales-empresa']['ingresosEmp'];
-                if ($request['loc-contact-empresa']['sitioWebEmp']) {
-                    $empresa->sitio_web = $request['loc-contact-empresa']['sitioWebEmp'];
-                }
-                $empresa->anio_creacion = $request['datos-generales-empresa']['anioCreacion'];
-                $empresa->url_doc_camaracomercio = "url pdf camara y comercio";
-
-                if ($request['loc-contact-empresa']['telefonoEmp']) {
-                    $empresa->telefono = $request['loc-contact-empresa']['telefonoEmp'];
-                }
-                if ($request['loc-contact-empresa']['emailEmp']) {
-                    $empresa->correo = $request['loc-contact-empresa']['emailEmp'];
-                }
-                // return response()->json($empresa);
-
-                $empresa->estado = "En espera";
-                $empresa->fecha_registro = Carbon::now();
-                $empresa->total_publicaciones = 0;
-                $empresa->limite_publicaciones = 0;
-                $empresa->num_publicaciones_actuales = 0;
-                // return response()->json($empresa);
-
-                // $dir_empresa = request('dir_empresa');
-                $direccionAdministrador = new Localizacion();
-                // $direccionAdministrador->codigo_postal = $request['datos-resp']['codigoPostalResp'];
-                $direccionAdministrador->codigo_postal = $request['loc-contact-empresa']['codigoPostalEmp'];
-                $direccionAdministrador->direccion = $request['datos-resp']['direccionTrabajoResp'];
-                // $direccionAdministrador->barrio = $request['datos-resp']['barrioResp'];
-                $direccionAdministrador->barrio = $request['loc-contact-empresa']['barrioEmp'];
-                $direccionAdministrador->ciudad()->associate(Ciudad::find($request['loc-contact-empresa']['ciudadEmp']));
-                // return response()->json($direccionAdministrador);
-                // if (!$dir_empresa) { }
-
-                $representanteLegal = new RepresentanteEmpresa();
-                $representanteLegal->nombre = $request['datos-resp']['nombrereplegal'];
-                $representanteLegal->apellidos = $request['datos-resp']['apellidoreplegal'];
-                if ($request['datos-resp']['telefonoreplegal']) {
-                    $representanteLegal->telefono = $request['datos-resp']['telefonoreplegal'];
-                }
-                $representanteLegal->telefono_movil = $request['datos-resp']['telefonoMovilreplegal'];
-                // return response()->json($representanteLegal);
-
-
-                $representante = new AdministradorEmpresa();
-                $representante->nombres = $request['datos-resp']['nombreResp'];
-                $representante->apellidos = $request['datos-resp']['apellidoResp'];
-                if ($request['datos-resp']['telefonoResp']) {
-                    $representante->telefono = $request['datos-resp']['telefonoResp'];
-                }
-                $representante->telefono_movil = $request['datos-resp']['telefonoMovilResp'];
-
-                $representante->correo_corporativo = $request['datos-resp']['emailCorpResp'];
-                // return response()->json([$representante, $request['datos-resp']['cargo']]);
-                // return response()->json(Cargo::find(request('rep_id_cargo'))->firstOrFail());
-                // return response()->json($representante);
-                // return response()->json([$user, $empresa, $representanteLegal, $representante]);
-
-                // DB::transaction(function () use ($user, $direccionEmpr, $empresa, $direccionAdministrador, $representante, $representanteLegal) {
-                DB::beginTransaction();
-                $user->save();
-                // return response()->json("aqui va");
-                $direccionEmpr->save();
-                $empresa->direccion()->associate($direccionEmpr);
-                $empresa->save();
-                $empresa->subSectores()->sync($request['sectores']['sectores']);
-
-
-                // if ($dir_empresa) {
-                //     $representante->direccion()->associate($direccionEmpr);
-                // } else {
-                $direccionAdministrador->save();
-                $cargo = Cargo::whereNombre($request['datos-resp']['cargo'])->first();
-                if (!$cargo) {
-                    $cargo->nombre = $request['datos-resp']['cargo'];
-                    $cargo->estado = false;
-                    $cargo->save();
-                }
-                // return response()->json($cargo);
-                $representante->direccion()->associate($direccionAdministrador);
-                $representante->user()->associate($user);
-                $representante->cargo()->associate($cargo);
-                $representante->empresa()->associate($empresa);
-                // }
-                $representante->save();
-                // return response()->json($representante);
-
-                $representanteLegal->empresa()->associate($empresa);
-                $representanteLegal->save();
-                // });
-                DB::commit();
-                return response()->json($empresa, 200);
-            } catch (ValidationException $ev) {
-                return response()->json($ev->validator->errors(), $code);
-            } catch (Exception $e) {
-                return response()->json($e);
+        try {
+            $user = new User();
+            $user->email = $request['datos']['datos-cuenta']['email'];
+            $user->password = bcrypt($request['datos']['datos-cuenta']['contrasenia']);
+            $rol = Role::whereNombre('Empresa')->first();
+            if (!$rol) {
+                return $this->fail("Al parecer no hay datos en la BD!");
             }
+            $user->rol()->associate($rol);
+
+            $direccionEmpr = new Localizacion();
+            if ($request['datos']['loc-contact-empresa']['codigoPostalEmp']) {
+                $direccionEmpr->codigo_postal = $request['datos']['loc-contact-empresa']['codigoPostalEmp'];
+            }
+            $direccionEmpr->direccion = $request['datos']['loc-contact-empresa']['direccionEmp'];
+            $direccionEmpr->barrio = $request['datos']['loc-contact-empresa']['barrioEmp'];
+            $direccionEmpr->ciudad()->associate(Ciudad::find($request['datos']['loc-contact-empresa']['ciudadEmp']));
+
+            $empresa = new Empresa();
+            $empresa->nit = $request['datos']['datos-generales-empresa']['NIT'];
+            $empresa->nombre = $request['datos']['datos-generales-empresa']['nombreEmpresa'];
+            $empresa->razon_social = $request['datos']['datos-generales-empresa']['razonSocial'];
+            $empresa->numero_empleados = $request['datos']['datos-generales-empresa']['numEmpleados'];
+            $empresa->ingresos = $request['datos']['datos-generales-empresa']['ingresosEmp'];
+            if ($request['datos']['loc-contact-empresa']['sitioWebEmp']) {
+                $empresa->sitio_web = $request['datos']['loc-contact-empresa']['sitioWebEmp'];
+            }
+            $empresa->anio_creacion = $request['datos']['datos-generales-empresa']['anioCreacion'];
+            $empresa->url_doc_camaracomercio = "url pdf camara y comercio";
+
+            if ($request['datos']['loc-contact-empresa']['telefonoEmp']) {
+                $empresa->telefono = $request['datos']['loc-contact-empresa']['telefonoEmp'];
+            }
+            if ($request['datos']['loc-contact-empresa']['emailEmp']) {
+                $empresa->correo = $request['datos']['loc-contact-empresa']['emailEmp'];
+            }
+
+            $empresa->estado = "En espera";
+            $empresa->fecha_registro = Carbon::now();
+            $empresa->total_publicaciones = 0;
+            $empresa->limite_publicaciones = 0;
+            $empresa->num_publicaciones_actuales = 0;
+            $empresa->descripcion = $request['datos']['datos-generales-empresa']['descripcionEmpresa'];
+
+            $direccionAdministrador = new Localizacion();
+            $direccionAdministrador->codigo_postal = $request['datos']['loc-contact-empresa']['codigoPostalEmp'];
+            $direccionAdministrador->direccion = $request['datos']['datos-resp']['direccionTrabajoResp'];
+            $direccionAdministrador->barrio = $request['datos']['loc-contact-empresa']['barrioEmp'];
+            $direccionAdministrador->ciudad()->associate(Ciudad::find($request['datos']['loc-contact-empresa']['ciudadEmp']));
+
+            $representanteLegal = new RepresentanteEmpresa();
+            $representanteLegal->nombre = $request['datos']['datos-resp']['nombrereplegal'];
+            $representanteLegal->apellidos = $request['datos']['datos-resp']['apellidoreplegal'];
+            if ($request['datos']['datos-resp']['telefonoreplegal']) {
+                $representanteLegal->telefono = $request['datos']['datos-resp']['telefonoreplegal'];
+            }
+            $representanteLegal->telefono_movil = $request['datos']['datos-resp']['telefonoMovilreplegal'];
+            $representante = new AdministradorEmpresa();
+            $representante->nombres = $request['datos']['datos-resp']['nombreResp'];
+            $representante->apellidos = $request['datos']['datos-resp']['apellidoResp'];
+
+            if($request['datos']['datos-resp']['horarioContactoResp']){
+
+                $representante->horario_contacto = $request['datos']['datos-resp']['horarioContactoResp'];
+            }
+
+
+            if ($request['datos']['datos-resp']['telefonoResp']) {
+                $representante->telefono = $request['datos']['datos-resp']['telefonoResp'];
+            }
+            $representante->telefono_movil = $request['datos']['datos-resp']['telefonoMovilResp'];
+            $representante->correo_corporativo = $request['datos']['datos-resp']['emailCorpResp'];
+
+            $ids = array();
+            foreach ($request['datos']['sectores']['subsectores'] as $sect) {
+                // foreach ($sect["subSectores"] as $subs) {
+                // return response()->json($sect);
+                // array_push($ids, $subs["idSubSector"]);
+                array_push($ids, $sect);
+                // }
+            }
+
+            DB::beginTransaction();
+
+            $pdf = $request->file('fileInput')->store('/empresas/pdfs', 'files');
+            $empresa->url_doc_camaracomercio = asset($pdf);
+            if ($request->file('logoInput')) {
+                $image_s = $request->file('logoInput')->store('/empresas/logos', 'files');
+                $empresa->url_logo = asset($image_s);
+            }
+
+            $user->save();
+            $direccionEmpr->save();
+            $empresa->direccion()->associate($direccionEmpr);
+            $empresa->save();
+            // $empresa->subSectores()->sync($request['sectores']['sectores']);
+            $empresa->subSectores()->sync($ids);
+
+            $direccionAdministrador->save();
+            $cargo = Cargo::whereNombre($request['datos']['datos-resp']['cargo'])->first();
+            if (!$cargo) {
+                $cargo = new Cargo();
+                $cargo->nombre = $request['datos']['datos-resp']['cargo'];
+                $cargo->estado = false;
+                $current_id = DB::table('cargos')->max('id_aut_cargos');
+                $cargo->id_aut_cargos = $current_id + 1;
+                $cargo->save();
+            }
+            $representante->direccion()->associate($direccionAdministrador);
+            $representante->user()->associate($user);
+            $representante->cargo()->associate($cargo);
+            $representante->empresa()->associate($empresa);
+            $representante->save();
+
+            $representanteLegal->empresa()->associate($empresa);
+            $representanteLegal->save();
+            DB::commit();
+            return $this->success($empresa->id_aut_empresa);
+        } catch (Exception $e) {
+            return $this->fail("Registro Empresa=>" . $e->getMessage());
         }
-        //
-        // abort(401);
-        return response()->json($data, $code);
+    }
+
+    public function uploadFiles(Empresa $empresa, Request $request)
+    {
+        // return response()->json(["esto llego", $request->allFiles()]);
+        $request->validate([
+            "fileInput" => "required|file|mimes:pdf|max:2048",
+            "logoInput" => "image"
+        ]);
+
+        // $pdf = Storage::disk('files')->put('/empresas/pdfs', $request->file('fileInput'));
+        $pdf = $request->file('fileInput')->storePublicly('/empresas/pdfs');
+        $empresa->url_doc_camaracomercio = $pdf;
+        if ($request->file('logoInput')) {
+            // $image_s = Storage::disk('public')->put('/empresas/logos', $request->file('logoInput'));
+            // $image_s2 = $request->file('logoInput')->store('/empresas/logos');
+            // $image_s3 = $request->file('logoInput')->storePublicly('/empresas/logos');
+            $image_s = $request->file('logoInput')->store('/empresas/logos', 'files');
+            $empresa->url_logo = $image_s;
+            $empresa->save();
+            // return $this->success([ $image_s, $image_s2, $image_s3, $pdf]);
+            return $this->success([$image_s, $pdf]);
+        }
+        $empresa->save();
+        return $this->success([asset($pdf), $pdf]);
+        // return response()->json(["esto llego", $request]);
     }
 }

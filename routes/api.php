@@ -28,17 +28,21 @@ Route::post('egresados', 'API\EgresadoController@guardarInformacionBasica');
 */
 Route::put('completeEgresados/{idEgresado}', 'API\EgresadoController@fullInfo');
 /*
+*Retorna el Id del egresado para inicio de sesion
+*/
+Route::get('getIdegresados/{correo}','API\EgresadoController@getEgresadoEmail');
+/*
 *Validación de carnetización de egresado
 */
-Route::get('carnetizacion/{correo}','CarnetizacionController@validarCarnetizacion');
+Route::get('carnetizacion/{correo}','API\CarnetizacionController@validarCarnetizacion');
 /*
 *Obteniendo todas las solicitudes de carnet pendientes para el Administrador
 */
-Route::get('carnetizacion','CarnetizacionController@getAll');
+Route::get('carnetizacion','API\CarnetizacionController@getAll');
 /*
 *Administrador la fecha de respuesta y el estado a "Solicitado" a "respondido" de carnet por egresados
 */
-Route::get('carnetizacion','CarnetizacionController@updateAdmin');
+Route::get('carnetizacionUpdateAdmin','API\CarnetizacionController@updateAdmin');
 /*
  * Obtiene todas la ciudades de un departamento.
  */

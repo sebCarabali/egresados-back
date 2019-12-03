@@ -1,19 +1,22 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use App\Egresado;
-use Carbon\Carbon;
 
 class CarnetizacionController extends Controller
 {
-    //Obtiene todas las solicitudes de carnetizacion de los egresados
-    public function getAll(){
-        $users = Egresado::join("carnetizacion","egresados.id_aut_egresado","=","carnetizacion.id_aut_carnetizacion")
+      //Obtiene todas las solicitudes de carnetizacion de los egresados
+      public function getAll(){
+        $SolicitudesPendientes = Egresado::join("solicita","egresados.id_aut_egresado","=","solicita.id_egresado")
+            ->join("carnetizacion","solicita.id_carnetizacion","=","carnetizacion.id_aut_carnetizacion")
             ->where('carnetizacion.estado_solicitud','=',"Solicitado")
-            ->select('egresados.nombres', 'egresados.apellidos', 'egresados.correo', 'egresados.identificacion','carnetizacion.fecha_solicitud')
+            ->select('egresados.nombres', 'egresados.apellidos', 'egresados.correo', 'egresados.identificacion','solicita.fecha_solicitud')
             ->get();
+        return response()->json($SolicitudesPendientes,200);
+
     }
 
     // Actualiza el Administrador la fecha de respuesta y el estado a "Solicitado" a "respondido" de carnet por egresados

@@ -219,7 +219,8 @@ class EgresadoController extends Controller
         
             foreach($referidos as $ref) {
             try{
-                //if($ref['es_egresado']){
+                if($ref['es_egresado']){
+                    
                     $referido = new Referido();
                     $referido->nombres = $ref['nombres'];
                     $referido->parentesco = $ref['parentesco'];
@@ -229,23 +230,19 @@ class EgresadoController extends Controller
                     $referido->telefono_movil = $ref['telefono_movil'];
                     $referido->correo = $ref['correo'];
                                 
-               /* }else{
+                }else{
                     $referido = new Referido();
                     $referido->nombres = $ref['nombres'];
                     $referido->parentesco = $ref['parentesco'];
                     $referido->es_egresado = $ref['es_egresado'];                                
                     $referido->telefono_movil = $ref['telefono_movil'];
-                    $referido->correo = $ref['correo'];
-                    $referido->niveles_estudio()->associate(NivelEstudio::where('id_aut_estudio',$ref['id_nivel_educativo'])->firstOrFail());             
-                }*/
+                    $referido->correo = $ref['correo'];                    
+                }
                 $referido->save();
-                //$egresado=Egresado::find($idEgresado);
                 
-                //$egresado->referidos()->attach($referido);
-                $referido->egresados()->attach($idEgresado);
-                
+                $referido->egresados()->attach($idEgresado);                
                 }catch(Exeption $e){
-                    return respose()->json($e, 202)->all();
+                    return respose()->json(['error' => 'Error agregando referido'], 400);
                 }
     
                 
@@ -254,14 +251,16 @@ class EgresadoController extends Controller
 
 
     //Metodo que permite almacenar una lista de experiencias de un egresado
-    public function guardarInfoExperiencia(array $experiencias, $idEgresado){        
+    public function guardarInfoExperiencia(array $experiencias, $idEgresado){     
+            
             //Informacion experiencias pasada
+            
             foreach($experiencias as $exp) {
                  //Informacion experiencias actual
                 $experiencia = new Experiencia();
-                //$experiencia->tipo_trabajo = $exp['tipo_trabajo'];
                 $experiencia->nombre_empresa = $exp['nombre_empresa'];
-                $experiencia->ciudad()->associate(Ciudad::where('id_aut_ciudad',$exp['id_ciudad'])->firstOrFail());
+                $experiencia->ciudad()->associate(Ciudad::where('id_aut_ciudad',$exp['id_ciudad'])->first());
+                
                 $experiencia->dir_empresa = $exp['dir_empresa'];
                 $experiencia->tel_trabajo=$exp['tel_trabajo'];
                 $experiencia->rango_salario=$exp['rango_salario'];
@@ -272,17 +271,33 @@ class EgresadoController extends Controller
                 $experiencia->trabajo_en_su_area=$exp['trabajo_en_su_area'];
                 
                 $cargo=new Cargo();
-                $cargo->nombre=$exp["cargo"];
+                $cargo->nombre=$exp["cargo_nombre"];
                 $cargo->estado=false;
                 $cargo->save();
-
-                $experiencia->cargos()->associate($cargo);
-                $experiencia->egresados()->associate(Egresado::where('id_aut_egresado',$idEgresado)->firstOrFail());
-                $experiencia->save();
-
+                
+                try {
+                    $experiencia->cargos()->associate($cargo);
+                    $experiencia->egresados()->associate(Egresado::where('id_aut_egresado',$idEgresado)->first());
+                    $experiencia->save();
+                }catch(Exception $e) {
+                    return response()->json(['error' => $e], 400);
+                }
+                return response()->json($experiencias, 202);
                 
             }
     }
+
+    public function getEgresadoEmail($email){
+        try {
+            $idEgresado = Egresado::where("correo","=",$email)
+            ->select("id_aut_egresado")->get();
+            return response()->json($idEgresado,200);
+
+        }catch(Exeption $e){
+            return response()->json(['error' => $e], 400);
+        }
+    }
+
 
     //Carga los atributos de un egresado especifico para actualizar
     public function edit($idEgresado){
@@ -417,35 +432,45 @@ class EgresadoController extends Controller
     //           Datos personales especificos
     //CompletarInformacionRequest
     public function fullInfo(Request $request, $idEgresado){
-       //return response()->json($request->all(), 202);
+
+       
        return DB::transaction(function()use($request,$idEgresado){
             
             try{
                 
                 $egresado = Egresado::find($idEgresado);                
+                
                 $egresado->ha_trabajado=$request->get('ha_trabajado');
                 $egresado->trabaja_actualmente=$request->get('trabaja_actualmente');
                 $egresado->save();
 
                 // Obteniendo informacion de los referidos de un egresado
                 $referidos = $request->get('referidos');
+
                 if($referidos && count($referidos)>0){
+                    
                     $this->guardarReferido($referidos,$idEgresado);
+                    //return response()->json($request->all(), 202);
                 }
                 
-
+               
                 // Obteniendo informacion de las experiencias de un egresado
-                $experiencias = $request->get('experiencias');
-                if($experiencias && count($experiencias)>0){
-                    $this->guardarInfoExperiencia($experiencias,$idEgresado);
+                $expAnterior = $request->get('expAnterior');
+                
+                $expActual = $request->get('expActual');
+               
+                
+                if($expAnterior && count($expAnterior)>0){
+                    $this->guardarInfoExperiencia($expAnterior,$idEgresado);
+                    //return response()->json( $this->guardarInfoExperiencia($expAnterior,$idEgresado)->all(), 202);
                 }
 
-               /* if($experienciasActual && count($experiencias)>0){
-                    $this->guardarInfoExperiencia($experiencias,$idEgresado);
-                }*/
+               if($expActual && count($expActual)>0){
+                    $this->guardarInfoExperiencia($expActual,$idEgresado);
+                }
                 
             }catch(Exception $e){
-                return response()->json($e, 400);
+                return response()->json($e->all(), 400);
             }
 
             return response()->json($idEgresado, 202);

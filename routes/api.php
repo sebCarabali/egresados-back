@@ -79,6 +79,17 @@ Route::get('users/validar/{codigo}', 'UserController@esUsuarioActivoPorCodigo');
 Route::get('facultades/{idSede}', 'API\FacultadController@getBySede');
 Route::get('programas/{idSede}/{idFacultad}/{idNivelEstudio}', 'API\ProgramaController@getBySedeAndFacultadAndNivelEstudio');
 Route::get('sedes', 'API\SedesController@getAll');
+/**
+ * Obtener los servicios
+ */
+Route::get('servicios', 'ServicioController@getAll');
+/**
+ * Gestión Apoyos
+ */
+Route::get('apoyos', 'ApoyoController@getAll');
+Route::get('apoyos/{idApoyo}', 'ApoyoController@getById');
+Route::post('apoyos', 'ApoyoController@save');
+Route::put('apoyos', 'ApoyoController@update');
 // --------------------------------------------------------------------------------
 /**
  * Registro de una empresa

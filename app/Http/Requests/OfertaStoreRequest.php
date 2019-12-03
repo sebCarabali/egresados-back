@@ -48,7 +48,8 @@ class OfertaStoreRequest extends FormRequest
             'contrato.duracion' => 'nullable|string',
             
             'requisitos.requisitosMinimos' => 'required|string',
-            'requisitos.idrequisitosMinimos' => 'required|integer|exists:niveles_estudio,id_aut_estudio',
+            // 'requisitos.idrequisitosMinimos' => 'required|integer|exists:niveles_estudio,id_aut_estudio',
+            'requisitos.idrequisitosMinimos' => 'required|integer|exists:programas,id_aut_programa',
             
             'requisitos.experienciaLaboral' => 'required|string',
             'requisitos.anios' => 'required|integer',
@@ -63,6 +64,8 @@ class OfertaStoreRequest extends FormRequest
             'requisitos.softwareOferta.*.nombre' => 'required|string',
             'requisitos.softwareOferta.*.nivel' => 'required|string',
             'requisitos.preguntasCandidato' => 'nullable|array',
+            'requisitos.idProgramas' => 'required|array|min:1',
+            'requisitos.idProgramas.*' => 'required|distinct|integer|exists:programas,id_aut_programa',
 
             'contactoHV.correo' => 'required|email',
             'contactoHV.nombres' => 'required|string',

@@ -198,7 +198,7 @@ class OfertaController extends Controller
       // }
 
       $cargo = Cargo::whereNombre($request['informacionPrincipal']['cargo'])->first();
-      if(!$cargo){
+      if (!$cargo) {
         $cargo = Cargo::create(["nombre" => $request['informacionPrincipal']['cargo']]);
       }
       $id_cargo = $cargo->id_aut_cargos;
@@ -267,6 +267,9 @@ class OfertaController extends Controller
       // Asigna los id de las areas de conocimientos requeridos por la oferta
       $oferta->areasConocimiento()->sync($request['informacionPrincipal']['idAreaConocimiento']); // Ids consultados de la tabla areas de conocimiento
 
+      // Asigna los id de los programas requeridos por la oferta
+      $oferta->programas()->sync($request['requisitos']['idProgramas']);
+
 
       // // Asigna los id de los software requeridos en la oferta
       // foreach ($request['requisitos']['softwareOferta'] as $soft) {
@@ -309,8 +312,7 @@ class OfertaController extends Controller
 
       DB::commit();
       return $this->success($oferta);
-    } 
-    catch (Exception $e) {
+    } catch (Exception $e) {
       return $this->fail("Registro oferta => " . $e->getMessage());
     }
   }
@@ -357,7 +359,7 @@ class OfertaController extends Controller
       // }
 
       $cargo = Cargo::whereNombre($request['informacionPrincipal']['cargo'])->first();
-      if(!$cargo){
+      if (!$cargo) {
         $cargo = Cargo::create(["nombre" => $request['informacionPrincipal']['cargo']]);
       }
       $id_cargo = $cargo->id_aut_cargos;
@@ -411,7 +413,8 @@ class OfertaController extends Controller
       // Asigna los id de las areas de conocimientos requeridos por la oferta
       $oferta->areasConocimiento()->sync($request['informacionPrincipal']['idAreaConocimiento']); // Ids consultados de la tabla areas de conocimiento
 
-
+      // Asigna los id de los programas requeridos por la oferta
+      $oferta->programas()->sync($request['requisitos']['idProgramas']);
 
       // Asigna los id de los software requeridos en la oferta
       $array_software = array();

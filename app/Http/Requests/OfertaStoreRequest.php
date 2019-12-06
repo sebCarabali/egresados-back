@@ -48,8 +48,8 @@ class OfertaStoreRequest extends FormRequest
             'contrato.duracion' => 'nullable|string',
             
             'requisitos.requisitosMinimos' => 'required|string',
-            // 'requisitos.idrequisitosMinimos' => 'required|integer|exists:niveles_estudio,id_aut_estudio',
-            'requisitos.idrequisitosMinimos' => 'required|integer|exists:programas,id_aut_programa',
+            'requisitos.idrequisitosMinimos' => 'required|integer|exists:niveles_estudio,id_aut_estudio',
+            // 'requisitos.idrequisitosMinimos' => 'required|integer|exists:programas,id_aut_programa',
             
             'requisitos.experienciaLaboral' => 'required|string',
             'requisitos.anios' => 'required|integer',

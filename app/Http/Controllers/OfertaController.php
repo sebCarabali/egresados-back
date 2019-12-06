@@ -13,6 +13,7 @@ use App\ContactoHV;
 use App\Empresa;
 use App\Http\Requests\OfertaStoreRequest;
 use App\Http\Resources\AreaConocimientoResource;
+use App\Http\Resources\EgresadoResource;
 use App\Http\Resources\SalarioResource;
 use App\OfertaSoftware;
 use App\PreguntaOferta;
@@ -278,7 +279,7 @@ class OfertaController extends Controller
       // $oferta->fecha_publicacion = ""; //
       // $oferta->fecha_cierre = ""; //
       $oferta->estado = "Pendiente"; // Enum ('Aceptada', 'Rechazada', 'Pendiente');  --Administrador
-      $oferta->estado_proceso = "En espera"; // ('En seleccion', 'Desactivada', 'Expirada');  --Empresa
+      $oferta->estado_proceso = "Pendiente"; // ('En seleccion', 'Desactivada', 'Expirada');  --Empresa
       $oferta->id_sector = $request['informacionPrincipal']['idSector'];
       if (isset($request['informacionPrincipal']['nombreTempEmpresa'])) {
         $oferta->nombre_temporal_empresa = $request['informacionPrincipal']['nombreTempEmpresa']; //
@@ -439,7 +440,7 @@ class OfertaController extends Controller
       // $oferta->fecha_publicacion = ""; //
       // $oferta->fecha_cierre = ""; //
       // $oferta->estado = "Pendiente"; // Enum ('Aceptada', 'Rechazada', 'Pendiente');  --Administrador
-      // $oferta->estado_proceso = "En espera"; // ('En seleccion', 'Desactivada', 'Expirada');  --Empresa
+      // $oferta->estado_proceso = "Pendiente"; // ('En seleccion', 'Desactivada', 'Expirada');  --Empresa
       $oferta->id_sector = $request['informacionPrincipal']['idSector'];
       if (isset($request['informacionPrincipal']['nombreTempEmpresa'])) {
         $oferta->nombre_temporal_empresa = $request['informacionPrincipal']['nombreTempEmpresa']; //
@@ -519,6 +520,10 @@ class OfertaController extends Controller
 
   public function getAllPostulados(Oferta $oferta)
   {
-    return $this->success($oferta->postulaciones);
+    return $this->success(EgresadoResource::collection($oferta->postulaciones));
+  }
+  public function getContactoHV(Empresa $empresa)
+  {
+    return $this->success($empresa->administrador);
   }
 }

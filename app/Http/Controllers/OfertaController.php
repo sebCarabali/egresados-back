@@ -276,6 +276,7 @@ class OfertaController extends Controller
       $oferta->id_forma_pago = $request['contrato']['idRangoSalarial'];
       $oferta->experiencia = $request['requisitos']['experienciaLaboral']; // Enum ('Sin experiencia', 'Igual a', 'Mayor o igual que', 'Menor o igual que')
       $oferta->anios_experiencia = $request['requisitos']['anios']; //
+      $oferta->perfil = $request['requisitos']['perfil']; //
       // $oferta->fecha_publicacion = ""; //
       // $oferta->fecha_cierre = ""; //
       $oferta->estado = "Pendiente"; // Enum ('Aceptada', 'Rechazada', 'Pendiente');  --Administrador
@@ -288,12 +289,12 @@ class OfertaController extends Controller
         $oferta->licencia_conduccion = $request['requisitos']['licenciaConduccion']; // Enum ('A1', 'A2', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3')
       }
       $oferta->requisitos_minimos = $request['requisitos']['requisitosMinimos']; // Texto descriptivo
-      if (isset($request['requisitos']['idDiscapacidad'])) {
-        $oferta->id_discapacidad = $request['requisitos']['idDiscapacidad']; // Id consultado de la tabla discapacidad
+      if (isset($request['requisitos']['idDiscapacidades'])) {
+        $oferta->discapacidades()->sync($request['requisitos']['idDiscapacidades']); // Id consultado de la tabla discapacidad
       }
       $oferta->num_dias_oferta = $request['informacionPrincipal']['vigenciaDias']; // Dias de la oferta Max 30
 
-      $oferta->id_aut_nivestud = $request['requisitos']['idrequisitosMinimos']; // NIvel Programa
+      $oferta->id_aut_nivestud = $request['requisitos']['idEstudioMinimo']; // NIvel Programa
 
       $oferta->save();
 
@@ -437,6 +438,7 @@ class OfertaController extends Controller
       $oferta->id_forma_pago = $request['contrato']['idRangoSalarial'];
       $oferta->experiencia = $request['requisitos']['experienciaLaboral']; // Enum ('Sin experiencia', 'Igual a', 'Mayor o igual que', 'Menor o igual que')
       $oferta->anios_experiencia = $request['requisitos']['anios']; //
+      $oferta->perfil = $request['requisitos']['perfil']; //
       // $oferta->fecha_publicacion = ""; //
       // $oferta->fecha_cierre = ""; //
       // $oferta->estado = "Pendiente"; // Enum ('Aceptada', 'Rechazada', 'Pendiente');  --Administrador
@@ -449,12 +451,12 @@ class OfertaController extends Controller
         $oferta->licencia_conduccion = $request['requisitos']['licenciaConduccion']; // Enum ('A1', 'A2', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3')
       }
       $oferta->requisitos_minimos = $request['requisitos']['requisitosMinimos']; // TEsto descriptivo
-      if (isset($request['requisitos']['idDiscapacidad'])) {
-        $oferta->id_discapacidad = $request['requisitos']['idDiscapacidad']; // Id consultado de la tabla discapacidad
+      if (isset($request['requisitos']['idDiscapacidades'])) {
+        $oferta->discapacidades()->sync($request['requisitos']['idDiscapacidades']); // Id consultado de la tabla discapacidad
       }
       $oferta->num_dias_oferta = $request['informacionPrincipal']['vigenciaDias']; // Dias de la oferta Max 30
 
-      $oferta->id_aut_nivestud = $request['requisitos']['idrequisitosMinimos']; // NIvel Programa
+      $oferta->id_aut_nivestud = $request['requisitos']['idEstudioMinimo']; // NIvel Programa
 
       $oferta->save();
       // $empresa->ofertas()->save($oferta);

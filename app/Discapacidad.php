@@ -13,6 +13,9 @@ class Discapacidad extends Model
     public function egresados() {
         return $this->belongsToMany('App\Egresado', 'egresados_discapacidades', 'id_discapacidad','id_egresados');
     }
+    public function ofertas() {
+        return $this->belongsToMany(Oferta::class, 'ofertas_discapacidades', 'id_discapacidad','id_oferta');
+    }
 
     
 }

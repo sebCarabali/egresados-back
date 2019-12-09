@@ -36,8 +36,8 @@ class OfertaStoreRequest extends FormRequest
             'informacionPrincipal.vigenciaDias' => 'required|integer|min:7|max:30',
             'informacionPrincipal.idUbicaciones' => 'required|array|min:1',
             'informacionPrincipal.idUbicaciones.*' => 'integer|exists:ciudades,id_aut_ciudad',
-            'informacionPrincipal.idAreaConocimiento' => 'required|array|min:1',
-            'informacionPrincipal.idAreaConocimiento.*' => 'integer|exists:areas_conocimiento,id_aut_areaconocimiento',
+            'informacionPrincipal.idAreasConocimiento' => 'required|array|min:1',
+            'informacionPrincipal.idAreasConocimiento.*' => 'integer|exists:areas_conocimiento,id_aut_areaconocimiento',
             
             'contrato.tipoContrato' => 'required|string',
             'contrato.jornada' => 'required|string',
@@ -48,13 +48,14 @@ class OfertaStoreRequest extends FormRequest
             'contrato.duracion' => 'nullable|string',
             
             'requisitos.requisitosMinimos' => 'required|string',
-            'requisitos.idrequisitosMinimos' => 'required|integer|exists:niveles_estudio,id_aut_estudio',
-            // 'requisitos.idrequisitosMinimos' => 'required|integer|exists:programas,id_aut_programa',
+            'requisitos.idEstudioMinimo' => 'required|integer|exists:niveles_estudio,id_aut_estudio',
+            'requisitos.perfil' => 'required|string',
             
             'requisitos.experienciaLaboral' => 'required|string',
             'requisitos.anios' => 'required|integer',
             'requisitos.licenciaConduccion' => 'nullable|string',
-            'requisitos.idDiscapacidad' => 'nullable|integer|exists:discapacidades,id_aut_discapacidades',
+            'requisitos.idDiscapacidades' => 'nullable|array|min:1',
+            'requisitos.idDiscapacidades.*' => 'integer|exists:discapacidades,id_aut_discapacidades',
             'requisitos.idiomas' => 'nullable|array',
             'requisitos.idiomas.*.id' => 'required|integer|exists:idiomas,id_aut_idioma',
             'requisitos.idiomas.*.nivel_escritura' => 'required|string',

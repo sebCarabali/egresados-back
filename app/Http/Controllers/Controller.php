@@ -43,7 +43,8 @@ class Controller extends BaseController
             'status_code' => $code,
             'message' => JsonResponse::$statusTexts[$code] = 'OK',
             'data' => $data,
-        ], isset(JsonResponse::$statusTexts[$code]) ? $code : JsonResponse::HTTP_OK);
+        ],200);
+        // ], isset(JsonResponse::$statusTexts[$code]) ? $code : JsonResponse::HTTP_OK);
     }
     /**
      * @param string|null $message
@@ -57,7 +58,8 @@ class Controller extends BaseController
             'status' => 'Bad Request',
             'status_code' => $code,
             'message' => $message ? $message : 'Bad Request',
-        ], isset(JsonResponse::$statusTexts[$code]) ? $code : JsonResponse::HTTP_BAD_REQUEST);
+        ],200);
+        // ], isset(JsonResponse::$statusTexts[$code]) ? $code : JsonResponse::HTTP_OK);
     }
     /**
      * @param string|null $message
@@ -71,7 +73,8 @@ class Controller extends BaseController
             'status' => 'Not Found',
             'status_code' => $code,
             'message' => $message ? $message : 'Not Found',
-        ], isset(JsonResponse::$statusTexts[$code]) ? $code : JsonResponse::HTTP_NOT_FOUND);
+        ],200);
+        // ], isset(JsonResponse::$statusTexts[$code]) ? $code : JsonResponse::HTTP_OK);
     }
     /**
      * @param string|null $message
@@ -85,7 +88,8 @@ class Controller extends BaseController
             'status' => 'Forbidden',
             'status_code' => $code,
             'message' => $message ? $message : 'Forbidden',
-        ], isset(JsonResponse::$statusTexts[$code]) ? $code : JsonResponse::HTTP_FORBIDDEN);
+        ],200);
+        // ], isset(JsonResponse::$statusTexts[$code]) ? $code : JsonResponse::HTTP_OK);
     }
     /**
      * @param string|null $message
@@ -99,6 +103,7 @@ class Controller extends BaseController
             'status' => 'Unauthorized',
             'status_code' => $code,
             'message' => $message ? $message : 'Unauthorized',
-        ], isset(JsonResponse::$statusTexts[$code]) ? $code : JsonResponse::HTTP_UNAUTHORIZED);
+        ],200);
+        // ], isset(JsonResponse::$statusTexts[$code]) ? $code : JsonResponse::HTTP_OK);
     }
 }

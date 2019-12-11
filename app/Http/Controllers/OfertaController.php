@@ -329,7 +329,7 @@ class OfertaController extends Controller
       // $oferta->ubicaciones()->sync($request['informacionPrincipal']['ubicacion']); // Ids consultados de la tabla discapacidad
 
       // Asigna los id de las areas de conocimientos requeridos por la oferta
-      $oferta->areasConocimiento()->sync($request['informacionPrincipal']['idAreaConocimiento']); // Ids consultados de la tabla areas de conocimiento
+      $oferta->areasConocimiento()->sync($request['informacionPrincipal']['idAreasConocimiento']); // Ids consultados de la tabla areas de conocimiento
 
       // Asigna los id de los programas requeridos por la oferta
       $oferta->programas()->sync($request['requisitos']['idProgramas']);
@@ -476,7 +476,7 @@ class OfertaController extends Controller
       $oferta->ubicaciones()->sync($request['informacionPrincipal']['idUbicaciones']); // Ids consultados de la tabla discapacidad
 
       // Asigna los id de las areas de conocimientos requeridos por la oferta
-      $oferta->areasConocimiento()->sync($request['informacionPrincipal']['idAreaConocimiento']); // Ids consultados de la tabla areas de conocimiento
+      $oferta->areasConocimiento()->sync($request['informacionPrincipal']['idAreasConocimiento']); // Ids consultados de la tabla areas de conocimiento
 
       // Asigna los id de los programas requeridos por la oferta
       $oferta->programas()->sync($request['requisitos']['idProgramas']);

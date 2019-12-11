@@ -8,6 +8,7 @@ use App\Ciudad;
 use Illuminate\Http\Request;
 
 use App\Empresa;
+use App\Helpers\CrearUsuario;
 use App\Helpers\JwtAuth;
 use App\Http\Requests\EmpresaStoreRequest;
 use App\Http\Requests\EmpresaUpdateRequest;
@@ -21,6 +22,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Validation\ValidationException;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 class EmpresaController extends Controller
@@ -36,7 +38,7 @@ class EmpresaController extends Controller
     public function getEmpresasEnEspera()
     {
         $empresas = Empresa::orderBy('fecha_registro', 'ASC')
-            ->where('estado', 'En espera')->get();
+            ->where('estado', 'Pendiente')->get();
 
         return response()->json($empresas, 200);
     }
@@ -248,14 +250,14 @@ class EmpresaController extends Controller
         $data = null;
 
         try {
-            $user = new User();
-            $user->email = $request['datos']['datos-cuenta']['email'];
-            $user->password = bcrypt($request['datos']['datos-cuenta']['contrasenia']);
-            $rol = Role::whereNombre('Empresa')->first();
-            if (!$rol) {
-                return $this->fail("Al parecer no hay datos en la BD!");
-            }
-            $user->rol()->associate($rol);
+            // $user = new User();
+            // $user->email = $request['datos']['datos-cuenta']['email'];
+            // $user->password = bcrypt($request['datos']['datos-cuenta']['contrasenia']);
+            // $rol = Role::whereNombre('Empresa')->first();
+            // if (!$rol) {
+            //     return $this->fail("Al parecer no hay datos en la BD!");
+            // }
+            // $user->rol()->associate($rol);
 
             $direccionEmpr = new Localizacion();
             if ($request['datos']['loc-contact-empresa']['codigoPostalEmp']) {
@@ -337,7 +339,9 @@ class EmpresaController extends Controller
                 $image_s = $request->file('logoInput')->store('/empresas/logos', 'files');
                 $empresa->url_logo = asset($image_s);
             }
-
+            $crearUsuario = new CrearUsuario();
+            $user = $crearUsuario->crearUsuario($request['datos']['datos-cuenta']['email'], 'Empresa');
+            $user->password = Hash::make($request['datos']['datos-cuenta']['contrasenia']);
             $user->save();
             $direccionEmpr->save();
             $empresa->direccion()->associate($direccionEmpr);

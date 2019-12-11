@@ -283,7 +283,7 @@ class EmpresaController extends Controller
                 $empresa->correo = $request['datos']['loc-contact-empresa']['emailEmp'];
             }
 
-            $empresa->estado = "En espera";
+            $empresa->estado = "Pendiente";
             $empresa->fecha_registro = Carbon::now();
             $empresa->total_publicaciones = 0;
             $empresa->limite_publicaciones = 0;

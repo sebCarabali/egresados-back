@@ -13,6 +13,7 @@ use App\ContactoHV;
 use App\Empresa;
 use App\Http\Requests\OfertaStoreRequest;
 use App\Http\Resources\AreaConocimientoResource;
+use App\Http\Resources\EgresadoResource;
 use App\Http\Resources\SalarioResource;
 use App\OfertaSoftware;
 use App\PreguntaOferta;
@@ -413,24 +414,24 @@ class OfertaController extends Controller
       $oferta->id_forma_pago = $request['contrato']['formaPago'];
       $oferta->experiencia = $request['requisitos']['experienciaLaboral']; // Enum ('Sin experiencia', 'Igual a', 'Mayor o igual que', 'Menor o igual que')
       $oferta->anios_experiencia = $request['requisitos']['anios']; //
+      $oferta->perfil = $request['requisitos']['perfil']; //
       // $oferta->fecha_publicacion = ""; //
       // $oferta->fecha_cierre = ""; //
       $oferta->estado = "Pendiente"; // Enum ('Aceptada', 'Rechazada', 'Pendiente');  --Administrador
-      $oferta->estado_proceso = "En espera"; // ('En seleccion', 'Desactivada', 'Expirada');  --Empresa
-      $oferta->id_sector = $request['informacion-principal']['idSector'];
-      if (isset($request['informacion-principal']['nombreTempEmpresa'])) {
-        $oferta->nombre_temporal_empresa = $request['informacion-principal']['nombreTempEmpresa']; //
+      $oferta->estado_proceso = "Pendiente"; // ('En seleccion', 'Desactivada', 'Expirada');  --Empresa
+      $oferta->id_sector = $request['informacionPrincipal']['idSector'];
+      if (isset($request['informacionPrincipal']['nombreTempEmpresa'])) {
+        $oferta->nombre_temporal_empresa = $request['informacionPrincipal']['nombreTempEmpresa']; //
       }
       if (isset($request['requisitos']['licenciaConduccion'])) {
         $oferta->licencia_conduccion = $request['requisitos']['licenciaConduccion']; // Enum ('A1', 'A2', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3')
       }
-      $oferta->requisitos_minimos = $request['requisitos']['requisitosMinimos']; // TEsto descriptivo
-      if (isset($request['requisitos']['idDiscapacidad'])) {
-        $oferta->id_discapacidad = $request['requisitos']['idDiscapacidad']; // Id consultado de la tabla discapacidad
+      $oferta->requisitos_minimos = $request['requisitos']['requisitosMinimos']; // Texto descriptivo
+      if (isset($request['requisitos']['idDiscapacidades'])) {
+        $oferta->discapacidades()->sync($request['requisitos']['idDiscapacidades']); // Id consultado de la tabla discapacidad
       }
       $oferta->num_dias_oferta = $request['informacion-principal']['vigenciaDias']; // Dias de la oferta Max 30
-
-      $oferta->id_aut_nivprog = $request['requisitos']['idrequisitosMinimos']; // NIvel Programa
+      $oferta->id_aut_nivestud = $request['requisitos']['idEstudioMinimo']; // NIvel Programa
 
       $oferta->save();
 
@@ -572,24 +573,25 @@ class OfertaController extends Controller
       $oferta->id_forma_pago = $request['contrato']['formaPago'];
       $oferta->experiencia = $request['requisitos']['experienciaLaboral']; // Enum ('Sin experiencia', 'Igual a', 'Mayor o igual que', 'Menor o igual que')
       $oferta->anios_experiencia = $request['requisitos']['anios']; //
+      $oferta->perfil = $request['requisitos']['perfil']; //
       // $oferta->fecha_publicacion = ""; //
       // $oferta->fecha_cierre = ""; //
       // $oferta->estado = "Pendiente"; // Enum ('Aceptada', 'Rechazada', 'Pendiente');  --Administrador
-      // $oferta->estado_proceso = "En espera"; // ('En seleccion', 'Desactivada', 'Expirada');  --Empresa
-      $oferta->id_sector = $request['informacion-principal']['idSector'];
-      if (isset($request['informacion-principal']['nombreTempEmpresa'])) {
-        $oferta->nombre_temporal_empresa = $request['informacion-principal']['nombreTempEmpresa']; //
+      // $oferta->estado_proceso = "Pendiente"; // ('En seleccion', 'Desactivada', 'Expirada');  --Empresa
+      $oferta->id_sector = $request['informacionPrincipal']['idSector'];
+      if (isset($request['informacionPrincipal']['nombreTempEmpresa'])) {
+        $oferta->nombre_temporal_empresa = $request['informacionPrincipal']['nombreTempEmpresa']; //
       }
       if (isset($request['requisitos']['licenciaConduccion'])) {
         $oferta->licencia_conduccion = $request['requisitos']['licenciaConduccion']; // Enum ('A1', 'A2', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3')
       }
       $oferta->requisitos_minimos = $request['requisitos']['requisitosMinimos']; // TEsto descriptivo
-      if (isset($request['requisitos']['idDiscapacidad'])) {
-        $oferta->id_discapacidad = $request['requisitos']['idDiscapacidad']; // Id consultado de la tabla discapacidad
+      if (isset($request['requisitos']['idDiscapacidades'])) {
+        $oferta->discapacidades()->sync($request['requisitos']['idDiscapacidades']); // Id consultado de la tabla discapacidad
       }
       $oferta->num_dias_oferta = $request['informacion-principal']['vigenciaDias']; // Dias de la oferta Max 30
 
-      $oferta->id_aut_nivprog = $request['requisitos']['idrequisitosMinimos']; // NIvel Programa
+      $oferta->id_aut_nivestud = $request['requisitos']['idEstudioMinimo']; // NIvel Programa
 
       $oferta->save();
       // $empresa->ofertas()->save($oferta);
@@ -655,6 +657,10 @@ class OfertaController extends Controller
 
   public function getAllPostulados(Oferta $oferta)
   {
-    return $this->success($oferta->postulaciones);
+    return $this->success(EgresadoResource::collection($oferta->postulaciones));
+  }
+  public function getContactoHV(Empresa $empresa)
+  {
+    return $this->success($empresa->administrador);
   }
 }

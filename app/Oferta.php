@@ -93,4 +93,8 @@ class Oferta extends Model
         return $this->hasOne(ContactoHV::class, 'id_oferta', 'id_aut_oferta');
     }
 
+    public function discapacidades() {
+        return $this->belongsToMany(Discapacidad::class, 'ofertas_discapacidades', 'id_oferta','id_discapacidad');
+    }
+
 }

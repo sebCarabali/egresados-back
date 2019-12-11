@@ -52,8 +52,14 @@ class EmpresaController extends Controller
             $empresa->direccion->ciudad->load('departamento');
             $empresa->direccion->ciudad->departamento->load('pais');
 
+            // return response()->json($empresa, 200);
+            if (!is_null($empresa->administrador)){
+              $empresa->administrador->load('direccion');
+              $empresa->administrador->load('user');
+              $empresa->administrador->load('cargo');
+            }
 
-            $empresa->administrador->load('direccion', 'user', 'cargo');
+
 
             $sectores = [];
 

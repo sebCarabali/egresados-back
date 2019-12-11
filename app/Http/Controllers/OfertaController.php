@@ -119,7 +119,6 @@ class OfertaController extends Controller
       // Id Ubicaciones
       $auxIdUbicaciones = array();
       foreach ($oferta->ubicaciones as $ubicacion) {
-
         array_push($auxIdUbicaciones, $ubicacion->id_aut_ciudad);
       }
 
@@ -205,18 +204,34 @@ class OfertaController extends Controller
         array_push($auxIdProgramas, $programa->id_aut_programa);
       }
 
+      // Discapacidades
+      $oferta->load('discapacidades');
+      $auxDiscapacidades = array();
+      $auxIdDiscapacidades = array();
+      foreach ($oferta->discapacidades as $discapacidad) {
+        array_push($auxDiscapacidades, $discapacidad->nombre);
+        array_push($auxIdDiscapacidades, $discapacidad->id_aut_discapacidades);
+      }
+
+      // movilizacionPropia
+      if ($oferta->movilizacionPropia == true ) {
+        $auxMovPropia = 1;
+      } else {
+        $auxMovPropia = 0;
+      }
+
       $oferta['requisitos'] = array(
         "anios" => $oferta['anios_experiencia'],
-        "discapacidades" => "", // ToDo
+        "discapacidades" => $auxDiscapacidades,
         "estudioMinimo" => $auxNivelEstudio,
         "experienciaLaboral" => $oferta['experiencia'],
-        "idDiscapacidades" => "", // ToDo
+        "idDiscapacidades" => $auxIdDiscapacidades,
         "idProgramas" => $auxIdProgramas,
         "idiomas" => $auxIdiomas,
         "idEstudioMinimo" => $oferta->id_aut_nivestud,
         "licenciaConduccion" => $oferta['licencia_conduccion'],
-        "movilizacionPropia" => "", //ToDo      // Ya va a estar
-        "perfil" => "",   //ToDo  // Ya va a estar
+        "movilizacionPropia" => $auxMovPropia,
+        "perfil" => $oferta->perfil,
         "preguntasCandidato" => $auxPreguntas,
         "programas" => $auxProgramas,
         "requisitosMinimos" => $oferta['requisitos_minimos'],
@@ -228,7 +243,10 @@ class OfertaController extends Controller
       unset($oferta['preguntas']);
       unset($oferta['software']);
       unset($oferta['nivelEstudio']);
+      unset($oferta['discapacidades']);
 
+      unset($oferta['perfil']);
+      unset($oferta['disp_movilidad_propia']);
       unset($oferta['id_aut_oferta']);
       unset($oferta['id_empresa']);
       unset($oferta['experiencia']);
@@ -241,6 +259,7 @@ class OfertaController extends Controller
       unset($oferta['requisitos_minimos']);
       unset($oferta['id_discapacidad']);
       unset($oferta['id_aut_nivestud']);
+      unset($oferta['programas']);
 
       $data = $oferta;
       $code = 200;
@@ -342,7 +361,7 @@ class OfertaController extends Controller
       $oferta = Oferta::find($id);
       if (!empty($oferta) && is_object($oferta) && $oferta['estado'] != 'Pendiente') {
         switch ($request['estado_proceso']) {
-          case 'En espera':
+          case 'Pendiente':
           case 'Activa':
           case 'En selección':
           case 'Finalizada con contratación':

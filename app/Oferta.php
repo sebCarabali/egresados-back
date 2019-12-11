@@ -21,11 +21,6 @@ class Oferta extends Model
         return $this->belongsTo('App\Sector', 'id_sector', 'id_aut_sector');
     }
 
-    public function programas()
-    {
-        return $this->belongsToMany('App\SubSector', 'programas_ofertas', 'id_oferta', 'id_programa');
-    }
-
     public function contrato()
     {
         return $this->hasOne('App\Contrato', 'id_oferta', 'id_aut_oferta');

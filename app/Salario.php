@@ -29,7 +29,7 @@ class Salario extends Model
      */
     public function getRangoAttribute()
     {
-        return "Entre $this->minimo  y $this->maximo";
+        return "Entre $this->minimo y $this->maximo";
     }
 
     public function getFormaPagoAttribute($value)

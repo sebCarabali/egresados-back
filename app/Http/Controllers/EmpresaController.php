@@ -35,8 +35,7 @@ class EmpresaController extends Controller
 
     public function getEmpresasEnEspera()
     {
-        $empresas = Empresa::orderBy('fecha_registro', 'ASC')
-            ->where('estado', 'En espera')->get();
+        $empresas = Empresa::orderBy('fecha_registro', 'ASC')->get();
 
         return response()->json($empresas, 200);
     }

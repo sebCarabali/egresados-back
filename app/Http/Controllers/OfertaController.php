@@ -24,7 +24,7 @@ class OfertaController extends Controller
 {
   public function getOfertasEnEspera()
   {
-    $ofertas = Oferta::where('estado', 'Pendiente')->get();
+    $ofertas = Oferta::all();
 
     $ofertas->load('empresa');
     $ofertas->load('areasConocimiento');
@@ -59,14 +59,14 @@ class OfertaController extends Controller
       // Contacto HV
       $oferta->load('contacto_hv');
       if (!empty($oferta['contacto_hv'])){
-        $oferta['contactoHv'] = $oferta->contacto_hv;
+        $oferta['contactoHV'] = $oferta->contacto_hv;
         unset($oferta['contacto_hv']);
-        unset($oferta['contactoHv']['id_aut_recepcionhv']);
-        unset($oferta['contactoHv']['id_oferta']);
-        $oferta['contactoHv']['telefonoMovil'] = $oferta['contactoHv']['telefono_movil'];
-        unset($oferta['contactoHv']['telefono_movil']);
+        unset($oferta['contactoHV']['id_aut_recepcionhv']);
+        unset($oferta['contactoHV']['id_oferta']);
+        $oferta['contactoHV']['telefonoMovil'] = $oferta['contactoHV']['telefono_movil'];
+        unset($oferta['contactoHV']['telefono_movil']);
       } else {
-        $oferta['contactoHv'] = [];
+        $oferta['contactoHV'] = [];
         unset($oferta['contacto_hv']);
       }
 
@@ -98,12 +98,151 @@ class OfertaController extends Controller
       }
 
       // Informacion Principal
+      // Areas
+      $auxAreas = array();
+      $auxIdAreas = array();
+      foreach ($oferta->areasConocimiento as $area) {
+        array_push($auxAreas, $area->nombre);
+        array_push($auxIdAreas, $area->id_aut_areaconocimiento);
+      }
 
+      // Cargo
+      $oferta->load('cargo');
+      $auxCargo = $oferta['cargo']['nombre'];
 
+      // Sector
+      $oferta->sector;
+      $auxIdSector = $oferta['sector']['id_aut_sector'];
+      $auxNombreSector = $oferta['sector']['nombre'];
 
+      // Id Ubicaciones
+      $auxIdUbicaciones = array();
+      foreach ($oferta->ubicaciones as $ubicacion) {
 
+        array_push($auxIdUbicaciones, $ubicacion->id_aut_ciudad);
+      }
+
+      // Ubicaciones
+      $auxUbicaciones = array();
+      foreach ($oferta->ubicaciones as $ubicacion) {
+        $auxObj = array(
+          "pais" => $ubicacion->departamento->pais->nombre,
+          "departamento" => $ubicacion->departamento->nombre,
+          "idCiudad" => $ubicacion->id_aut_ciudad,
+          "ciudad" => $ubicacion->nombre
+        );
+        array_push($auxUbicaciones, $auxObj);
+      }
+
+      $oferta['informacionPrincipal'] = array(
+        "areas" => $auxAreas,
+        "cargo" => $auxCargo,
+        "descripcion" => $oferta['descripcion'],
+        "idAreasConocimiento" => $auxIdAreas,
+        "idSector" => $auxIdSector,
+        "idUbicaciones" => $auxIdUbicaciones,
+        "nombreOferta" => $oferta['nombre_oferta'],
+        "nombreTempEmpresa" => $oferta['nombre_temporal_empresa'],
+        "numVacantes" => $oferta['numero_vacantes'],
+        "sector" => $auxNombreSector,
+        "ubicaciones" => $auxUbicaciones,
+        "vigenciaDias" => $oferta['num_dias_oferta'],
+      );
+
+      // Unsets
+      unset($oferta['cargo']);
+      unset($oferta['ubicaciones']);
+      unset($oferta['areasConocimiento']);
+      unset($oferta['sector']);
+      unset($oferta['nombre_oferta']);
+      unset($oferta['descripcion']);
+      unset($oferta['id_cargo']);
+      unset($oferta['numero_vacantes']);
+      unset($oferta['id_forma_pago']);
+      unset($oferta['id_sector']);
+      unset($oferta['nombre_temporal_empresa']);
+      unset($oferta['num_dias_oferta']);
+
+      // Idiomas
+      $auxIdiomas = array();
+      foreach ($oferta->idiomas as $idioma) {
+        $auxObj = array(
+          "id" => $idioma['id_aut_idioma'],
+          "nombre" => $idioma['nombre'],
+          "nivel_lectura" => $idioma['pivot']['nivel_lectura'],
+          "nivel_escritura" => $idioma['pivot']['nivel_escritura'],
+          "nivel_conversacion" => $idioma['pivot']['nivel_conversacion'],
+        );
+        array_push($auxIdiomas, $auxObj);
+      }
+
+      // Preguntas
+      $auxPreguntas = array();
+      foreach ($oferta->preguntas as $pregunta) {
+        array_push($auxPreguntas, $pregunta->pregunta);
+      }
+
+      // Software
+      $auxSoftware = array();
+      foreach ($oferta->software as $software) {
+        $auxObj = array(
+            "nombre" => $software['nombre'],
+            "nivel" => $software['nivel'],
+        );
+        array_push($auxSoftware, $auxObj);
+      }
+      // Nivel Estudio
+      $oferta->load('nivelEstudio');
+      $auxNivelEstudio = $oferta['nivelEstudio']['nombre'];
+
+      // Programas
+      $oferta->load('programas');
+      $auxProgramas = array();
+      $auxIdProgramas = array();
+      foreach ($oferta->programas as $programa) {
+        array_push($auxProgramas, $programa->nombre);
+        array_push($auxIdProgramas, $programa->id_aut_programa);
+      }
+
+      $oferta['requisitos'] = array(
+        "anios" => $oferta['anios_experiencia'],
+        "discapacidades" => "", // ToDo
+        "estudioMinimo" => $auxNivelEstudio,
+        "experienciaLaboral" => $oferta['experiencia'],
+        "idDiscapacidades" => "", // ToDo
+        "idProgramas" => $auxIdProgramas,
+        "idiomas" => $auxIdiomas,
+        "idEstudioMinimo" => $oferta->id_aut_nivestud,
+        "licenciaConduccion" => $oferta['licencia_conduccion'],
+        "movilizacionPropia" => "", //ToDo      // Ya va a estar
+        "perfil" => "",   //ToDo  // Ya va a estar
+        "preguntasCandidato" => $auxPreguntas,
+        "programas" => $auxProgramas,
+        "requisitosMinimos" => $oferta['requisitos_minimos'],
+        "softwareOferta" => $auxSoftware
+      );
+
+      // Unsets
+      unset($oferta['idiomas']);
+      unset($oferta['preguntas']);
+      unset($oferta['software']);
+      unset($oferta['nivelEstudio']);
+
+      unset($oferta['id_aut_oferta']);
+      unset($oferta['id_empresa']);
+      unset($oferta['experiencia']);
+      unset($oferta['anios_experiencia']);
+      unset($oferta['fecha_publicacion']);
+      unset($oferta['fecha_cierre']);
+      unset($oferta['estado']);
+      unset($oferta['estado_proceso']);
+      unset($oferta['licencia_conduccion']);
+      unset($oferta['requisitos_minimos']);
+      unset($oferta['id_discapacidad']);
+      unset($oferta['id_aut_nivestud']);
 
       $data = $oferta;
+      $code = 200;
     } else {
       $data = null;
     }

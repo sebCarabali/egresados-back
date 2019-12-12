@@ -612,8 +612,10 @@ class OfertaController extends Controller
       $oferta->requisitos_minimos = $request['requisitos']['requisitosMinimos']; // TEsto descriptivo
       if (isset($request['requisitos']['idDiscapacidades'])) {
         $oferta->discapacidades()->sync($request['requisitos']['idDiscapacidades']); // Id consultado de la tabla discapacidad
+      }else{
+        $oferta->discapacidades()->sync([]);
       }
-      // $empresa->ofertas()->save($oferta);
+      // $empresa->ofertas()->save($oferta); 
       // Asigna los id de los idioma requeridos en la oferta
 
       $array_idiomas = array();

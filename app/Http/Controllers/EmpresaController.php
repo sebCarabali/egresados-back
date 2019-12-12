@@ -23,6 +23,7 @@ use Illuminate\Validation\ValidationException;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
 class EmpresaController extends Controller
@@ -373,7 +374,14 @@ class EmpresaController extends Controller
             $representanteLegal->empresa()->associate($empresa);
             $representanteLegal->save();
 
-            $crearUsuario->_enviarMensajeActivacion($user);
+            // $crearUsuario->_enviarMensajeActivacion($user);
+            $correo = $user->email;
+            Mail::send('mail.confirmation', ['codigo' => $user->codigo_verificacion], function ($message) use ($correo) {
+                $message->from('carloschapid@unicauca.edu.co', 'Egresados');
+                $message->to($correo)->subject('Nuevo usuario');
+            });
+
+
             DB::commit();
             return $this->success($empresa->id_aut_empresa);
         } catch (Exception $e) {

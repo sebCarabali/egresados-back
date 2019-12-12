@@ -95,7 +95,7 @@ class OfertaController extends Controller
         unset($oferta['contrato']['id_aut_contrato']);
         unset($oferta['salario']);
       } else {
-        $oferta['contrato'] = [];
+        $oferta['contrato'] = null;
       }
 
       // Informacion Principal
@@ -323,19 +323,22 @@ class OfertaController extends Controller
         switch ($request['estado']) {
           case 'Aceptada':
             $oferta->update([
-              'estado' => $request['estado'],
+              'estado' => 'Aceptada',
               'estado_proceso' => 'Activa'
             ]);
             $data = $oferta;
             $code = 200;
             break;
           case 'Rechazada':
-            $oferta->update(['estado' => $request['estado']]);
+            $oferta->update(['estado' => 'Rechazada']);
             $data = $oferta;
             $code = 200;
             break;
           case 'Pendiente':
-            $oferta->update(['estado' => $request['estado']]);
+            $oferta->update([
+              'estado' => 'Pendiente',
+              'estado_proceso' => 'Pendiente'
+            ]);
             $data = $oferta;
             $code = 200;
             break;
@@ -362,12 +365,35 @@ class OfertaController extends Controller
       if (!empty($oferta) && is_object($oferta) && $oferta['estado'] != 'Pendiente') {
         switch ($request['estado_proceso']) {
           case 'Pendiente':
+            $oferta->update(['estado_proceso' => 'Pendiente']);
+            $data = $oferta;
+            $code = 200;
+            break;
           case 'Activa':
+            $oferta->update(['estado_proceso' => 'Activa']);
+            $data = $oferta;
+            $code = 200;
+            break;
           case 'En selección':
+            $oferta->update(['estado_proceso' => 'En selección']);
+            $data = $oferta;
+            $code = 200;
+            break;
           case 'Finalizada con contratación':
+            $oferta->update([
+              'estado_proceso' => 'Finalizada con contratación',
+              ''// ToDo
+            ]);
+            $data = $oferta;
+            $code = 200;
+            break;
           case 'Finalizada sin contratación':
+            $oferta->update(['estado_proceso' => 'Finalizada sin contratación']);
+            $data = $oferta;
+            $code = 200;
+            break;
           case 'Expirada':
-            $oferta->update(['estado_proceso' => $request['estado_proceso']]);
+            $oferta->update(['estado_proceso' => 'Expirada']);
             $data = $oferta;
             $code = 200;
             break;

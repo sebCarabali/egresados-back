@@ -23,6 +23,7 @@ class OfertaStoreRequest extends FormRequest
      */
     public function rules()
     {
+        $perfiles = array("Profesional", "Estudiante pregrado", "Doctor", "Especialista", "Magister");
         return [
             // 'informacionPrincipal.idCargo' => 'nullable|integer|exists:cargos,id_acargos',
             // 'informacionPrincipal.otroCargo' => 'required_without:informacionPrincipal.idCargo|string',
@@ -49,12 +50,12 @@ class OfertaStoreRequest extends FormRequest
             
             'requisitos.requisitosMinimos' => 'required|string',
             'requisitos.idEstudioMinimo' => 'required|integer|exists:niveles_estudio,id_aut_estudio',
-            'requisitos.perfil' => 'required|string',
+            'requisitos.perfil' => 'required|string|in:'.implode(',', $perfiles),
             
             'requisitos.experienciaLaboral' => 'required|string',
             'requisitos.anios' => 'required|integer',
             'requisitos.licenciaConduccion' => 'nullable|string',
-            'requisitos.idDiscapacidades' => 'nullable|array|min:1',
+            'requisitos.idDiscapacidades' => 'nullable|array',
             'requisitos.idDiscapacidades.*' => 'integer|exists:discapacidades,id_aut_discapacidades',
             'requisitos.idiomas' => 'nullable|array',
             'requisitos.idiomas.*.id' => 'required|integer|exists:idiomas,id_aut_idioma',

@@ -1,0 +1,7 @@
+{
+    "The given data was invalid." : "Los datos proporcionados no eran válidos.",
+    "An error has occurred on the server." : "Se ha producido un error en el servidor.",
+    "An error occurred while consulting the database.":"Ha ocurrido un error al consultar la base de datos.",
+    "The route does not exist!":"La ruta no existe!",
+    "No records found for: :model":"No se encontró ningún registro para: :model"
+}

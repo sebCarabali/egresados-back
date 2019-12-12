@@ -425,12 +425,12 @@ class OfertaController extends Controller
 
       $oferta = new Oferta();
       $oferta->id_empresa = $empresa->id_aut_empresa;
-      $oferta->nombre_oferta = $request['informacion-principal']['nombreOferta']; //
-      $oferta->descripcion = $request['informacion-principal']['descripcion']; //
+      $oferta->nombre_oferta = $request['informacionPrincipal']['nombreOferta']; //
+      $oferta->descripcion = $request['informacionPrincipal']['descripcion']; //
       $oferta->cargo()->associate($cargo);
 
-      $oferta->numero_vacantes = $request['informacion-principal']['numVacantes']; //
-      $oferta->id_forma_pago = $request['contrato']['formaPago'];
+      $oferta->numero_vacantes = $request['informacionPrincipal']['numVacantes']; //
+      $oferta->id_forma_pago = $request['contrato']['idRangoSalarial'];
       $oferta->experiencia = $request['requisitos']['experienciaLaboral']; // Enum ('Sin experiencia', 'Igual a', 'Mayor o igual que', 'Menor o igual que')
       $oferta->anios_experiencia = $request['requisitos']['anios']; //
       $oferta->perfil = $request['requisitos']['perfil']; //
@@ -449,7 +449,7 @@ class OfertaController extends Controller
       if (isset($request['requisitos']['idDiscapacidades'])) {
         $oferta->discapacidades()->sync($request['requisitos']['idDiscapacidades']); // Id consultado de la tabla discapacidad
       }
-      $oferta->num_dias_oferta = $request['informacion-principal']['vigenciaDias']; // Dias de la oferta Max 30
+      $oferta->num_dias_oferta = $request['informacionPrincipal']['vigenciaDias']; // Dias de la oferta Max 30
       $oferta->id_aut_nivestud = $request['requisitos']['idEstudioMinimo']; // NIvel Programa
 
       $oferta->save();
@@ -481,7 +481,7 @@ class OfertaController extends Controller
       $oferta->idiomas()->sync($array_idiomas);
 
       // Asigna los id de las ciudades donde va a estar disponible la oferta
-      $oferta->ubicaciones()->sync($request['informacion-principal']['ubicacion']); // Ids consultados de la tabla discapacidad
+      $oferta->ubicaciones()->sync($request['informacionPrincipal']['idUbicaciones']); // Ids consultados de la tabla discapacidad
 
       // Asigna los id de las areas de conocimientos requeridos por la oferta
       $oferta->areasConocimiento()->sync($request['informacionPrincipal']['idAreasConocimiento']); // Ids consultados de la tabla areas de conocimiento
@@ -583,13 +583,13 @@ class OfertaController extends Controller
       }
 
       // $oferta->id_empresa = $empresa->id_aut_empresa;
-      $oferta->nombre_oferta = $request['informacion-principal']['nombreOferta']; //
-      $oferta->descripcion = $request['informacion-principal']['descripcion']; //
+      $oferta->nombre_oferta = $request['informacionPrincipal']['nombreOferta']; //
+      $oferta->descripcion = $request['informacionPrincipal']['descripcion']; //
       $oferta->cargo()->associate($cargo);
       // $oferta->id_contrato = $contrato->id_aut_contrato;
 
-      $oferta->numero_vacantes = $request['informacion-principal']['numVacantes']; //
-      $oferta->id_forma_pago = $request['contrato']['formaPago'];
+      $oferta->numero_vacantes = $request['informacionPrincipal']['numVacantes']; //
+      $oferta->id_forma_pago = $request['contrato']['idRangoSalarial'];
       $oferta->experiencia = $request['requisitos']['experienciaLaboral']; // Enum ('Sin experiencia', 'Igual a', 'Mayor o igual que', 'Menor o igual que')
       $oferta->anios_experiencia = $request['requisitos']['anios']; //
       $oferta->perfil = $request['requisitos']['perfil']; //
@@ -608,7 +608,7 @@ class OfertaController extends Controller
       if (isset($request['requisitos']['idDiscapacidades'])) {
         $oferta->discapacidades()->sync($request['requisitos']['idDiscapacidades']); // Id consultado de la tabla discapacidad
       }
-      $oferta->num_dias_oferta = $request['informacion-principal']['vigenciaDias']; // Dias de la oferta Max 30
+      $oferta->num_dias_oferta = $request['informacionPrincipal']['vigenciaDias']; // Dias de la oferta Max 30
 
       $oferta->id_aut_nivestud = $request['requisitos']['idEstudioMinimo']; // NIvel Programa
 
@@ -627,7 +627,7 @@ class OfertaController extends Controller
       $oferta->idiomas()->sync($array_idiomas);
 
       // Asigna los id de las ciudades donde va a estar disponible la oferta
-      $oferta->ubicaciones()->sync($request['informacion-principal']['ubicacion']); // Ids consultados de la tabla discapacidad
+      $oferta->ubicaciones()->sync($request['informacionPrincipal']['idUbicaciones']); // Ids consultados de la tabla discapacidad
 
       // Asigna los id de las areas de conocimientos requeridos por la oferta
       $oferta->areasConocimiento()->sync($request['informacionPrincipal']['idAreasConocimiento']); // Ids consultados de la tabla areas de conocimiento

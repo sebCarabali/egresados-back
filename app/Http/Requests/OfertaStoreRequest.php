@@ -49,7 +49,7 @@ class OfertaStoreRequest extends FormRequest
             
             'requisitos.requisitosMinimos' => 'required|string',
             'requisitos.idEstudioMinimo' => 'required|integer|exists:niveles_estudio,id_aut_estudio',
-            'requisitos.perfil' => 'required|string',
+            'requisitos.perfil' => 'required|string|in:Profesional, Estudiante pregrado, Doctor, Especialista, Magister',
             
             'requisitos.experienciaLaboral' => 'required|string',
             'requisitos.anios' => 'required|integer',

@@ -20,7 +20,8 @@ class EgresadoResource extends Resource
             "apellidos" => $this->apellidos,
             "correo" => $this->correo,
             "celular" => $this->celular,
-            "nivelEducativo"=> $this->nivelEducativo->nombre
+            "nivelEducativo"=> $this->nivelEducativo->nombre,
+            "estado" => $this->pivot->estado
             
         ];
         // return parent::toArray($request);

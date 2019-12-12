@@ -59,7 +59,7 @@ class OfertaController extends Controller
 
       // Contacto HV
       $oferta->load('contacto_hv');
-      if (!empty($oferta['contacto_hv'])){
+      if (!empty($oferta['contacto_hv'])) {
         $oferta['contactoHV'] = $oferta->contacto_hv;
         unset($oferta['contacto_hv']);
         unset($oferta['contactoHV']['id_aut_recepcionhv']);
@@ -73,7 +73,7 @@ class OfertaController extends Controller
 
       // Contrato
       $oferta->load('contrato');
-      if(!empty($oferta['contrato'])){
+      if (!empty($oferta['contrato'])) {
         $oferta->load('salario');
 
         $oferta['contrato']['comentariosSalario'] = $oferta['contrato']['comentarios_salario'];
@@ -186,8 +186,8 @@ class OfertaController extends Controller
       $auxSoftware = array();
       foreach ($oferta->software as $software) {
         $auxObj = array(
-            "nombre" => $software['nombre'],
-            "nivel" => $software['nivel'],
+          "nombre" => $software['nombre'],
+          "nivel" => $software['nivel'],
         );
         array_push($auxSoftware, $auxObj);
       }
@@ -214,7 +214,7 @@ class OfertaController extends Controller
       }
 
       // movilizacionPropia
-      if ($oferta->movilizacionPropia == true ) {
+      if ($oferta->movilizacionPropia == true) {
         $auxMovPropia = 1;
       } else {
         $auxMovPropia = 0;
@@ -446,13 +446,13 @@ class OfertaController extends Controller
         $oferta->licencia_conduccion = $request['requisitos']['licenciaConduccion']; // Enum ('A1', 'A2', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3')
       }
       $oferta->requisitos_minimos = $request['requisitos']['requisitosMinimos']; // Texto descriptivo
-      if (isset($request['requisitos']['idDiscapacidades'])) {
-        $oferta->discapacidades()->sync($request['requisitos']['idDiscapacidades']); // Id consultado de la tabla discapacidad
-      }
       $oferta->num_dias_oferta = $request['informacionPrincipal']['vigenciaDias']; // Dias de la oferta Max 30
       $oferta->id_aut_nivestud = $request['requisitos']['idEstudioMinimo']; // NIvel Programa
 
       $oferta->save();
+      if (isset($request['requisitos']['idDiscapacidades'])) {
+        $oferta->discapacidades()->sync($request['requisitos']['idDiscapacidades']); // Id consultado de la tabla discapacidad
+      }
 
       // Contrato que tendrá la oferta
       $contrato = new Contrato();
@@ -490,13 +490,13 @@ class OfertaController extends Controller
       $oferta->programas()->sync($request['requisitos']['idProgramas']);
 
 
-        // // Asigna los id de los software requeridos en la oferta
-        // foreach ($request['requisitos']['softwareOferta'] as $soft) {
-        //   $software = new OfertaSoftware();
-        //   $software->nombre = $soft['nombre'];
-        //   $software->nivel = $soft['nivel'];
-        //   $oferta->software()->save($software);
-        // }
+      // // Asigna los id de los software requeridos en la oferta
+      // foreach ($request['requisitos']['softwareOferta'] as $soft) {
+      //   $software = new OfertaSoftware();
+      //   $software->nombre = $soft['nombre'];
+      //   $software->nivel = $soft['nivel'];
+      //   $oferta->software()->save($software);
+      // }
 
       // Asigna los id de los software requeridos en la oferta
       $array_software = array();
@@ -604,15 +604,15 @@ class OfertaController extends Controller
       if (isset($request['requisitos']['licenciaConduccion'])) {
         $oferta->licencia_conduccion = $request['requisitos']['licenciaConduccion']; // Enum ('A1', 'A2', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3')
       }
-      $oferta->requisitos_minimos = $request['requisitos']['requisitosMinimos']; // TEsto descriptivo
-      if (isset($request['requisitos']['idDiscapacidades'])) {
-        $oferta->discapacidades()->sync($request['requisitos']['idDiscapacidades']); // Id consultado de la tabla discapacidad
-      }
       $oferta->num_dias_oferta = $request['informacionPrincipal']['vigenciaDias']; // Dias de la oferta Max 30
 
       $oferta->id_aut_nivestud = $request['requisitos']['idEstudioMinimo']; // NIvel Programa
 
       $oferta->save();
+      $oferta->requisitos_minimos = $request['requisitos']['requisitosMinimos']; // TEsto descriptivo
+      if (isset($request['requisitos']['idDiscapacidades'])) {
+        $oferta->discapacidades()->sync($request['requisitos']['idDiscapacidades']); // Id consultado de la tabla discapacidad
+      }
       // $empresa->ofertas()->save($oferta);
       // Asigna los id de los idioma requeridos en la oferta
 

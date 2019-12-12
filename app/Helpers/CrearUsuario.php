@@ -20,7 +20,7 @@ class CrearUsuario
         ]);
         $user->rol()->associate(Role::where(DB::raw('upper(nombre)'), strtoupper($rol))->firstOrFail());
         $user->save();
-        $this->_enviarMensajeActivacion($user);
+        // $this->_enviarMensajeActivacion($user);
         return $user;
     }
 

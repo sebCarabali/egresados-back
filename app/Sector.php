@@ -18,4 +18,8 @@ class Sector extends Model
         return $this->hasMany(SubSector::class, 'id_sectores', 'id_aut_sector');
     }
 
+    public function ofertas()
+    {
+        return $this->hasMany('App\Oferta', 'id_sector', 'id_aut_sector');
+    }
 }

@@ -14,4 +14,9 @@ class NivelEstudio extends Model
  {
      return $this->hasMany('App\Referido', 'id_nivel_estudio');
  }
+
+ public function ofertas()
+ {
+     return $this->hasMany('App\Oferta', 'id_aut_nivestud', 'id_aut_estudio');
+ }
 }

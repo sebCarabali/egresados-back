@@ -24,4 +24,9 @@ class Programa extends Model
     {
         return $this->hasMany('App\Referido','id_aut_referido');
     }
+
+    public function ofertas()
+    {
+        return $this->belongsToMany('App\Oferta', 'programas_ofertas', 'id_programa', 'id_oferta');
+    }
 }

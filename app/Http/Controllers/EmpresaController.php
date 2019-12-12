@@ -37,8 +37,7 @@ class EmpresaController extends Controller
 
     public function getEmpresasEnEspera()
     {
-        $empresas = Empresa::orderBy('fecha_registro', 'ASC')
-            ->where('estado', 'Pendiente')->get();
+        $empresas = Empresa::orderBy('fecha_registro', 'ASC')->get();
 
         return response()->json($empresas, 200);
     }
@@ -55,8 +54,14 @@ class EmpresaController extends Controller
             $empresa->direccion->ciudad->load('departamento');
             $empresa->direccion->ciudad->departamento->load('pais');
 
+            // return response()->json($empresa, 200);
+            if (!is_null($empresa->administrador)){
+              $empresa->administrador->load('direccion');
+              $empresa->administrador->load('user');
+              $empresa->administrador->load('cargo');
+            }
 
-            $empresa->administrador->load('direccion', 'user', 'cargo');
+
 
             $sectores = [];
 
@@ -341,8 +346,8 @@ class EmpresaController extends Controller
             }
             $crearUsuario = new CrearUsuario();
             $user = $crearUsuario->crearUsuario($request['datos']['datos-cuenta']['email'], 'Empresa');
-            $user->password = Hash::make($request['datos']['datos-cuenta']['contrasenia']);
-            $user->save();
+            // $user->password = Hash::make($request['datos']['datos-cuenta']['contrasenia']);
+            // $user->save();
             $direccionEmpr->save();
             $empresa->direccion()->associate($direccionEmpr);
             $empresa->save();
@@ -367,6 +372,8 @@ class EmpresaController extends Controller
 
             $representanteLegal->empresa()->associate($empresa);
             $representanteLegal->save();
+
+            $crearUsuario->_enviarMensajeActivacion($user);
             DB::commit();
             return $this->success($empresa->id_aut_empresa);
         } catch (Exception $e) {

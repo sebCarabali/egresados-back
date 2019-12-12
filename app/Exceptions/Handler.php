@@ -64,9 +64,9 @@ class Handler extends ExceptionHandler
             } else if ($exception instanceof MethodNotAllowedHttpException) {
                 $this->response($exception, "The route does not exist!", 404);
             } 
-            else if ($exception instanceof QueryException) {
-                $this->response($exception, "An error occurred while consulting the database.");
-            }
+            // else if ($exception instanceof QueryException) {
+            //     $this->response($exception, "An error occurred while consulting the database.");
+            // }
              else if ($exception instanceof ValidationException) {
                 $this->response($exception, "The given data was invalid.", 422, $exception->errors());
             }

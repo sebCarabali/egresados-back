@@ -10,6 +10,7 @@ use App\Cargo;
 use App\Contrato;
 use App\CategoriaCargo;
 use App\ContactoHV;
+use App\Egresado;
 use App\Empresa;
 use App\Http\Requests\OfertaStoreRequest;
 use App\Http\Resources\AreaConocimientoResource;
@@ -612,7 +613,7 @@ class OfertaController extends Controller
       $oferta->requisitos_minimos = $request['requisitos']['requisitosMinimos']; // TEsto descriptivo
       if (isset($request['requisitos']['idDiscapacidades'])) {
         $oferta->discapacidades()->sync($request['requisitos']['idDiscapacidades']); // Id consultado de la tabla discapacidad
-      }else{
+      } else {
         $oferta->discapacidades()->sync([]);
       }
       // $empresa->ofertas()->save($oferta); 
@@ -683,5 +684,17 @@ class OfertaController extends Controller
   public function getContactoHV(Empresa $empresa)
   {
     return $this->success($empresa->administrador);
+  }
+
+  public function changeStatePostulado(Egresado $postulado, Oferta $oferta, Request $request)
+  {
+    $estados = array('Contratado', 'Muy bueno', 'Bueno', 'Descartado', 'Desistió', 'Sin clasificación');
+
+    $request->validate([
+      'estado' => 'required|string|in:' . implode(',', $estados),
+    ]);
+    $oferta->postulaciones()->updateExistingPivot($postulado->id_aut_egresado, ["estado" => $request["estado"]]);
+
+    return $this->success("Se ha actualizado el estado correctamente.");
   }
 }

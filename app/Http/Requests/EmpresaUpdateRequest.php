@@ -47,7 +47,7 @@ class EmpresaUpdateRequest extends FormRequest
             'loc-contact-empresa.codigoPostalEmp' => 'nullable|integer',
             'loc-contact-empresa.telefonoEmp' => 'nullable|integer',
             'loc-contact-empresa.emailEmp' => 'nullable|email',
-            'loc-contact-empresa.sitioWebEmp' => 'nullable|url',
+            'loc-contact-empresa.sitioWebEmp' => 'nullable|string',
             // 'loc-contact-empresa.sitioWebEmp' => 'url|active_url',
 
             // 'sectores' => 'required',

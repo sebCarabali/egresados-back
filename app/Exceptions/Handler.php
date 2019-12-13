@@ -86,6 +86,6 @@ class Handler extends ExceptionHandler
             "status_code" => $code,
             "message" => __($message !=null ? $message : ($exception!=null ? $exception->getMessage() : "An error has occurred on the server."), $parameters),
             "errors" => $errors,
-        ], $code));
+        ], 200));
     }
 }

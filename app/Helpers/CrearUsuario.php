@@ -5,11 +5,24 @@ namespace App\Helpers;
 use App\Apoyo;
 use App\Role;
 use App\User;
+// use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
 class CrearUsuario
 {
+
+    public function crearUsuario($email, $rol) {
+        // throw new HttpResponseException(response()->json($email));
+        $user = new User([
+            'email' => $email,
+            'codigo_verificacion' => $this->_generarCodigoConfirmacion()
+        ]);
+        $user->rol()->associate(Role::where(DB::raw('upper(nombre)'), strtoupper($rol))->firstOrFail());
+        $user->save();
+        // $this->_enviarMensajeActivacion($user);
+        return $user;
+    }
 
     public function crearUsuarioApoyo(Apoyo $apoyo) {
         $user = new User([
@@ -42,7 +55,7 @@ class CrearUsuario
     {
         $correo = $usuario->email;
         Mail::send('mail.confirmation', ['codigo' => $usuario->codigo_verificacion], function ($message) use ($correo) {
-            $message->from('sebastiancc@unicauca.edu.co', 'Egresados');
+            $message->from('carloschapid@unicauca.edu.co', 'Egresados');
             $message->to($correo)->subject('Nuevo usuario');
         });
     }

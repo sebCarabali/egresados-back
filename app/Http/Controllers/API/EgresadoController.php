@@ -290,7 +290,7 @@ class EgresadoController extends Controller
     public function getEgresadoEmail($email){
         try {
             $idEgresado = Egresado::where("correo","=",$email)
-            ->select("id_aut_egresado")->get();
+            ->select("id_aut_egresado")->first();
             return response()->json($idEgresado,200);
 
         }catch(Exeption $e){
@@ -431,9 +431,7 @@ class EgresadoController extends Controller
     //           Experiencias
     //           Datos personales especificos
     //CompletarInformacionRequest
-    public function fullInfo(Request $request, $idEgresado){
-
-       
+    public function fullInfo($idEgresado, Request $request){
        return DB::transaction(function()use($request,$idEgresado){
             
             try{

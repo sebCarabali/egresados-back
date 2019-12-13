@@ -3,6 +3,7 @@
 use App\NivelEstudio;
 use App\NivelPrograma;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,6 +56,12 @@ Route::get('ciudadesPais/{idPais}', 'CiudadController@getAllCitiesWithDeparments
  * Obtiene todos los departamentos de un país.
  */
 Route::get('departamentos/{idPais}', 'DepartamentoController@getByPais');
+
+/**
+ * Datos contacto Empresa ADmin
+ */
+Route::get('contactoHV/{empresa}', 'OfertaController@getContactoHV');
+
 /**
  * Obtiene todos los países.
  */
@@ -111,6 +118,7 @@ Route::post('empresas/oferta/store/{empresa}', 'OfertaController@storeOferta');
 Route::post('empresas/oferta/update/{oferta}', 'OfertaController@updateOferta');
 Route::post('empresas/storeArchivos/{empresa}', 'EmpresaController@uploadFiles')->where(['id' => '[0-9]+']);
 Route::get('ofertas/postulados/{oferta}', 'OfertaController@getAllPostulados');
+Route::put('postulado/{postulado}/{oferta}/estado', 'OfertaController@changeStatePostulado');
 /**
  * Actualización  de una empresa
  */
@@ -215,5 +223,10 @@ Route::get('areasConocimiento', 'OfertaController@getAllAreas');
 Route::post('ofertas/store', 'OfertaController@storeOferta');
 Route::post('login', 'AuthController@login');
 
+Route::get('encriptar/{pass}', function ($pass) {
+    return Hash::make($pass);
+});
 Route::group(['middleware' => ['jwt.verify']], function () {
     /*AÑADE AQUI LAS RUTAS QUE QUIERAS PROTEGER CON JWT*/ });
+
+

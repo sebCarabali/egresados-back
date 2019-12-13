@@ -12,7 +12,7 @@ $factory->define(App\Empresa::class, function (Faker $faker) {
         "ingresos" => "0 - 3.000.000",
         "sitio_web"=> $faker->unique()->url,
         "id_direccion" => 1,
-        "estado" => "En espera",
+        "estado" => "Pendiente",
         "fecha_registro" => Carbon::now("-5:00")->format("Y-m-d"),
         "fecha_activacion" => Carbon::now("-5:00")->format("Y-m-d"),
         "fecha_vencimiento" => Carbon::now("-5:00")->format("Y-m-d"),

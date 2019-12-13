@@ -380,10 +380,8 @@ class OfertaController extends Controller
             $code = 200;
             break;
           case 'Finalizada con contratación':
-            $oferta->update([
-              'estado_proceso' => 'Finalizada con contratación',
-              ''// ToDo
-            ]);
+            $oferta->postulaciones()->updateExistingPivot($request['idEgresadoEscogido'], ['estado' => 'Contratado']);
+            $oferta->update(['estado_proceso' => 'Finalizada con contratación']);
             $data = $oferta;
             $code = 200;
             break;

@@ -21,6 +21,7 @@ use App\PreguntaOferta;
 use App\Salario;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Carbon;
 
 class OfertaController extends Controller
 {
@@ -96,7 +97,7 @@ class OfertaController extends Controller
         unset($oferta['contrato']['id_aut_contrato']);
         unset($oferta['salario']);
       } else {
-        $oferta['contrato'] = [];
+        $oferta['contrato'] = null;
       }
 
       // Informacion Principal
@@ -323,29 +324,37 @@ class OfertaController extends Controller
       if (!empty($oferta) && is_object($oferta)) {
         switch ($request['estado']) {
           case 'Aceptada':
+            $auxFecha = Carbon::now('-5:00');
             $oferta->update([
-              'estado' => $request['estado'],
-              'estado_proceso' => 'Activa'
+              'estado' => 'Aceptada',
+              'estado_proceso' => 'Activa',
+              'fecha_publicacion' => $auxFecha->format('Y-m-d'),
+              'fecha_cierre' => $auxFecha->copy()->addDays($oferta->num_dias_oferta)->format('Y-m-d'),
             ]);
+
             $data = $oferta;
             $code = 200;
             break;
           case 'Rechazada':
-            $oferta->update(['estado' => $request['estado']]);
+            $oferta->update(['estado' => 'Rechazada']);
             $data = $oferta;
             $code = 200;
             break;
           case 'Pendiente':
-            $oferta->update(['estado' => $request['estado']]);
+            $oferta->update([
+              'estado' => 'Pendiente',
+              'estado_proceso' => 'Pendiente'
+            ]);
             $data = $oferta;
             $code = 200;
             break;
         }
+        DB::commit();
       }
     } catch (ValidationException $ev) {
       return response()->json($ev->validator->errors(), $code);
     } catch (Exception $e) {
-      return response()->json($e);
+      return response()->json($e, $code);
     }
     return response()->json($data, $code);
   }
@@ -363,12 +372,33 @@ class OfertaController extends Controller
       if (!empty($oferta) && is_object($oferta) && $oferta['estado'] != 'Pendiente') {
         switch ($request['estado_proceso']) {
           case 'Pendiente':
+            $oferta->update(['estado_proceso' => 'Pendiente']);
+            $data = $oferta;
+            $code = 200;
+            break;
           case 'Activa':
+            $oferta->update(['estado_proceso' => 'Activa']);
+            $data = $oferta;
+            $code = 200;
+            break;
           case 'En selección':
+            $oferta->update(['estado_proceso' => 'En selección']);
+            $data = $oferta;
+            $code = 200;
+            break;
           case 'Finalizada con contratación':
+            $oferta->postulaciones()->updateExistingPivot($request['idEgresadoEscogido'], ['estado' => 'Contratado']);
+            $oferta->update(['estado_proceso' => 'Finalizada con contratación']);
+            $data = $oferta;
+            $code = 200;
+            break;
           case 'Finalizada sin contratación':
+            $oferta->update(['estado_proceso' => 'Finalizada sin contratación']);
+            $data = $oferta;
+            $code = 200;
+            break;
           case 'Expirada':
-            $oferta->update(['estado_proceso' => $request['estado_proceso']]);
+            $oferta->update(['estado_proceso' => 'Expirada']);
             $data = $oferta;
             $code = 200;
             break;
@@ -616,7 +646,7 @@ class OfertaController extends Controller
       } else {
         $oferta->discapacidades()->sync([]);
       }
-      // $empresa->ofertas()->save($oferta); 
+      // $empresa->ofertas()->save($oferta);
       // Asigna los id de los idioma requeridos en la oferta
 
       $array_idiomas = array();

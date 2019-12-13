@@ -21,6 +21,7 @@ use App\PreguntaOferta;
 use App\Salario;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Carbon;
 
 class OfertaController extends Controller
 {
@@ -323,10 +324,14 @@ class OfertaController extends Controller
       if (!empty($oferta) && is_object($oferta)) {
         switch ($request['estado']) {
           case 'Aceptada':
+            $auxFecha = Carbon::now('-5:00');
             $oferta->update([
               'estado' => 'Aceptada',
-              'estado_proceso' => 'Activa'
+              'estado_proceso' => 'Activa',
+              'fecha_publicacion' => $auxFecha->format('Y-m-d'),
+              'fecha_cierre' => $auxFecha->copy()->addDays($oferta->num_dias_oferta)->format('Y-m-d'),
             ]);
+
             $data = $oferta;
             $code = 200;
             break;
@@ -344,11 +349,12 @@ class OfertaController extends Controller
             $code = 200;
             break;
         }
+        DB::commit();
       }
     } catch (ValidationException $ev) {
       return response()->json($ev->validator->errors(), $code);
     } catch (Exception $e) {
-      return response()->json($e);
+      return response()->json($e, $code);
     }
     return response()->json($data, $code);
   }
@@ -640,7 +646,7 @@ class OfertaController extends Controller
       } else {
         $oferta->discapacidades()->sync([]);
       }
-      // $empresa->ofertas()->save($oferta); 
+      // $empresa->ofertas()->save($oferta);
       // Asigna los id de los idioma requeridos en la oferta
 
       $array_idiomas = array();

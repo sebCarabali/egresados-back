@@ -31,19 +31,19 @@ Route::put('completeEgresados/{idEgresado}', 'API\EgresadoController@fullInfo');
 /*
 *Retorna el Id del egresado para inicio de sesion
 */
-Route::get('getIdegresados/{correo}','API\EgresadoController@getEgresadoEmail');
+Route::get('getIdegresados/{correo}', 'API\EgresadoController@getEgresadoEmail');
 /*
 *Validación de carnetización de egresado
 */
-Route::get('carnetizacion/{correo}','API\CarnetizacionController@validarCarnetizacion');
+Route::get('carnetizacion/{correo}', 'API\CarnetizacionController@validarCarnetizacion');
 /*
 *Obteniendo todas las solicitudes de carnet pendientes para el Administrador
 */
-Route::get('carnetizacion','API\CarnetizacionController@getAll');
+Route::get('carnetizacion', 'API\CarnetizacionController@getAll');
 /*
 *Administrador la fecha de respuesta y el estado a "Solicitado" a "respondido" de carnet por egresados
 */
-Route::get('carnetizacionUpdateAdmin','API\CarnetizacionController@updateAdmin');
+Route::get('carnetizacionUpdateAdmin', 'API\CarnetizacionController@updateAdmin');
 /*
  * Obtiene todas la ciudades de un departamento.
  */
@@ -88,7 +88,7 @@ Route::get('programas/{idFacultad}', 'API\ProgramaController@getByFacultad');
 //Route::group(['middleware' => 'cors'], function () {
 Route::post('egresados/verificar', 'API\VerificarEgresadoController@verificar');
 //});
-Route::get('nivelesPrograma', function(){
+Route::get('nivelesPrograma', function () {
     return response()->json(NivelEstudio::where('pertenece_u', 1)->get(), 200);
 });
 
@@ -109,6 +109,16 @@ Route::get('apoyos', 'ApoyoController@getAll');
 Route::get('apoyos/{idApoyo}', 'ApoyoController@getById');
 Route::post('apoyos', 'ApoyoController@save');
 Route::put('apoyos', 'ApoyoController@update');
+
+/**
+ * Gestión eventos
+ */
+Route::get('eventos', 'EventosController@getAll');
+Route::get('eventos/{idEvento}', 'EventosController@getById');
+Route::post('eventos', 'EventosController@save');
+Route::put('eventos', 'EventosController@update');
+
+
 // --------------------------------------------------------------------------------
 /**
  * Registro de una empresa
@@ -227,5 +237,3 @@ Route::get('encriptar/{pass}', function ($pass) {
 });
 Route::group(['middleware' => ['jwt.verify']], function () {
     /*AÑADE AQUI LAS RUTAS QUE QUIERAS PROTEGER CON JWT*/ });
-
-

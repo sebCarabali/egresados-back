@@ -48,7 +48,7 @@ class EmpresaStoreRequest extends FormRequest
             'datos.loc-contact-empresa.codigoPostalEmp' => 'nullable|numeric',
             'datos.loc-contact-empresa.telefonoEmp' => 'nullable|integer',
             'datos.loc-contact-empresa.emailEmp' => 'nullable|email',
-            'datos.loc-contact-empresa.sitioWebEmp' => 'nullable|url',
+            'datos.loc-contact-empresa.sitioWebEmp' => 'nullable|string',
             // 'loc-contact-empresa.sitioWebEmp' => 'url|active_url',
 
 

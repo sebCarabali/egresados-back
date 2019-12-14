@@ -148,7 +148,7 @@ class VerificarEgresadoController extends Controller
             'identificacion' => $row['cedula'],
             'estado' => 'PENDIENTE'
         ]);
-        $egresado = $this->registrarNuevoGrado($egresado, $row);
-        return $egresado;
+        $respuesta = $this->registrarNuevoGrado($egresado, $row);
+        return $respuesta;
     }
 }

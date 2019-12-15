@@ -463,7 +463,9 @@ class OfertaController extends Controller
       $oferta->numero_vacantes = $request['informacionPrincipal']['numVacantes']; //
       $oferta->id_forma_pago = $request['contrato']['idRangoSalarial'];
       $oferta->experiencia = $request['requisitos']['experienciaLaboral']; // Enum ('Sin experiencia', 'Igual a', 'Mayor o igual que', 'Menor o igual que')
-      $oferta->anios_experiencia = $request['requisitos']['anios']; //
+      if(isset($request['requisitos']['anios'])){
+        $oferta->anios_experiencia = $request['requisitos']['anios']; //
+      }
       $oferta->perfil = $request['requisitos']['perfil']; //
       // $oferta->fecha_publicacion = ""; //
       // $oferta->fecha_cierre = ""; //
@@ -622,7 +624,9 @@ class OfertaController extends Controller
       $oferta->numero_vacantes = $request['informacionPrincipal']['numVacantes']; //
       $oferta->id_forma_pago = $request['contrato']['idRangoSalarial'];
       $oferta->experiencia = $request['requisitos']['experienciaLaboral']; // Enum ('Sin experiencia', 'Igual a', 'Mayor o igual que', 'Menor o igual que')
-      $oferta->anios_experiencia = $request['requisitos']['anios']; //
+      if(isset($request['requisitos']['anios'])){
+        $oferta->anios_experiencia = $request['requisitos']['anios']; //
+      }
       $oferta->perfil = $request['requisitos']['perfil']; //
       // $oferta->fecha_publicacion = ""; //
       // $oferta->fecha_cierre = ""; //

@@ -375,12 +375,12 @@ class EmpresaController extends Controller
             $representanteLegal->save();
 
             // $crearUsuario->_enviarMensajeActivacion($user);
-            $correo = $user->email;
-            Mail::send('mail.confirmation', ['codigo' => $user->codigo_verificacion], function ($message) use ($correo) {
-                $message->from('carloschapid@unicauca.edu.co', 'Egresados');
-                $message->to($correo)->subject('Nuevo usuario');
-            });
-
+            // $correo = $user->email;
+            // Mail::send('mail.confirmation', ['codigo' => $user->codigo_verificacion], function ($message) use ($correo) {
+            //     $message->from('carloschapid@unicauca.edu.co', 'Egresados');
+            //     $message->to($correo)->subject('Nuevo usuario');
+            // });
+            $user->notify(new \App\Notifications\RegistroEmpresa());
 
             DB::commit();
             return $this->success($empresa->id_aut_empresa);

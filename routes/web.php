@@ -19,5 +19,11 @@
 */
 Route::get('/', function () {
     // dd(\App\Departamento::all());
-    return view('welcome');
+    // $user = \App\User::whereEmail("luisafgr@unicauca.edu.co")->first();
+    $user = \App\User::get()->last();
+    if($user){
+      $user->notify(new \App\Notifications\RegistroEmpresa());
+    }
+    // return view('welcome');
+    return view('mail.notificacion_registro_empresa')->with("user", $user);
 });

@@ -16,7 +16,7 @@ class EventosResource extends Resource
     {
         return [
             'id' => $this->id_aut_evento,
-            'nombre' => $this->nombres,
+            'nombre' => $this->nombre,
             'fechaInicio' => $this->fecha_inicio,
             'fechaFin' => $this->fecha_fin,
             'lugar' => $this->lugar,

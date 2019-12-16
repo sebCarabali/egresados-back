@@ -8,7 +8,8 @@
 
 namespace App\Helpers;
 
-use App\Eventos;
+use App\Evento;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
 /**
@@ -23,16 +24,20 @@ class BusquedaEventos {
      * @param Request $filters
      */
     public static function apply(Request $filters) {
-        $eventos = (new Eventos)->newQuery();
-
-        if ($filters->has('fecha')) {
-            $eventos->where('fecha_inicio', $filters->get('fecha'));
+        //DB::enableQueryLog(); // Enable query log
+        $eventos = Evento::query();
+        
+        if ($filters->has('fecha') && $filters->get('fecha') !== '') {
+            $eventos = $eventos->where('fecha_inicio', date('Y-m-d', strtotime($filters->get('fecha'))));
+            //$eventos = $eventos->where('fecha_fin', '>=', date('Y-m-d', strtotime($filters->get('fecha'))));
         }
 
         if ($filters->has('lugar')) {
-            $eventos->where('lugar', 'like', '%' . $filters->get('lugar') . '%');
+            $lugarFilter = mb_strtoupper($filters->get('lugar'));
+            $eventos = $eventos->where(DB::raw("upper(lugar)"), 'like', "%$lugarFilter%");
         }
-        
+        //$eventos->get();
+        //return response()->json(['query' => dd(DB::getQueryLog())], 200);
         return $eventos->get();
     }
 

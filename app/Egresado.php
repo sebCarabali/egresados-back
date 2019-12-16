@@ -38,7 +38,7 @@ class Egresado extends Model
     }
 
     public function programas() {
-      return $this->belongsToMany('App\Programa', 'grados', 'id_estudiante', 'id_programa');
+      return $this->belongsToMany('App\Programa', 'grados', 'id_egresado', 'id_programa');
     }
 
   public function discapacidades() {

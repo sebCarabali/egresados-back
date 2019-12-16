@@ -31,6 +31,8 @@ Route::put('completeEgresados/{idEgresado}', 'API\EgresadoController@fullInfo');
 /*
 *Retorna el Id del egresado para inicio de sesion
 */
+
+Route::get('cuestionario','API\TipoObservacionController@getCuestionario');
 Route::get('getIdegresados/{correo}','API\EgresadoController@getEgresadoEmail');
 /*
 *Validación de carnetización de egresado

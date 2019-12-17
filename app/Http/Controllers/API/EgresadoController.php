@@ -18,6 +18,7 @@ use App\Programa;
 use App\NivelEstudio;
 use App\Referido;
 use App\Cargo;
+use App\Grado;
 use Validator;
 use Excel;
 use App\Imports\EgresadosImport;
@@ -72,6 +73,7 @@ class EgresadoController extends Controller
         $egresado->num_hijos = $request->get('num_hijos');
         // TODO: Verificar estados.
         $egresado->estado = 'EN_ESPERA';
+        $egresado->estado_completar = false;
         $egresado->ha_trabajado = false;
         $egresado->trabaja_actualmente = false;
 
@@ -102,6 +104,7 @@ class EgresadoController extends Controller
         $egresado->correo = $request->get('correo');
         $egresado->correo_alternativo = $request->get('correo_alternativo');
         $egresado->grupo_etnico = $request->get('grupo_etnico');
+        
         $egresado->fecha_nacimiento = date('m/d/Y', strtotime($request->get('fecha_nacimiento')));
         $egresado->lugarExpedicion()->associate(Ciudad::where('id_aut_ciudad', $request->get('id_lugar_expedicion'))->first());
         $egresado->ciudadNacimiento()->associate(Ciudad::where('id_aut_ciudad', $request->get('id_lugar_nacimiento'))->first());
@@ -196,6 +199,7 @@ class EgresadoController extends Controller
             $usuario = $this->_crearUsuario($egresado);
             $egresado->user()->associate($usuario);
             $egresado->lugarResidencia()->associate($localizacion);
+            //return response()->json($egresado,200);
             $egresado->save();
             $egresado->programas()->attach($grado['id_programa'], [
                 //'tipo' => $grado->tipo,
@@ -426,11 +430,65 @@ class EgresadoController extends Controller
         $levels=BD::table('niveles_estudio')->get();
         return response()->json($levels, 205);
     }
+
+    public function guardarGradoSimultaneo($gradoSimultaneo,$idEgresado){
+        try{
+            $gradoPendiente = Grado::where('id_egresado','=',$idEgresado)
+            ->where('estado','=','Pendiente')
+            ->select('fecha_graduacion','anio_graduacion')->get();
+
+            $grado = array(
+                'id_programa' => $gradoSimultaneo->get('id_programa'),
+                'mension_honor' => $gradoSimultaneo->get('mension_honor'),
+                'titulo_especial' => $gradoSimultaneo->get('titulo_especial'),
+                'fecha_grado' => date('m/d/Y', strtotime($gradoPendiente->get('fecha_grado'))),
+                'anio_graduacion' => $gradoPendiente->get('anio_graduacion'),
+                'estado' => "PENDIENTE"
+            );
+            
+            $egresado = Egresado::find($idEgresado);
+
+            $egresado->programas()->attach($gradoSimultaneo['id_programa'], [
+                'mencion_honor' => array_key_exists('mension_honor', $grado) ? $grado['mension_honor'] : 'No',
+                'titulo_especial' => array_key_exists('titulo_especial', $grado) ? $grado['titulo_especial'] : '',
+                'fecha_graduacion' => $grado['fecha_grado'],
+                'anio_graduacion' => $grado['anio_graduacion'],
+                'estado'=>$grado['estado']
+            ]);
+
+            $idGradoRegistrado = DB::table('egresados')
+            ->join('grados', 'egresados.id_aut_egresado', '=', 'grado.id_egresado')
+            ->join('programas', 'grado.id_programas', '=', 'programas.id_aut_programa')
+            ->where('egresados.id_aut_egresado','=',$idEgresado)
+            ->where('grados.estado','=','PENDIENTE')
+            ->where('grados.id_programa','=',$gradoSimultaneo['id_programa'])
+            ->select('grados.id_aut_grado')
+            ->get();
+            
+            $this->guadarComentario($gradoSimultaneo->get('comentarios'), $idGradoRegistrado);
+            
+        }catch(Exception $e){
+            return response()->json(["error al momento de guardar grados simultaneo"], 400);
+        }
+    }
+    public function guadarComentario(array $comentarios, $idGrado){
+        try{
+            $grado = Grado::find($idGrado);
+            foreach($comentarios as $comentario){
+                $grado -> tipoObservacion() -> attach($comentario->get("id_aut_comentario"),["respuesta"=>$comentario->get("respuesta")]);
+            }
+
+        }catch(Exception $e){
+            return response()->json(['Error al guardar comentarios' => $e], 400);
+        }
+            
+    }
     //Metodo para completar la informacion de un egresdao
     //Se agrega: Regeridos
     //           Experiencias
     //           Datos personales especificos
     //CompletarInformacionRequest
+    
     public function fullInfo($idEgresado, Request $request){
        return DB::transaction(function()use($request,$idEgresado){
             
@@ -453,18 +511,47 @@ class EgresadoController extends Controller
                 
                
                 // Obteniendo informacion de las experiencias de un egresado
-                $expAnterior = $request->get('expAnterior');
-                
                 $expActual = $request->get('expActual');
                
                 
-                if($expAnterior && count($expAnterior)>0){
-                    $this->guardarInfoExperiencia($expAnterior,$idEgresado);
-                    //return response()->json( $this->guardarInfoExperiencia($expAnterior,$idEgresado)->all(), 202);
-                }
 
+                //Se obtienen los comentarios del  grado ya registrado en el preregistro
+                $comentariosGradoRegistrado = $request->get('comentarios');
+                
+                /*
+                * GRADO SIMULTANEO
+                * Este caso se presenta cuando un graduando se 
+                * gradua de DOS carreras diferentes al tiempo
+                */
+
+                // Se obtine la informacion de un grado simultaneo 
+                $gradoSimultaneo = $request->get('gradoAdicional');
+
+
+                /*if($expAnterior && count($expAnterior)>0){
+                    $this->guardarInfoExperiencia($expAnterior,$idEgresado);
+                    
+                }*/
+                
+                
                if($expActual && count($expActual)>0){
                     $this->guardarInfoExperiencia($expActual,$idEgresado);
+                }
+                
+                
+                if($comentariosGradoRegistrado && count($comentariosGradoRegistrado)){
+                    return response()->json($comentariosGradoRegistrado,400);
+                    $idgrado = DB::table('grados')
+                    ->where('id_egresado','=',$idEgresado) 
+                    ->where("grados.estado",'PENDIENTE')
+                    ->select('grados.id_aut_grado')->get();
+                    
+                    $this->guadarComentario($comentariosGradoRegistrado, $idgrado);
+                }
+                
+                if($gradoSimultaneo['id_nivel_educativo']!=0 && count($gradoSimultaneo)){
+                    
+                    $this->guardarGradoSimultaneo($gradoSimultaneo, $idEgresado);
                 }
                 
             }catch(Exception $e){
@@ -478,6 +565,8 @@ class EgresadoController extends Controller
     /**
      * Store a newly created resource in storage.
      *
+
+
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */

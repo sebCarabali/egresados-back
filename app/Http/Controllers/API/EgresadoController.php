@@ -273,6 +273,7 @@ class EgresadoController extends Controller
                 $experiencia->tipo_contrato=$exp['tipo_contrato'];
                 $experiencia->sector=$exp['sector'];
                 $experiencia->trabajo_en_su_area=$exp['trabajo_en_su_area'];
+                $experiencia->categoria=$exp['categoria'];
                 
                 $cargo=new Cargo();
                 $cargo->nombre=$exp["cargo_nombre"];

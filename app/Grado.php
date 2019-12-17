@@ -10,8 +10,9 @@ class Grado extends Model
     protected $primaryKey = "id_aut_grado";
     public $timestamps = false;    
 
-    public function tipoObservacion() {
+    public function tipoObservacion() 
+    {
         return $this->belongsToMany('App\TipoObservacion', 'comenta', 'id_grado', 'id_comentario');
     }
-    
+
 }

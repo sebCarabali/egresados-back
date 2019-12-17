@@ -2,23 +2,25 @@
 
 namespace App\Notifications;
 
+use App\Empresa;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class RegistroEmpresa extends Notification
+class RegistroEmpresaAdmin extends Notification
 {
     use Queueable;
 
+    protected $empresa;
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(Empresa $empresa)
     {
-        //
+        $this->empresa = $empresa;
     }
 
     /**
@@ -40,9 +42,8 @@ class RegistroEmpresa extends Notification
      */
     public function toMail($notifiable)
     {
-        // dd($notifiable);
         return (new MailMessage)
-            ->view("mail.notificacion_registro_empresa", ["user" => $notifiable]);
+            ->view("mail.notificacion_registro_empresa", ["empresa" => $this->empresa]);
     }
 
     /**

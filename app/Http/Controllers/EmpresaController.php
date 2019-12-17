@@ -24,6 +24,7 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 
 class EmpresaController extends Controller
@@ -200,11 +201,13 @@ class EmpresaController extends Controller
     }
 
 
-    public function updateEstado($id, Request $request)
+    public function updateEstado(Empresa $id, Request $request)
     {
         // Código de error por defecto
         $code = 400;
         $data = null;
+        // $id->administrador->notify(new \App\Notifications\CambioEstadoEmpresa());
+        // return $this->fail($id->administrador);
 
         // Validador
         try {
@@ -214,9 +217,12 @@ class EmpresaController extends Controller
 
             //if (!empty($params_array)) {
             // Buscar el registro
-            $empresa = Empresa::find($id);
+            $empresa = $id;
+            // $empresa = Empresa::find($id);
 
             if (!empty($empresa) && is_object($empresa)) {
+                DB::beginTransaction();
+
                 if ($request['estado'] == 'Activo' && !empty($request['limite_publicaciones'])) {
                     // Actualizar el registro en concreto
 
@@ -233,6 +239,9 @@ class EmpresaController extends Controller
                     $data = $empresa;
                     $code = 200;
                 }
+                DB::commit();
+                $empresa->administrador->notify(new \App\Notifications\CambioEstadoEmpresa());
+
             }
         } catch (ValidationException $ev) {
             return response()->json($ev->validator->errors(), 400);
@@ -381,7 +390,7 @@ class EmpresaController extends Controller
             //     $message->to($correo)->subject('Nuevo usuario');
             // });
             $user->notify(new \App\Notifications\RegistroEmpresa());
-
+            Notification::send(Role::whereNombre("Administrador")->first()->users()->first(), new \App\Notifications\RegistroEmpresaAdmin($empresa));
             DB::commit();
             return $this->success($empresa->id_aut_empresa);
         } catch (Exception $e) {

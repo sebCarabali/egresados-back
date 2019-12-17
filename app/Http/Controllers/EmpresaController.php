@@ -8,6 +8,7 @@ use App\Ciudad;
 use Illuminate\Http\Request;
 
 use App\Empresa;
+use App\Helpers\CrearUsuario;
 use App\Helpers\JwtAuth;
 use App\Http\Requests\EmpresaStoreRequest;
 use App\Http\Requests\EmpresaUpdateRequest;
@@ -21,6 +22,8 @@ use Illuminate\Support\Carbon;
 use Illuminate\Validation\ValidationException;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
 class EmpresaController extends Controller
@@ -253,14 +256,14 @@ class EmpresaController extends Controller
         $data = null;
 
         try {
-            $user = new User();
-            $user->email = $request['datos']['datos-cuenta']['email'];
-            $user->password = bcrypt($request['datos']['datos-cuenta']['contrasenia']);
-            $rol = Role::whereNombre('Empresa')->first();
-            if (!$rol) {
-                return $this->fail("Al parecer no hay datos en la BD!");
-            }
-            $user->rol()->associate($rol);
+            // $user = new User();
+            // $user->email = $request['datos']['datos-cuenta']['email'];
+            // $user->password = bcrypt($request['datos']['datos-cuenta']['contrasenia']);
+            // $rol = Role::whereNombre('Empresa')->first();
+            // if (!$rol) {
+            //     return $this->fail("Al parecer no hay datos en la BD!");
+            // }
+            // $user->rol()->associate($rol);
 
             $direccionEmpr = new Localizacion();
             if ($request['datos']['loc-contact-empresa']['codigoPostalEmp']) {
@@ -342,8 +345,10 @@ class EmpresaController extends Controller
                 $image_s = $request->file('logoInput')->store('/empresas/logos', 'files');
                 $empresa->url_logo = asset($image_s);
             }
-
-            $user->save();
+            $crearUsuario = new CrearUsuario();
+            $user = $crearUsuario->crearUsuario($request['datos']['datos-cuenta']['email'], 'Empresa');
+            // $user->password = Hash::make($request['datos']['datos-cuenta']['contrasenia']);
+            // $user->save();
             $direccionEmpr->save();
             $empresa->direccion()->associate($direccionEmpr);
             $empresa->save();
@@ -368,6 +373,15 @@ class EmpresaController extends Controller
 
             $representanteLegal->empresa()->associate($empresa);
             $representanteLegal->save();
+
+            // $crearUsuario->_enviarMensajeActivacion($user);
+            // $correo = $user->email;
+            // Mail::send('mail.confirmation', ['codigo' => $user->codigo_verificacion], function ($message) use ($correo) {
+            //     $message->from('carloschapid@unicauca.edu.co', 'Egresados');
+            //     $message->to($correo)->subject('Nuevo usuario');
+            // });
+            $user->notify(new \App\Notifications\RegistroEmpresa());
+
             DB::commit();
             return $this->success($empresa->id_aut_empresa);
         } catch (Exception $e) {

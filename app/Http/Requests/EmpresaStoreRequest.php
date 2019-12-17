@@ -28,7 +28,8 @@ class EmpresaStoreRequest extends FormRequest
         // throw new HttpResponseException(response()->json($this->json()));
         //  throw new HttpResponseException(response()->json($this->all()));
 
-
+        $rangoEmpleados = array('1 - 10', '11 - 50', '51 - 150', '151 - 300', '301 - 500', '501 - 1000', '1001 - 5000', 'Más de 5000');
+        $salarios = array('0 - 3.000.000', '3.000.001 - 10.000.000', '10.000.001 - 25.000.000', '25.000.001 - 50.000.000', '50.000.001 - 100.000.000', 'Más de 100.000.000');
         return [
             'datos.datos-cuenta.email' => 'required|max:255|email|unique:users,email',
             'datos.datos-cuenta.contrasenia' => 'required|string|min:6',
@@ -38,8 +39,8 @@ class EmpresaStoreRequest extends FormRequest
             'datos.datos-generales-empresa.razonSocial' => 'required|string',
             'datos.datos-generales-empresa.nombreEmpresa' => 'required|unique:empresas,nombre',
             'datos.datos-generales-empresa.anioCreacion' => 'required|numeric|between:1900,' . Carbon::now()->format("Y"),
-            'datos.datos-generales-empresa.numEmpleados' => 'required|string',
-            'datos.datos-generales-empresa.ingresosEmp' => 'required|string',
+            'datos.datos-generales-empresa.numEmpleados' => 'required|string|in:'. implode(",",$rangoEmpleados),
+            'datos.datos-generales-empresa.ingresosEmp' => 'required|string|in:'. implode(",",$salarios),
             'datos.datos-generales-empresa.descripcionEmpresa' => 'required|string',
 
             'datos.loc-contact-empresa.ciudadEmp' => 'required|exists:ciudades,id_aut_ciudad',
@@ -48,7 +49,7 @@ class EmpresaStoreRequest extends FormRequest
             'datos.loc-contact-empresa.codigoPostalEmp' => 'nullable|numeric',
             'datos.loc-contact-empresa.telefonoEmp' => 'nullable|integer',
             'datos.loc-contact-empresa.emailEmp' => 'nullable|email',
-            'datos.loc-contact-empresa.sitioWebEmp' => 'nullable|url',
+            'datos.loc-contact-empresa.sitioWebEmp' => 'nullable|string',
             // 'loc-contact-empresa.sitioWebEmp' => 'url|active_url',
 
 

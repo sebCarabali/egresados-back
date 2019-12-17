@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Egresado;
+use App\Programa;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Imports\EgresadosImport;
@@ -12,14 +13,23 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
-class VerificarEgresadoController extends Controller
-{
+class VerificarEgresadoController extends Controller {
+
+    // Para el estado del egresado
+    const ACTIVO_LOGUEADO = 'ACTIVO_LOGUEADO';
+    const ACTIVO_NO_LOGUEADO = 'ACTIVO_NO_LOGUEADO';
+    // Para el tipo de grado
+    const GRADO_POSTUMO = 'GRADO POSTUMO';
+    const GRADO_PRIVADO = 'GRADO_PRIVADO';
+    // Para grados
+    const ACTIVO = 'ACTIVO';
+    const PENDIENTE = 'PENDIENTE';
+
     /**
      * Usada para verificar los egresados, que se encuentran registrados
      * contrastandolos con los que reporta la secretaria general.
      */
-    public function verificar(Request $request)
-    {
+    public function verificar(Request $request) {
         $file = $request->file('fileInput');
         $validator = $this->crearValidador($file);
         if ($validator->fails()) {
@@ -40,8 +50,7 @@ class VerificarEgresadoController extends Controller
         }
     }
 
-    private function crearValidador($file)
-    {
+    private function crearValidador($file) {
         $input = [
             'file' => $file,
             'extension' => strtolower($file->getClientOriginalExtension())
@@ -58,16 +67,14 @@ class VerificarEgresadoController extends Controller
         return Validator::make($input, $rules, $messages);
     }
 
-    private function obtenerDatosExcel($file)
-    {
+    private function obtenerDatosExcel($file) {
         $import = new EgresadosImport();
         Excel::import($import, $file);
         $egresados = $import->egresados;
         return $egresados;
     }
 
-    private function procesaroDatosExcel($excelData)
-    {
+    private function procesaroDatosExcel($excelData) {
         // Estados de egresados después de las validaciones.
         $inconsistentes = [];
         $aceptados = [];
@@ -81,51 +88,28 @@ class VerificarEgresadoController extends Controller
                     array_push($inconsistentes, $row);
                     continue;
                 }
-                // obtener egresados por la identificación.
-                $egresado = Egresado::where('identificacion', $row['cedula'])->first();
-                if (!$egresado) {
-                    $this->registrarPendiente($row);
-                    array_push($pendientes, $row);
-                } else {
-                    // Si el egresados se encuentra como EN_ESPERA
-                    // cambiar estado y transformar algunos datos a los que llegan del archivo de secretaria.
-                    if ($egresado->estado == 'EN_ESPERA') {
-                        // cambiar estado a ACTIVO y agregar a aceptados
-                        $egresado->estado = 'ACTIVO';
-                        $egresado->save();
-                        $row['nombres'] = $egresado->nombres;
-                        $row['apellidos'] = $egresado->apellidos;
-                        array_push($aceptados, $row);
-                    } else if ($egresado->estado == 'PENDIENTE' || $egresado->estado == 'ACTIVO') {
-                        $this->registrarNuevoGrado($egresado, $row);
-                        array_push($pendientes, $row);
-                    }
-                }
+                
+                
             }
             DB::commit();
-            return [
-                'aceptados' => $aceptados,
-                'pendientes' => $pendientes,
-                'inconsistentes' => $inconsistentes
-            ];
+            return ['aceptados' => $aceptados, 'pendientes' => $pendientes, 'inconsistentes' => $inconsistentes];
         } catch (Exception $e) {
             DB::rollback();
             throw $e;
         }
     }
 
-    private function esFilaInconsistente($row)
-    {
+    private function esFilaInconsistente($row) {
         return empty($row['nombres']) ||
-            empty($row['apellidos']) ||
-            empty($row['cedula']) ||
-            empty($row['fechaGrado']) ||
-            empty($row['programa']) ||
-            empty($row['titulo']);
+                empty($row['apellidos']) ||
+                empty($row['cedula']) ||
+                empty($row['fechaGrado']) ||
+                empty($row['programa']) ||
+                empty($row['titulo']) ||
+                empty($row['']);
     }
 
-    private function registrarNuevoGrado($egresado, $row)
-    {
+    private function registrarNuevoGrado($egresado, $row) {
         $programa = Programa::where(DB::raw('upper(nombre)'), $row['programa'])->first();
         if (!$programa) {
             throw new Exception('El Programa ' . $row['programa'] . ' no existe');
@@ -140,15 +124,36 @@ class VerificarEgresadoController extends Controller
         return $egresado;
     }
 
-    private function registrarPendiente($row)
-    {
+    private function registrarPendiente($row) {
         $egresado = Egresado::create([
-            'nombres' => $row['nombres'],
-            'apellidos' => $row['apellidos'],
-            'identificacion' => $row['cedula'],
-            'estado' => 'PENDIENTE'
+                    'nombres' => $row['nombres'],
+                    'apellidos' => $row['apellidos'],
+                    'identificacion' => $row['cedula'],
+                    'estado' => 'PENDIENTE'
         ]);
         $respuesta = $this->registrarNuevoGrado($egresado, $row);
         return $respuesta;
     }
+
+    private function esGradoDiferente(Egresado $egresado, $programaExcel) {
+        $idProgramasEgresado = DB::table('grados')->select('id_programa')
+                        ->where('id_estudiante', $egresado->id_aut_egresado)
+                        ->where('estado', self::ACTIVO)
+                        ->get()->values();
+        $programas = Programa::select('nombre')->whereIn('id_aut_programa', $idProgramasEgresado)->get();
+        $yaGraduadoDelPrograma = $programas->contains(function($key, $value) use ($programaExcel) {
+            return $value === $programaExcel;
+        });
+        // Si no se ha graduado del programa retorna true de lo contrario falso
+        return !$yaGraduadoDelPrograma;
+    }
+
+    private function esGradoPostumo($row) {
+        return $row['actaYFecha'] == self::GRADO_POSTUMO;
+    }
+
+    private function esGradoPrivado($row) {
+        return $row['actaYFecha'] == self::GRADO_PRIVADO;
+    }
+
 }

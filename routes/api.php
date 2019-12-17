@@ -118,7 +118,12 @@ Route::get('eventos/{idEvento}', 'EventosController@getById');
 Route::post('eventos', 'EventosController@save');
 Route::put('eventos', 'EventosController@update');
 
-
+/**
+ * Gestión egresados
+ */
+Route::get('admin/egresados', 'Admin\EgresadoController@getAll');
+Route::get('admin/egresados/{idEgresado}', 'Admin\EgresadoController@getById');
+Route::get('admin/egresados/grados/{idEgresado}', 'GradosController@getByIdEgresado');
 // --------------------------------------------------------------------------------
 /**
  * Registro de una empresa

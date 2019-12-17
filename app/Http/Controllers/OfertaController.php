@@ -331,7 +331,6 @@ class OfertaController extends Controller
               'fecha_publicacion' => $auxFecha->format('Y-m-d'),
               'fecha_cierre' => $auxFecha->copy()->addDays($oferta->num_dias_oferta)->format('Y-m-d'),
             ]);
-
             $data = $oferta;
             $code = 200;
             break;

@@ -32,7 +32,7 @@ class EmpresaUpdateRequest extends FormRequest
         $salarios = array('0 - 3.000.000', '3.000.001 - 10.000.000', '10.000.001 - 25.000.000', '25.000.001 - 50.000.000', '50.000.001 - 100.000.000', 'Más de 100.000.000');
         return [
             'datos-cuenta.email' => 'present|max:255|email|unique:users,email,' . $empresa->administrador->id_aut_user . ',id_aut_user',
-            'datos-cuenta.contrasenia' => 'string|min:6',
+            'datos-cuenta.contrasenia' => 'string|min:8',
 
             // Datos empresa
             'datos-generales-empresa.NIT' => 'required|digits_between:8,15|unique:empresas,nit,' . $empresa->id_aut_empresa . ',id_aut_empresa',

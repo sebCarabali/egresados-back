@@ -7,21 +7,22 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class RegistroEmpresa extends Notification
+class CambioEstadoOfertaEmpresa extends Notification
 {
     use Queueable;
 
-    public $subject = "Activar cuenta | Ofertas Laborales Unicauca";
-
-
+    public $subject = "";
+    protected $oferta;
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($oferta)
     {
-        //
+        $this->subject = "Cambio estado Oferta | Ofertas Laborales Unicauca";
+        $this->oferta = $oferta;
+
     }
 
     /**
@@ -43,10 +44,9 @@ class RegistroEmpresa extends Notification
      */
     public function toMail($notifiable)
     {
-        // dd($notifiable);
         return (new MailMessage)
-        ->subject($this->subject)
-            ->view("mail.notificacion_registro_empresa", ["user" => $notifiable]);
+            ->subject($this->subject)
+            ->view("mail.notificacion_cambio_estado_oferta_empresa", ["oferta" => $this->oferta]);
     }
 
     /**

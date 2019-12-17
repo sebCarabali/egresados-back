@@ -6,6 +6,28 @@
       <meta http-equiv="X-UA-Compatible" content="ie=edge">
       <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
       <meta http-equiv="content-type" content="text/html; charset=windows-1252">
+      
+      <style>
+            .tabla {
+                  /* border: 1px solid #000; */
+                  margin: auto;
+                  /* box-shadow: 0px 3px 9px 1px #596f88 !important; */
+                  /* border-radius: 8px !important; */
+                  padding: 10px 21px !important;
+                  text-align: left !important;
+            }
+
+            .btn-a {
+                  margin: auto !important;
+                  text-decoration: none !important;
+                  display: inline-block !important;
+                  /* border: 1px solid #000; */
+                  border-radius: 2px !important;
+                  background-color: rgb(18, 86, 376) !important;
+                  padding: 2px 10px !important;
+                  color: white !important;
+            }
+      </style>
 </head>
 
 <body text="#000000" bgcolor="#FFFFFF" style="padding: 20px;">
@@ -49,23 +71,36 @@
                   </div>
             </div>
       </div>
-      </div>
       <hr style="height: 3px; background-color: gray; border: 0px;">
       <footer>
             <small>
 
                   <div class="container">
-                        <a> CONTACTO ÁREA DE EGRESADOS </a>
-                        <ul class="list-inline col-5">
-                              <li> <a> Dirección: Calle 5 N° 4-70</a>
-                              </li>
-                              <li> <a> Centro Histórico - Santo Domingo - Popayán</a>
-                              </li>
-                              <li> <a> Teléfono: 8209900 Ext. 1431</a>
-                              </li>
-                              <li> <a> Correo electrónico: egresados@unicauca.edu.co</a>
-                              </li>
-                        </ul>
+                        <table>
+                              <thead>
+                                    <th>CONTACTO ÁREA DE EGRESADOS
+                                    </th>
+                              </thead>
+
+                              <tbody>
+
+
+                                    <tr>
+                                          <td>
+                                                Dirección: Calle 5 N° 4-70
+                                          </td>
+                                    </tr>
+                                    <tr>
+                                          <td> Centro Histórico - Santo Domingo - Popayán</td>
+                                    </tr>
+                                    <tr>
+                                          <td> Teléfono: 8209900 Ext. 1431</td>
+                                    </tr>
+                                    <tr>
+                                          <td> Correo electrónico: egresados@unicauca.edu.co</td>
+                                    </tr>
+                              </tbody>
+                        </table>
                   </div>
             </small>
             <br>

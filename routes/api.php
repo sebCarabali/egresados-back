@@ -104,6 +104,9 @@ Route::get('sedes', 'API\SedesController@getAll');
  * Obtener los servicios
  */
 Route::get('servicios', 'ServicioController@getAll');
+
+Route::get('eventos', 'EventosController@getAllWithoutPaging');
+
 /**
  * Gestión Apoyos
  */
@@ -115,10 +118,10 @@ Route::put('apoyos', 'ApoyoController@update');
 /**
  * Gestión eventos
  */
-Route::get('eventos', 'EventosController@getAll');
-Route::get('eventos/{idEvento}', 'EventosController@getById');
-Route::post('eventos', 'EventosController@save');
-Route::put('eventos', 'EventosController@update');
+Route::get('admin/eventos', 'EventosController@getAll');
+Route::get('admin/eventos/{idEvento}', 'EventosController@getById');
+Route::post('admin/eventos', 'EventosController@save');
+Route::put('admin/eventos', 'EventosController@update');
 
 /**
  * Gestión egresados

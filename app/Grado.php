@@ -14,7 +14,8 @@ class Grado extends Model {
         return $this->belongsTo('App\Programa', 'id_programa');
     }
 
-    public function tipoObservacion() {
+    public function tipoObservacion() 
+    {
         return $this->belongsToMany('App\TipoObservacion', 'comenta', 'id_grado', 'id_comentario');
     }
 

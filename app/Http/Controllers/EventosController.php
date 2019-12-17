@@ -61,7 +61,6 @@ class EventosController extends Controller {
     public function getById($idEvento) {
         try {
             $evento = Eventos::find($idEvento)->firstOrFail();
-            $evento->image_path = asset(Storage::get($evento->id_aut_evento));
             return $this->success(new EventosResource($evento));
         } catch (Exception $e) {
             return $this->notFound('No se encontró el evento solicitado: ' . $e->getMessage());
@@ -75,26 +74,37 @@ class EventosController extends Controller {
         try {
             DB::beginTransaction();
             $evento = Evento::where('id_aut_evento', $data['id'])->firstOrFail();
-            if($request->has('fileInput') && $request->get('fileInput') != null) {
-                // TODO: Guardar imagen del evento y eliminar la existente
-                // Verificar si existe una imagen registrada para el evento
-                // Si existe eliminar del storage
-                // Guardar la nueva imagen en el storage y guardar ruta
+            if ($request->has('fileInput') && $request->get('fileInput') != null) {
+                $evento = $this->actualizarImagen($request->file('fileInput'));
             }
-            $evento->nombre = $data['nombre'];
-            $evento->fecha_inicio = date('m/d/Y', strtotime($data['fechaInicio']));
-            $evento->fecha_fin = date('m/d/Y', strtotime($data['fechaFin']));
-            $evento->lugar = $data['lugar'];
-            $evento->descripcion = $data['descripcion'];
-            $evento->a_quien_va_dirigida = $data['dirigidoA'];
-            $evento->cupos = $data['cupos'];
-            $evento->save();
+            $eventoRet = $this->setInfoAlEvento($evento, $data);
             DB::commit();
-            return $this->success($evento);
+            return $this->success($eventoRet);
         } catch (Exception $e) {
             DB::rollback();
             return $this->badRequest($e->getMessage());
         }
+    }
+
+    private function setInfoAlEvento(Evento $evento, array $data) {
+        $evento->nombre = $data['nombre'];
+        $evento->fecha_inicio = date('m/d/Y', strtotime($data['fechaInicio']));
+        $evento->fecha_fin = date('m/d/Y', strtotime($data['fechaFin']));
+        $evento->lugar = $data['lugar'];
+        $evento->descripcion = $data['descripcion'];
+        $evento->a_quien_va_dirigida = $data['dirigidoA'];
+        $evento->cupos = $data['cupos'];
+        $evento->save();
+        return $evento;
+    }
+
+    private function actualizarImagen($file, Evento $evento) {
+        // TODO: Guardar nueva imagen del evento y eliminar la existente.
+        if (!empty(!$evento->image_path)) {
+            Storage::delete($evento->image_path, 'public');
+        }
+        $evento->image_path = $file->store('storage/eventos', 'public');
+        return $evento;
     }
 
 }

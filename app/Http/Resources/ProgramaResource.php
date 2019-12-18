@@ -16,7 +16,10 @@ class ProgramaResource extends Resource
     {
         return [
             "idPrograma" => $this->id_aut_programa,
-            "Nombre" => $this->nombre
+            "Nombre" => $this->nombre,
+            'sede' => $this->sede()->first(),
+            'facultad' => $this->facultad()->first(),
+            'titulo' => DB::table('titulo')-select('nombre')->where('id_aut_titulo', $this->id_titulo)->first()
         ];
     }
 }

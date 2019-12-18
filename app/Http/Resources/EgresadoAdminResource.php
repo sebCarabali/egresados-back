@@ -33,8 +33,9 @@ class EgresadoAdminResource extends Resource {
             'celular' => $this->celular,
             'grados' => GradosResource::collection(\App\Grado::where('id_egresado', $this->id_aut_egresado)->get()),
             'referenciasPersonales' => $this->getReferidos(),
-            'trabajoActual' => 'Load trabajo actual',
+            'trabajosActuales' => $this->getTrabajoActual(),
             'telefonoFijo' => $this->telefono_fijo,
+            'solicitudes' => $this->getSolicitudesCarnetizacion(),
             'lugarNacimiento' => new CiudadResource($this->ciudadNacimiento()->first()),
             'lugarResidencia' => new LocalizacionResource($this->lugarResidencia()->first())
         ];
@@ -48,12 +49,12 @@ class EgresadoAdminResource extends Resource {
     
     private function getTrabajoActual()
     {
-        return \App\Experiencia::where('id_egresado', $this->id_aut_egresado)
-                ->whereIsNull('fehca_fin')->get();
+        return ExperienciaResource::collection(\App\Experiencia::where('id_egresado', $this->id_aut_egresado)
+                ->whereNull('fecha_fin')->get());
     }
     
     private function getSolicitudesCarnetizacion()
     {
-        // ...
+        return SolicitudCarnetResource::collection(DB::table('solicita')->where('id_egresado', $this->id_aut_egresado)->get());
     }
 }

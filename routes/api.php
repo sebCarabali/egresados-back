@@ -129,6 +129,8 @@ Route::put('admin/eventos', 'EventosController@update');
 Route::get('admin/egresados', 'Admin\EgresadoController@getAll');
 Route::get('admin/egresados/{idEgresado}', 'Admin\EgresadoController@getById');
 Route::get('admin/egresados/grados/{idEgresado}', 'GradosController@getByIdEgresado');
+Route::get('admin/grado/{idGrado}', 'GradosController@getById');
+Route::get('admin/observaciones', 'API\TipoObservacionController@getObservaciones');
 // --------------------------------------------------------------------------------
 /**
  * Registro de una empresa
@@ -139,6 +141,9 @@ Route::post('empresas/oferta/update/{oferta}', 'OfertaController@updateOferta');
 Route::post('empresas/storeArchivos/{empresa}', 'EmpresaController@uploadFiles')->where(['id' => '[0-9]+']);
 Route::get('ofertas/postulados/{oferta}', 'OfertaController@getAllPostulados');
 Route::put('postulado/{postulado}/{oferta}/estado', 'OfertaController@changeStatePostulado');
+Route::get('getEmpresa/{email}','EmpresaController@getEmpresaEmail');
+
+
 /**
  * Actualización  de una empresa
  */

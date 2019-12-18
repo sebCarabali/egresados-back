@@ -14,7 +14,7 @@ class ExperienciaResource extends Resource {
      */
     public function toArray($request) {
         return [
-            'id_experiencia' => $this->id_aut_experiencia,
+            'id' => $this->id_aut_experiencia,
             'cargo' => new CargoResource($this->cargos()->first()),
             'nombreEmpresa' => $this->nombre_empresa,
             'sector' => $this->sector

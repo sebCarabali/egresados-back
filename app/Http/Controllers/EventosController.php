@@ -31,7 +31,7 @@ class EventosController extends Controller {
             $evento->descripcion = $data['descripcion'];
             $evento->a_quien_va_dirigida = $data['dirigidoA'];
             $evento->cupos = $data['cupos'];
-            //$evento->image_path = $req->file('fileInput')->store('storage/eventos', 'public');
+            $evento->image_path = $req->file('fileInput')->store('storage/eventos', 'public');
             $evento->save();
             DB::commit();
             return $this->success(new EventosResource($evento));

@@ -12,4 +12,9 @@ class TipoObservacionController extends Controller
     public function getCuestionario(){
         return response()->json(TipoObservacion::all(), 200);       
     }
+    
+    public function getObservaciones()
+    {
+        return $this->success(\App\Http\Resources\TipoObservacionResource::collection(TipoObservacion::all()));
+    }
 }

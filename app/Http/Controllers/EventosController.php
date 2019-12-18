@@ -31,7 +31,7 @@ class EventosController extends Controller {
             $evento->descripcion = $data['descripcion'];
             $evento->a_quien_va_dirigida = $data['dirigidoA'];
             $evento->cupos = $data['cupos'];
-            $evento->image_path = $req->file('fileInput')->store('storage/eventos', 'public');
+            $evento->imagen = asset($req->file('fileInput')->store('storage/eventos', 'public'));
             $evento->save();
             DB::commit();
             return $this->success(new EventosResource($evento));
@@ -100,10 +100,10 @@ class EventosController extends Controller {
 
     private function actualizarImagen($file, Evento $evento) {
         // TODO: Guardar nueva imagen del evento y eliminar la existente.
-        if (!empty(!$evento->image_path)) {
-            Storage::delete($evento->image_path, 'public');
+        if (!empty(!$evento->imagem)) {
+            Storage::delete($evento->imagen, 'public');
         }
-        $evento->image_path = $file->store('storage/eventos', 'public');
+        $evento->imagen = $file->store('storage/eventos', 'public');
         return $evento;
     }
     

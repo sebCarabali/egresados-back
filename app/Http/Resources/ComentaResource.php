@@ -21,8 +21,8 @@ class ComentaResource extends Resource {
     }
 
     private function getPregunta() {
-        return DB::table('tipo_de_observacion')->select('pregunta')
-                ->where('id_aut_comentario', $this->id_comentario)->first();
+        return DB::table('tipo_de_observacion')
+                ->where('id_aut_comentario', $this->id_comentario)->first()->pregunta;
     }
 
 }

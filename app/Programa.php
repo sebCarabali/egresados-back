@@ -16,6 +16,10 @@ class Programa extends Model
                 /*->withPivot('tipo', 'mension_honor', 'titulo_especial', 'comentarios', 'fecha_graduacion',
                             'docente_influencia');*/
     }
+    
+    public function sede() {
+        return $this->belognsTo('App\Sede', 'id_sede');
+    }
 
     public function facultad() {
         return $this->belognsTo('App\Facultad', 'id_facultad');
@@ -24,6 +28,7 @@ class Programa extends Model
     {
         return $this->hasMany('App\Referido','id_aut_referido');
     }
+    
 
     public function ofertas()
     {

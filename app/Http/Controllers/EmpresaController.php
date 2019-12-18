@@ -429,8 +429,15 @@ class EmpresaController extends Controller
             if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $user = User::whereEmail($email)->get()->first();
                 if($user){
-                    // $user = new User();
-                    return $this->success($user->administrador()->with("empresa")->get());
+                    // return $user->rol;
+                    if($user->rol->nombre == "Empresa"){
+                        $empresa = new Empresa();
+                        $empresa->id_aut_empresa= $user->administrador->empresa->id_aut_empresa;
+                        return $this->success($empresa);
+                    }else{
+                        return $this->fail("No se encontro nignuna Empresa enlazada al correo ingresado!", 422);
+                    }
+                    
                 }else{
                     return $this->fail("No se encontro nignun usuario!", 422);
                 }

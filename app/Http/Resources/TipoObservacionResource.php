@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\Resource;
 
-class SolicitudCarnetResource extends Resource
+class TipoObservacionResource extends Resource
 {
     /**
      * Transform the resource into an array.
@@ -15,9 +15,8 @@ class SolicitudCarnetResource extends Resource
     public function toArray($request)
     {
         return [
-           'fechaSolicitud' => $this->fecha_solicitud,
-            'fechaRespuesta' => $this->fecha_respuesta,
-            'estadoSolicitud' => $this->carnetizacion()->first()->estado
+            'id' => $this->id_aut_comentario,
+            'pregunta' => $this->pregunta
         ];
     }
 }

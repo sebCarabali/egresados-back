@@ -53,6 +53,28 @@ class OfertaController extends Controller
     return response()->json($ofertas, 200);
   }
 
+  public function getOfertasEmpresaOrdenadas($id)
+  {
+    $ofertas = Oferta::orderBy('estado_proceso', 'ASC')->where('id_empresa', $id)->get();
+
+    // Ordenar primero sacando las ofertas "Activas"
+    $aux = [];
+    $aux2 = [];
+    foreach ($ofertas as $oferta) {
+      $nombre = $oferta->cargo->nombre;
+      unset($oferta['cargo']);
+      $oferta['cargo_nombre'] = $nombre;
+      if ($oferta->estado_proceso == 'Activa') {
+        array_push($aux, $oferta);
+      } else {
+        array_push($aux2, $oferta);
+      }
+    }
+    $resultado = array_merge($aux, $aux2);
+
+    return response()->json($resultado, 200);
+  }
+
   public function getOferta($id)
   {
     // Codigo de error por defecto
@@ -334,7 +356,6 @@ class OfertaController extends Controller
               'fecha_publicacion' => $auxFecha->format('Y-m-d'),
               'fecha_cierre' => $auxFecha->copy()->addDays($oferta->num_dias_oferta)->format('Y-m-d'),
             ]);
-
             $data = $oferta;
             $code = 200;
             break;

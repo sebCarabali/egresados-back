@@ -129,6 +129,8 @@ Route::put('admin/eventos', 'EventosController@update');
 Route::get('admin/egresados', 'Admin\EgresadoController@getAll');
 Route::get('admin/egresados/{idEgresado}', 'Admin\EgresadoController@getById');
 Route::get('admin/egresados/grados/{idEgresado}', 'GradosController@getByIdEgresado');
+Route::get('admin/grado/{idGrado}', 'GradosController@getById');
+Route::get('admin/observaciones', 'API\TipoObservacionController@getObservaciones');
 // --------------------------------------------------------------------------------
 /**
  * Registro de una empresa
@@ -231,6 +233,10 @@ Route::put('/ofertas/estado-proceso/{id}', 'OfertaController@updateEstadoProceso
  * Cambia el estado de una oferta desde la empresa
  */
 Route::get('/ofertas/{id}', 'OfertaController@getOferta');
+/**
+ * Obtiene las ofertas de una empresa ordenadas por estado_proceso
+ */
+Route::get('/ofertas/empresa/ordenadas-estado-proceso/{id}', 'OfertaController@getOfertasEmpresaOrdenadas');
 
 
 

@@ -240,7 +240,7 @@ class EmpresaController extends Controller
                     ]);
                     $data = $empresa;
                     $code = 200;
-                } else if ($request['estado'] == 'En espera' || $request['estado'] == 'Inactivo') {
+                } else if ($request['estado'] == 'Pendiente' || $request['estado'] == 'Inactivo') {
                     // Actualizar el registro en concreto
                     $empresa->update(['estado' => $request['estado']]);
                     $data = $empresa;

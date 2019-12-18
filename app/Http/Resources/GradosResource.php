@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\Resource;
+use \Illuminate\Support\Facades\DB;
 
 class GradosResource extends Resource {
 
@@ -19,8 +20,13 @@ class GradosResource extends Resource {
             'mencion' => $this->mencion_honor,
             'estado' => $this->estado,
             'fechaGrado' => $this->fecha_graduacion,
-            'programa' => new ProgramaResource($this->programa()->first())
+            'programa' => new ProgramaResource($this->programa()->first()),
+            'comentarios' => $this->obtenerComentarios()
         ];
+    }
+
+    private function obtenerComentarios() {
+        return ComentaResource::collection(DB::table('comenta')->where('id_grado', $this->id_aut_grado)->get());
     }
 
 }

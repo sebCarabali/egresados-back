@@ -23,4 +23,9 @@ class GradosController extends Controller {
         return $this->success(GradosResource::collection($grados));
     }
     
+    public function getById($idGrado)
+    {
+        return $this->success(new GradosResource(Grado::where('id_aut_grado', $idGrado)->first()));
+    }
+    
 }

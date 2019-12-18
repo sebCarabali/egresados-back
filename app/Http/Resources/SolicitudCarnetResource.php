@@ -15,7 +15,9 @@ class SolicitudCarnetResource extends Resource
     public function toArray($request)
     {
         return [
-           ''
+           'fechaSolicitud' => $this->fecha_solicitud,
+            'fechaRespuesta' => $this->fecha_respuesta,
+            'estadoSolicitud' => $this->carnetizacion()->first()->estado
         ];
     }
 }

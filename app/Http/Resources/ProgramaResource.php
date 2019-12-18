@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\Resource;
+use \Illuminate\Support\Facades\DB;
 
 class ProgramaResource extends Resource
 {
@@ -19,7 +20,8 @@ class ProgramaResource extends Resource
             "Nombre" => $this->nombre,
             'sede' => $this->sede()->first(),
             'facultad' => $this->facultad()->first(),
-            'titulo' => DB::table('titulo')-select('nombre')->where('id_aut_titulo', $this->id_titulo)->first()
+            'nivelEstudio' => $this->nivelEstudio()->first(),
+            'titulo' => DB::table('titulo')->select('nombre')->where('id_aut_titulo', $this->id_titulo)->first()
         ];
     }
 }

@@ -21,7 +21,7 @@ class ContactoHV extends Model
         "telefono_movil"
     ];
 
-    public function routeNotificationForMail($notification)
+    public function routeNotificationForMail()
     {
         return $this->correo;
     }

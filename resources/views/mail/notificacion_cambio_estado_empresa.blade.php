@@ -1,21 +1,6 @@
 @extends('mail.layout')
-
-{{-- {{$user}} --}}
-@isset($user)
-@section('contenido')
-@section('titulo_mensaje', 'Se ha registrado la empresa')
-<p>Para verificar su cuenta siga el siguiente enlace</p>
-<br><br>
-<a href="{{env("URL_FRONT")}}egresados/confirmar/{{$user->codigo_verificacion}}">confirmar cuenta</a>
-{{-- <a href="http://localhost:4200/egresados/confirmar/{{$user->codigo_verificacion}}">confirmar cuenta</a> --}}
-
-<br>
-<p>Si usted no ha realizado el registro, por favor omita este mensaje!</p>
-@endsection
-@endisset
-
 @isset($empresa)
-@section('titulo_mensaje', 'Se ha registrado una nueva empresa')
+@section('titulo_mensaje', 'Se ha cambiado el estado de la empresa')
 @section('contenido')
 
 <div>
@@ -34,9 +19,12 @@
                               <td>{{$empresa->nombre}}</td>
                         </tr>
                         <tr>
+                              <th>Estado</th>
+                              <td>{{$empresa->estado}}</td>
+                        </tr>
+                        <tr>
                               <td colspan="2" style="text-align:center">
-                                    <a class="btn-a" href="http://localhost:4200/admin/solicitudes">EMRESAS
-                                          PENDIENTES</a>
+                                    <a class="btn-a" href="http://localhost:4200/login">INGRESAR</a>
                               </td>
                         </tr>
                   </tbody>

@@ -18,10 +18,12 @@ use App\Http\Resources\EgresadoResource;
 use App\Http\Resources\SalarioResource;
 use App\OfertaSoftware;
 use App\PreguntaOferta;
+use App\Role;
 use App\Salario;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Notification;
 
 class OfertaController extends Controller
 {
@@ -322,6 +324,7 @@ class OfertaController extends Controller
       // Buscar el registro
       $oferta = Oferta::find($id);
       if (!empty($oferta) && is_object($oferta)) {
+        DB::beginTransaction();
         switch ($request['estado']) {
           case 'Aceptada':
             $auxFecha = Carbon::now('-5:00');
@@ -349,6 +352,8 @@ class OfertaController extends Controller
             break;
         }
         DB::commit();
+        $oferta->contacto_hv->notify(new \App\Notifications\CambioEstadoOfertaEmpresa($oferta));
+        $oferta->empresa->administrador->notify(new \App\Notifications\CambioEstadoOfertaEmpresa($oferta));
       }
     } catch (ValidationException $ev) {
       return response()->json($ev->validator->errors(), $code);
@@ -462,7 +467,7 @@ class OfertaController extends Controller
       $oferta->numero_vacantes = $request['informacionPrincipal']['numVacantes']; //
       $oferta->id_forma_pago = $request['contrato']['idRangoSalarial'];
       $oferta->experiencia = $request['requisitos']['experienciaLaboral']; // Enum ('Sin experiencia', 'Igual a', 'Mayor o igual que', 'Menor o igual que')
-      if(isset($request['requisitos']['anios'])){
+      if (isset($request['requisitos']['anios'])) {
         $oferta->anios_experiencia = $request['requisitos']['anios']; //
       }
       $oferta->perfil = $request['requisitos']['perfil']; //
@@ -562,6 +567,7 @@ class OfertaController extends Controller
 
 
       DB::commit();
+      Notification::send(Role::whereNombre("Administrador")->first()->users()->first(), new \App\Notifications\RegistroOfertaAdmin($oferta));
       return $this->success($oferta);
     } catch (Exception $e) {
       return $this->fail("Registro oferta => " . $e->getMessage());
@@ -623,7 +629,7 @@ class OfertaController extends Controller
       $oferta->numero_vacantes = $request['informacionPrincipal']['numVacantes']; //
       $oferta->id_forma_pago = $request['contrato']['idRangoSalarial'];
       $oferta->experiencia = $request['requisitos']['experienciaLaboral']; // Enum ('Sin experiencia', 'Igual a', 'Mayor o igual que', 'Menor o igual que')
-      if(isset($request['requisitos']['anios'])){
+      if (isset($request['requisitos']['anios'])) {
         $oferta->anios_experiencia = $request['requisitos']['anios']; //
       }
       $oferta->perfil = $request['requisitos']['perfil']; //

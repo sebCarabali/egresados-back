@@ -20,7 +20,8 @@ class ReferidoResource extends Resource
             'correo' => $this->correo,
             'parentesco' => $this->parentesco,
             'telefonoMovil' => $this->telefono_movil,
-            'esEgresado' => $this->es_egresado
+            'esEgresado' => $this->es_egresado,
+            'programa' => new ProgramaResource($this->programa()->first())
         ];
     }
 }

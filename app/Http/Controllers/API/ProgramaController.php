@@ -26,8 +26,10 @@ class ProgramaController extends Controller {
     }
 
     public function getBySedeAndFacultadAndNivelEstudio($idSede, $idFacultad, $idNivelEstudio) {
+        
         try {
-            $idProgramas = DB::table('sede_programas')
+            
+            /*$idProgramas = DB::table('sede_programas')
                     ->select('id_programa')
                     ->where('id_sede', $idSede)->get()->toArray();
 
@@ -48,7 +50,16 @@ class ProgramaController extends Controller {
                 ->where('id_facultad', $idFacultad)
                 ->where('id_nivelestudio', $idNivelEstudio)
                 ->get();*/
-            return response()->json($programas, 200);
+
+               
+                $programas = DB::table('programas')
+                ->join('sede','programas.id_sede','=','sede.id_aut_sede')
+                ->where('programas.id_facultad',$idFacultad)
+                ->where('sede.id_aut_sede',$idSede)
+                ->where('programas.id_nivelestudio',$idNivelEstudio)
+                ->select('programas.nombre','programas.id_aut_programa')->get();
+
+                return response()->json($programas, 200);
         } catch(Exception $e) {
             return response()->json(['error'=>$e], 400);
         }

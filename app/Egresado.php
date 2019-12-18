@@ -12,8 +12,6 @@ class Egresado extends Model
     //protected $fillable = ['nombres'];
     protected $guarded = ['id_aut_egresado'];
 
-    public $timestamps = false;
-
     public function ciudadNacimiento()
     {
       return $this->belongsTo('App\Ciudad', 'id_lugar_nacimiento');

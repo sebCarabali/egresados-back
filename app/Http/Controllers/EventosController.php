@@ -106,5 +106,10 @@ class EventosController extends Controller {
         $evento->image_path = $file->store('storage/eventos', 'public');
         return $evento;
     }
+    
+    public function getAllWithoutPaging()
+    {
+        return $this->success(EventosResource::collection(Evento::all()));
+    }
 
 }

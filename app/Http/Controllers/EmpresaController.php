@@ -431,15 +431,18 @@ class EmpresaController extends Controller
                 if($user){
                     // return $user->rol;
                     if($user->rol->nombre == "Empresa"){
+                        if(!$user->administrador || !$user->administrador->empresa){
+                            return $this->fail("No se encontró ninguna Empresa enlazada al correo ingresado!", 422);
+                        }
                         $empresa = new Empresa();
                         $empresa->id_aut_empresa= $user->administrador->empresa->id_aut_empresa;
                         return $this->success($empresa);
                     }else{
-                        return $this->fail("No se encontro nignuna Empresa enlazada al correo ingresado!", 422);
+                        return $this->fail("No se encontró ninguna Empresa enlazada al correo ingresado!", 422);
                     }
                     
                 }else{
-                    return $this->fail("No se encontro nignun usuario!", 422);
+                    return $this->fail("No se encontró ningún usuario!", 422);
                 }
             } else {
                 return $this->fail("No es un correo electrónico!", 422);

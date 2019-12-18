@@ -23,8 +23,7 @@ use Validator;
 use Excel;
 use App\Imports\EgresadosImport;
 
-class EgresadoController extends Controller
-{
+class EgresadoController extends Controller {
 
     /**
      * Store egresados basic info.
@@ -32,8 +31,7 @@ class EgresadoController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function guardarInformacionBasica(GuardarInformacionBasicaRequest $request)
-    {
+    public function guardarInformacionBasica(GuardarInformacionBasicaRequest $request) {
         // verificar si ya hay datos registrados.
         $hasDataRegistered = $this->_tieneDatosRegistrados($request->get('identificacion'));
         if ($hasDataRegistered) {
@@ -47,8 +45,7 @@ class EgresadoController extends Controller
         return response()->json($egresado, 201);
     }
 
-    private function _crearInformacionBasica(Request $request)
-    {
+    private function _crearInformacionBasica(Request $request) {
 
         // get egresados data
         $egresado = new Egresado();
@@ -98,8 +95,7 @@ class EgresadoController extends Controller
         return $this->_guardarInformacionBasica($egresado, $localizacion, $grado, $discapacidad);
     }
 
-    private function _completarInformacionBasica(Egresado $egresado, Request $request)
-    {
+    private function _completarInformacionBasica(Egresado $egresado, Request $request) {
         $egresado->num_hijos = $request->get('num_hijos');
         $egresado->correo = $request->get('correo');
         $egresado->correo_alternativo = $request->get('correo_alternativo');
@@ -133,8 +129,7 @@ class EgresadoController extends Controller
         return $this->_guardarInformacionBasica($egresado, $localizacion, $grado, $discapacidad);
     }
 
-    private function _crearUsuario($egresado)
-    {
+    private function _crearUsuario($egresado) {
         $user = new User([
             'email' => $egresado->correo,
             'codigo_verificacion' => $this->_generarCodigoConfirmacion()
@@ -165,8 +160,7 @@ class EgresadoController extends Controller
       );
       } */
 
-    private function _generarCodigoConfirmacion($length = 16)
-    {
+    private function _generarCodigoConfirmacion($length = 16) {
         $alfabeto = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         $yaExiste = false;
         do {
@@ -176,13 +170,11 @@ class EgresadoController extends Controller
         return $codigo;
     }
 
-    private function _codigoYaExisteEnBd($codigo)
-    {
+    private function _codigoYaExisteEnBd($codigo) {
         return User::where('codigo_verificacion', $codigo)->exists();
     }
 
-    private function _enviarMensajeActivacion(User $usuario)
-    {
+    private function _enviarMensajeActivacion(User $usuario) {
         //
         $correo = $usuario->email;
         Mail::send('mail.confirmation', ['codigo' => $usuario->codigo_verificacion], function ($message) use ($correo) {
@@ -191,36 +183,34 @@ class EgresadoController extends Controller
         });
     }
 
-    private function _guardarInformacionBasica(Egresado $egresado, Localizacion $localizacion, array $grado, array $discapacidad)
-    {
+    private function _guardarInformacionBasica(Egresado $egresado, Localizacion $localizacion, array $grado, array $discapacidad) {
         // save all data and response egresados object in json format
         return DB::transaction(function () use ($egresado, $localizacion, $grado, $discapacidad) {
-            $localizacion->save();
-            $usuario = $this->_crearUsuario($egresado);
-            $egresado->user()->associate($usuario);
-            $egresado->lugarResidencia()->associate($localizacion);
-            //return response()->json($egresado,200);
-            $egresado->save();
-            $egresado->programas()->attach($grado['id_programa'], [
-                //'tipo' => $grado->tipo,
-                'mencion_honor' => array_key_exists('mension_honor', $grado) ? $grado['mension_honor'] : 'No',
-                'titulo_especial' => array_key_exists('titulo_especial', $grado) ? $grado['titulo_especial'] : '',
-                //'comentarios' => array_key_exists('comentarios', $grado) ? $grado['comentarios'] : '',
-                'fecha_graduacion' => $grado['fecha_grado'],
-                //'docente_influencia' => array_key_exists('docente_influencia', $grado) ? $grado['docente_influencia'] : '',
-                'anio_graduacion' => $grado['anio_graduacion']
-            ]);
-            foreach ($discapacidad as $d) {
-                $egresado->discapacidades()->attach($d);
-            }
-            $this->_enviarMensajeActivacion($usuario);
-            return $egresado;
-        });
+                    $localizacion->save();
+                    $usuario = $this->_crearUsuario($egresado);
+                    $egresado->user()->associate($usuario);
+                    $egresado->lugarResidencia()->associate($localizacion);
+                    //return response()->json($egresado,200);
+                    $egresado->save();
+                    $egresado->programas()->attach($grado['id_programa'], [
+                        //'tipo' => $grado->tipo,
+                        'mencion_honor' => array_key_exists('mension_honor', $grado) ? $grado['mension_honor'] : 'No',
+                        'titulo_especial' => array_key_exists('titulo_especial', $grado) ? $grado['titulo_especial'] : '',
+                        //'comentarios' => array_key_exists('comentarios', $grado) ? $grado['comentarios'] : '',
+                        'fecha_graduacion' => $grado['fecha_grado'],
+                        //'docente_influencia' => array_key_exists('docente_influencia', $grado) ? $grado['docente_influencia'] : '',
+                        'anio_graduacion' => $grado['anio_graduacion']
+                    ]);
+                    foreach ($discapacidad as $d) {
+                        $egresado->discapacidades()->attach($d);
+                    }
+                    $this->_enviarMensajeActivacion($usuario);
+                    return $egresado;
+                });
     }
 
     //Metodo que permite almacenar una lista de Referidos de un egresado
-    private function guardarReferido(array $referidos, $idEgresado)
-    {
+    private function guardarReferido(array $referidos, $idEgresado) {
 
         foreach ($referidos as $ref) {
             try {
@@ -251,10 +241,8 @@ class EgresadoController extends Controller
         }
     }
 
-
     //Metodo que permite almacenar una lista de experiencias de un egresado
-    public function guardarInfoExperiencia(array $experiencias, $idEgresado)
-    {
+    public function guardarInfoExperiencia(array $experiencias, $idEgresado) {
 
         //Informacion experiencias pasada
 
@@ -272,6 +260,7 @@ class EgresadoController extends Controller
             $experiencia->tipo_contrato = $exp['tipo_contrato'];
             $experiencia->sector = $exp['sector'];
             $experiencia->trabajo_en_su_area = $exp['trabajo_en_su_area'];
+            $experiencia->categoria = $exp['categoria'];
 
             $cargo = new Cargo();
             $cargo->nombre = $exp["cargo_nombre"];
@@ -289,55 +278,51 @@ class EgresadoController extends Controller
         }
     }
 
-    public function getEgresadoEmail($email)
-    {
+    public function getEgresadoEmail($email) {
         try {
             $idEgresado = Egresado::where("correo", "=", $email)
-                ->select("id_aut_egresado")->first();
+                            ->select("id_aut_egresado")->first();
             return response()->json($idEgresado, 200);
         } catch (Exeption $e) {
             return response()->json(['error' => $e], 400);
         }
     }
 
-
     //Carga los atributos de un egresado especifico para actualizar
-    public function edit($idEgresado)
-    {
+    public function edit($idEgresado) {
 
 
         $expedicion = DB::table('egresados')
-            ->join('ciudades', 'egresados.id_lugar_expedicion', '=', 'ciudades.id_aut_ciudad')
-            ->join('departamentos', 'departamentos.id_aut_departamento', '=', 'ciudades.id_departamento')
-            ->join('pais', 'pais.id_aut_pais', '=', 'departamentos.id_aut_dep')
-            ->select('paises.nombre', 'departamentos.nombre', 'ciudades.nombre')
-            ->get();
+                ->join('ciudades', 'egresados.id_lugar_expedicion', '=', 'ciudades.id_aut_ciudad')
+                ->join('departamentos', 'departamentos.id_aut_departamento', '=', 'ciudades.id_departamento')
+                ->join('pais', 'pais.id_aut_pais', '=', 'departamentos.id_aut_dep')
+                ->select('paises.nombre', 'departamentos.nombre', 'ciudades.nombre')
+                ->get();
 
         $residencia = DB::table('egresados')
-            ->join('localizacion', 'egresado.id_lugar_residencia', '=', 'localizacion.id_aut_localizacion')
-            ->join('ciudades', 'localizacion.id_ciudad', '=', 'ciudades.id_aut_ciudad')
-            ->join('departamentos', 'departamentos.id_aut_departamento', '=', 'ciudades.id_departamento')
-            ->join('pais', 'pais.id_aut_pais', '=', 'departamentos.id_aut_dep')
-            ->select('localizacion.barrio', 'localizacion.direccion', 'localizacion.codigo_postal', 'paises.nombre', 'departamentos.nombre', 'ciudades.nombre')
-            ->get();
+                ->join('localizacion', 'egresado.id_lugar_residencia', '=', 'localizacion.id_aut_localizacion')
+                ->join('ciudades', 'localizacion.id_ciudad', '=', 'ciudades.id_aut_ciudad')
+                ->join('departamentos', 'departamentos.id_aut_departamento', '=', 'ciudades.id_departamento')
+                ->join('pais', 'pais.id_aut_pais', '=', 'departamentos.id_aut_dep')
+                ->select('localizacion.barrio', 'localizacion.direccion', 'localizacion.codigo_postal', 'paises.nombre', 'departamentos.nombre', 'ciudades.nombre')
+                ->get();
 
         $nivelEstudio = DB::table('egresados')
-            ->join('niveles_estudio', 'egresados.id_nivel_educativo', '=', 'niveles_estudio.id_aut_estudio')
-            ->select('niveles_estudio.nombre')
-            ->get();
+                ->join('niveles_estudio', 'egresados.id_nivel_educativo', '=', 'niveles_estudio.id_aut_estudio')
+                ->select('niveles_estudio.nombre')
+                ->get();
 
         $nacimiento = DB::table('egresados')
-            ->join('ciudades', 'egresados.id_lugar_expedicion', '=', 'ciudades.id_aut_ciudad')
-            ->join('departamentos', 'departamentos.id_aut_departamento', '=', 'ciudades.id_departamento')
-            ->join('pais', 'pais.id_aut_pais', '=', 'departamentos.id_aut_dep')
-            ->select('paises.nombre', 'departamentos.nombre', 'ciudades.nombre')
-            ->get();
+                ->join('ciudades', 'egresados.id_lugar_expedicion', '=', 'ciudades.id_aut_ciudad')
+                ->join('departamentos', 'departamentos.id_aut_departamento', '=', 'ciudades.id_departamento')
+                ->join('pais', 'pais.id_aut_pais', '=', 'departamentos.id_aut_dep')
+                ->select('paises.nombre', 'departamentos.nombre', 'ciudades.nombre')
+                ->get();
 
         return response()->json();
     }
 
-    public function update(Request $request, $idEgresado)
-    {
+    public function update(Request $request, $idEgresado) {
         $egresado = Egresado::find($idEgresado);
 
         //Obteniendo discapacidades del formulario
@@ -373,72 +358,68 @@ class EgresadoController extends Controller
     }
 
     //Permite asocias las incapacidades seleccionadas al egresado
-    private function _updateInformation(Egresado $egresado, array $discapacidades, $nuevaDiscapacidad, $localizacion, $referidosUpdate, $experienciasUpdate)
-    {
+    private function _updateInformation(Egresado $egresado, array $discapacidades, $nuevaDiscapacidad, $localizacion, $referidosUpdate, $experienciasUpdate) {
         return DB::transaction(function () use ($egresado, $discapacidades, $nuevaDiscapacidad, $localizacion, $referidosUpdate, $experienciasUpdate) {
 
-            //Asociando listado de discapacidades de egresado
-            foreach ($discapacidades as $discapacidad) {
-                $egresado->discapacidad()->attach($discapacida['id_discapacidad']);
-            }
+                    //Asociando listado de discapacidades de egresado
+                    foreach ($discapacidades as $discapacidad) {
+                        $egresado->discapacidad()->attach($discapacida['id_discapacidad']);
+                    }
 
-            //Agregando nuevas discapacidades de egresado
-            $nuevaDiscapacidad->save();
-            $nuevaDiscapacidad->egresado()->attach($egresado->get('id_aut_egresado'));
+                    //Agregando nuevas discapacidades de egresado
+                    $nuevaDiscapacidad->save();
+                    $nuevaDiscapacidad->egresado()->attach($egresado->get('id_aut_egresado'));
 
-            //Guardar nueva localización de egresado
-            $localizacion->save();
-            $egresado->lugarResidencia()->associate($localizacion);
+                    //Guardar nueva localización de egresado
+                    $localizacion->save();
+                    $egresado->lugarResidencia()->associate($localizacion);
 
-            //Desvincular listado de referidos anteriores del egresado.
-            $referidosAnteriores = Referido::first();
-            $referidosAnteriores->egresados();
-            foreach ($referidosAnteriores as $ref) {
-                $ref->egresado()->deattach($egresado('id_aut_egresado'));
-            }
+                    //Desvincular listado de referidos anteriores del egresado.
+                    $referidosAnteriores = Referido::first();
+                    $referidosAnteriores->egresados();
+                    foreach ($referidosAnteriores as $ref) {
+                        $ref->egresado()->deattach($egresado('id_aut_egresado'));
+                    }
 
 
-            //Asociando listado  de referidos
-            foreach ($referidosUpdate as $ref) {
-                $referido = new Referido();
-                $referido->nombres = $ref['nombres'];
-                $referido->parentesco = $ref['parentesco'];
-                $referido->es_egresado = $ref['es_egresado'];
-                $referido->niveles_estudio()->associate(NivelEstudio::where('id_aut_estudio', $ref['id_nivel_educativo'])->firstOrFail());
-                $referido->programa()->associate(Programa::where('id_aut_programa', $ref['id_aut_programa'])->firstOrFail());
-                $referido->telefono_movil = $ref['telefono_movil'];
-                $referido->correo = $ref['correo'];
+                    //Asociando listado  de referidos
+                    foreach ($referidosUpdate as $ref) {
+                        $referido = new Referido();
+                        $referido->nombres = $ref['nombres'];
+                        $referido->parentesco = $ref['parentesco'];
+                        $referido->es_egresado = $ref['es_egresado'];
+                        $referido->niveles_estudio()->associate(NivelEstudio::where('id_aut_estudio', $ref['id_nivel_educativo'])->firstOrFail());
+                        $referido->programa()->associate(Programa::where('id_aut_programa', $ref['id_aut_programa'])->firstOrFail());
+                        $referido->telefono_movil = $ref['telefono_movil'];
+                        $referido->correo = $ref['correo'];
 
-                $referido->save();
-                $egresado->referido()->attach($referido);
-            }
+                        $referido->save();
+                        $egresado->referido()->attach($referido);
+                    }
 
-            //Asociando nuevas experiencias para un egresado
-            $this->guardarInfoExperiencia($experiencias, $idEgresado);
-        });
+                    //Asociando nuevas experiencias para un egresado
+                    $this->guardarInfoExperiencia($experiencias, $idEgresado);
+                });
     }
 
     //Recupera numero de hijos y estado civil de un egresado
-    public function getStateAndChildren($idEgresado)
-    {
+    public function getStateAndChildren($idEgresado) {
         $egresado = DB::table('egresados')->where('id_aut_egresdo', $idEgresado)->value('num_hijos', 'num_hijos');
         return $egresado;
     }
 
     //Recupera niveles de estudio
 
-    public function getAllLevelStudy()
-    {
+    public function getAllLevelStudy() {
         $levels = BD::table('niveles_estudio')->get();
         return response()->json($levels, 205);
     }
 
-    public function guardarGradoSimultaneo($gradoSimultaneo, $idEgresado)
-    {
+    public function guardarGradoSimultaneo($gradoSimultaneo, $idEgresado) {
         try {
             $gradoPendiente = Grado::where('id_egresado', '=', $idEgresado)
-                ->where('estado', '=', 'PENDIENTE')
-                ->select('fecha_graduacion', 'anio_graduacion')->first();
+                            ->where('estado', '=', 'PENDIENTE')
+                            ->select('fecha_graduacion', 'anio_graduacion')->first();
 
 
             $grado = array(
@@ -461,12 +442,12 @@ class EgresadoController extends Controller
             ]);
 
             $idGradoRegistrado = DB::table('egresados')
-                ->join('grados', 'egresados.id_aut_egresado', '=', 'grados.id_egresado')
-                ->join('programas', 'grados.id_programa', '=', 'programas.id_aut_programa')
-                ->where('egresados.id_aut_egresado', $idEgresado)
-                ->where('grados.estado', 'PENDIENTE')
-                ->where('grados.id_programa', '=', $gradoSimultaneo['id_aut_programa'])
-                ->select('grados.id_aut_grado')->first();
+                            ->join('grados', 'egresados.id_aut_egresado', '=', 'grados.id_egresado')
+                            ->join('programas', 'grados.id_programa', '=', 'programas.id_aut_programa')
+                            ->where('egresados.id_aut_egresado', $idEgresado)
+                            ->where('grados.estado', 'PENDIENTE')
+                            ->where('grados.id_programa', '=', $gradoSimultaneo['id_aut_programa'])
+                            ->select('grados.id_aut_grado')->first();
 
 
 
@@ -478,8 +459,7 @@ class EgresadoController extends Controller
         }
     }
 
-    public function guardarComentario($comentarios, $grado)
-    {
+    public function guardarComentario($comentarios, $grado) {
         try {
 
             foreach ($comentarios as $comentario) {
@@ -489,92 +469,91 @@ class EgresadoController extends Controller
             return response()->json(['Error al guardar comentarios' => $e], 400);
         }
     }
+
     //Metodo para completar la informacion de un egresdao
     //Se agrega: Regeridos
     //           Experiencias
     //           Datos personales especificos
     //CompletarInformacionRequest
 
-    public function fullInfo($idEgresado, Request $request)
-    {
+    public function fullInfo($idEgresado, Request $request) {
         //return response()->json($idEgresado,400);
         return DB::transaction(function () use ($request, $idEgresado) {
 
-            try {
+                    try {
 
-                $egresado = Egresado::find($idEgresado);
+                        $egresado = Egresado::find($idEgresado);
 
-                $egresado->ha_trabajado = $request->get('ha_trabajado');
-                $egresado->trabaja_actualmente = $request->get('trabaja_actualmente');
-                $egresado->save();
+                        $egresado->ha_trabajado = $request->get('ha_trabajado');
+                        $egresado->trabaja_actualmente = $request->get('trabaja_actualmente');
+                        $egresado->save();
 
-                // Obteniendo informacion de los referidos de un egresado
-                $referidos = $request->get('referidos');
+                        // Obteniendo informacion de los referidos de un egresado
+                        $referidos = $request->get('referidos');
 
-                if ($referidos && count($referidos) > 0) {
+                        if ($referidos && count($referidos) > 0) {
 
-                    $this->guardarReferido($referidos, $idEgresado);
-                }
-
-
-                // Obteniendo informacion de las experiencias de un egresado
-                $expActual = $request->get('expActual');
+                            $this->guardarReferido($referidos, $idEgresado);
+                        }
 
 
-
-                //Se obtienen los comentarios del  grado ya registrado en el preregistro
-                $comentariosGradoRegistrado = $request->get('comentarios');
-
-                /*
-                * GRADO SIMULTANEO
-                * Este caso se presenta cuando un graduando se 
-                * gradua de DOS carreras diferentes al tiempo
-                */
-
-                // Se obtine la informacion de un grado simultaneo 
-                $gradoSimultaneo = $request->get('gradoAdicional');
+                        // Obteniendo informacion de las experiencias de un egresado
+                        $expActual = $request->get('expActual');
 
 
-                if ($expActual && count($expActual) > 0) {
-                    $this->guardarInfoExperiencia($expActual, $idEgresado);
-                }
+
+                        //Se obtienen los comentarios del  grado ya registrado en el preregistro
+                        $comentariosGradoRegistrado = $request->get('comentarios');
+
+                        /*
+                         * GRADO SIMULTANEO
+                         * Este caso se presenta cuando un graduando se 
+                         * gradua de DOS carreras diferentes al tiempo
+                         */
+
+                        // Se obtine la informacion de un grado simultaneo 
+                        $gradoSimultaneo = $request->get('gradoAdicional');
 
 
-                if ($comentariosGradoRegistrado && count($comentariosGradoRegistrado)) {
-                    $grado = Grado::where('id_egresado', '=', $idEgresado)
-                        ->where('grados.estado', 'PENDIENTE')->first();
+                        if ($expActual && count($expActual) > 0) {
+                            $this->guardarInfoExperiencia($expActual, $idEgresado);
+                        }
 
-                    $this->guardarComentario($comentariosGradoRegistrado, $grado);
-                }
 
-                if (/*$gradoSimultaneo['id_nivel_educativo']!=0*/$gradoSimultaneo && count($gradoSimultaneo)) {
-                    $this->guardarGradoSimultaneo($gradoSimultaneo, $idEgresado);
-                    /*return response()->json($gradoSimultaneo['comentarios'], 400);
-                    *INSERT INTO ofertas.grados
-	                ( id_aut_grado, tipo_grado, mencion_honor, titulo_especial, anio_graduacion, fecha_graduacion, id_programa, id_egresado, estado, observacion) 
-                    VALUES ( 2, '', '', '', '2019', '09/09/2019', 2, 10, 'PENDIENTE', '' );
-                    */
-                }
-            } catch (Exception $e) {
-                return response()->json($e->all(), 400);
-            }
+                        if ($comentariosGradoRegistrado && count($comentariosGradoRegistrado)) {
+                            $grado = Grado::where('id_egresado', '=', $idEgresado)
+                                            ->where('grados.estado', 'PENDIENTE')->first();
 
-            return response()->json("TERMINANDO COPLENTAR REGISTRO", 200);
-        });
+                            $this->guardarComentario($comentariosGradoRegistrado, $grado);
+                        }
+
+                        if (/* $gradoSimultaneo['id_nivel_educativo']!=0 */$gradoSimultaneo && count($gradoSimultaneo)) {
+                            $this->guardarGradoSimultaneo($gradoSimultaneo, $idEgresado);
+                            /* return response()->json($gradoSimultaneo['comentarios'], 400);
+                             * INSERT INTO ofertas.grados
+                              ( id_aut_grado, tipo_grado, mencion_honor, titulo_especial, anio_graduacion, fecha_graduacion, id_programa, id_egresado, estado, observacion)
+                              VALUES ( 2, '', '', '', '2019', '09/09/2019', 2, 10, 'PENDIENTE', '' );
+                             */
+                        }
+                    } catch (Exception $e) {
+                        return response()->json($e->all(), 400);
+                    }
+
+                    return response()->json("TERMINANDO COPLENTAR REGISTRO", 200);
+                });
     }
 
     /**
      * Store a newly created resource in storage.
-     *INSERT INTO ofertas.grados
-	( id_aut_grado, tipo_grado, mencion_honor, titulo_especial, anio_graduacion, fecha_graduacion, id_programa, id_egresado, estado, observacion) 
-VALUES ( 2, '', '', '', '2019', '09/09/2019', 2, 10, 'PENDIENTE', '' );
+     * INSERT INTO ofertas.grados
+      ( id_aut_grado, tipo_grado, mencion_honor, titulo_especial, anio_graduacion, fecha_graduacion, id_programa, id_egresado, estado, observacion)
+      VALUES ( 2, '', '', '', '2019', '09/09/2019', 2, 10, 'PENDIENTE', '' );
 
 
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
-    {
+    public function store(Request $request) {
         $correo = $usuario->email;
         $data = [
             'codigo' => $usuario->codigo_verificacion
@@ -585,13 +564,11 @@ VALUES ( 2, '', '', '', '2019', '09/09/2019', 2, 10, 'PENDIENTE', '' );
         });
     }
 
-    private function _tieneDatosRegistrados($identificacion)
-    {
+    private function _tieneDatosRegistrados($identificacion) {
         return Egresado::where('identificacion', $identificacion)->exists();
     }
 
-    private function getCollection($file)
-    {
+    private function getCollection($file) {
         $import = new EgresadosImport();
         Excel::import($import, $file);
         $egresados = $import->egresados;
@@ -611,8 +588,7 @@ VALUES ( 2, '', '', '', '2019', '09/09/2019', 2, 10, 'PENDIENTE', '' );
 
      * @return \Illuminate\Http\Response
      */
-    public function validateExcel(Request $request)
-    {
+    public function validateExcel(Request $request) {
         $file = $request->file('fileInput');
         $input = [
             'file' => $file,
@@ -630,17 +606,14 @@ VALUES ( 2, '', '', '', '2019', '09/09/2019', 2, 10, 'PENDIENTE', '' );
         $validator = Validator::make($input, $rules, $messages);
 
         /* if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }*/
+          return response()->json($validator->errors(), 422);
+          } */
         $egresadosEnExcel = $this->getCollection($file);
         $aceptados = $this->_procesarExcel($egresadosEnExcel);
         return response()->json($aceptados, 200, [], JSON_UNESCAPED_UNICODE);
     }
 
-
-
-    private function _procesarExcel($egresados)
-    {
+    private function _procesarExcel($egresados) {
         $resultado = array();
         $fisrtRow = true;
         // para todos los egresados de excel.
@@ -649,7 +622,7 @@ VALUES ( 2, '', '', '', '2019', '09/09/2019', 2, 10, 'PENDIENTE', '' );
                 // Si el egresado ya ha realizado el pre-registro, cambiar estado de EN_ESPERA a ACTIVO LOGUEADO.
                 if (!empty($e['identificacion'])) {
                     $egresadoYaRegistrado = Egresado::where('identificacion', $e['identificacion'])
-                        ->where('estado', '=', 'EN_ESPERA')->first();
+                                    ->where('estado', '=', 'EN_ESPERA')->first();
                     if ($egresadoYaRegistrado) {
                         // cambiar estado.
                         $egresadoYaRegistrado->estado = 'ACTIVO_LOGUEADO';
@@ -663,4 +636,5 @@ VALUES ( 2, '', '', '', '2019', '09/09/2019', 2, 10, 'PENDIENTE', '' );
         }
         return $resultado;
     }
+
 }

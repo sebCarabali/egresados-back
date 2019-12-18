@@ -57,10 +57,10 @@ class EmpresaController extends Controller
             $empresa->direccion->ciudad->departamento->load('pais');
 
             // return response()->json($empresa, 200);
-            if (!is_null($empresa->administrador)){
-              $empresa->administrador->load('direccion');
-              $empresa->administrador->load('user');
-              $empresa->administrador->load('cargo');
+            if (!is_null($empresa->administrador)) {
+                $empresa->administrador->load('direccion');
+                $empresa->administrador->load('user');
+                $empresa->administrador->load('cargo');
             }
 
 
@@ -159,9 +159,8 @@ class EmpresaController extends Controller
         $administradorEmp = $empresa->administrador;
         $administradorEmp->nombres = $request['datos-resp']['nombreResp'];
         $administradorEmp->apellidos = $request['datos-resp']['apellidoResp'];
-        if($request['datos-resp']['horarioContactoResp']){
+        if ($request['datos-resp']['horarioContactoResp']) {
             $administradorEmp->horario_contacto = $request['datos-resp']['horarioContactoResp'];
-
         }
         if (!empty($request['datos-resp']['telefonoResp'])) {
             $administradorEmp->telefono = $request['datos-resp']['telefonoResp'];
@@ -241,7 +240,6 @@ class EmpresaController extends Controller
                 }
                 DB::commit();
                 $empresa->administrador->notify(new \App\Notifications\CambioEstadoEmpresa());
-
             }
         } catch (ValidationException $ev) {
             return response()->json($ev->validator->errors(), 400);
@@ -325,7 +323,7 @@ class EmpresaController extends Controller
             $representante->nombres = $request['datos']['datos-resp']['nombreResp'];
             $representante->apellidos = $request['datos']['datos-resp']['apellidoResp'];
 
-            if($request['datos']['datos-resp']['horarioContactoResp']){
+            if ($request['datos']['datos-resp']['horarioContactoResp']) {
 
                 $representante->horario_contacto = $request['datos']['datos-resp']['horarioContactoResp'];
             }
@@ -422,5 +420,35 @@ class EmpresaController extends Controller
         $empresa->save();
         return $this->success([asset($pdf), $pdf]);
         // return response()->json(["esto llego", $request]);
+    }
+
+    public function getEmpresaEmail($email)
+    {
+        try {
+
+            if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $user = User::whereEmail($email)->get()->first();
+                if($user){
+                    // return $user->rol;
+                    if($user->rol->nombre == "Empresa"){
+                        if(!$user->administrador || !$user->administrador->empresa){
+                            return $this->fail("No se encontró ninguna Empresa enlazada al correo ingresado!", 422);
+                        }
+                        $empresa = new Empresa();
+                        $empresa->id_aut_empresa= $user->administrador->empresa->id_aut_empresa;
+                        return $this->success($empresa);
+                    }else{
+                        return $this->fail("No se encontró ninguna Empresa enlazada al correo ingresado!", 422);
+                    }
+                    
+                }else{
+                    return $this->fail("No se encontró ningún usuario!", 422);
+                }
+            } else {
+                return $this->fail("No es un correo electrónico!", 422);
+            }
+        } catch (Exeption $e) {
+            return response()->json(['error' => $e], 400);
+        }
     }
 }

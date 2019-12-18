@@ -139,6 +139,9 @@ Route::post('empresas/oferta/update/{oferta}', 'OfertaController@updateOferta');
 Route::post('empresas/storeArchivos/{empresa}', 'EmpresaController@uploadFiles')->where(['id' => '[0-9]+']);
 Route::get('ofertas/postulados/{oferta}', 'OfertaController@getAllPostulados');
 Route::put('postulado/{postulado}/{oferta}/estado', 'OfertaController@changeStatePostulado');
+Route::get('getEmpresa/{email}','EmpresaController@getEmpresaEmail');
+
+
 /**
  * Actualización  de una empresa
  */

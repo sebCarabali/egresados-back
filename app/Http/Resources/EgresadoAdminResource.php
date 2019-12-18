@@ -7,7 +7,9 @@
  */
 
 namespace App\Http\Resources;
+
 use \Illuminate\Http\Resources\Json\Resource;
+use \Illuminate\Support\Facades\DB;
 
 /**
  * Description of EgresadoAdminResource
@@ -15,6 +17,7 @@ use \Illuminate\Http\Resources\Json\Resource;
  * @author sebastian
  */
 class EgresadoAdminResource extends Resource {
+
     public function toArray($request) {
         return [
             'id' => $this->id_aut_egresado,
@@ -29,11 +32,28 @@ class EgresadoAdminResource extends Resource {
             'estadoCivil' => $this->estado_civil,
             'celular' => $this->celular,
             'grados' => GradosResource::collection(\App\Grado::where('id_egresado', $this->id_aut_egresado)->get()),
-            'referenciasPersonales' => 'Load referencias',
+            'referenciasPersonales' => $this->getReferidos(),
             'trabajoActual' => 'Load trabajo actual',
             'telefonoFijo' => $this->telefono_fijo,
             'lugarNacimiento' => new CiudadResource($this->ciudadNacimiento()->first()),
             'lugarResidencia' => new LocalizacionResource($this->lugarResidencia()->first())
         ];
+    }
+
+    
+    private function getReferidos()
+    {
+        return ReferidoResource::collection(\App\Referido::whereIn('id_aut_referido', DB::table('referidos_egresados')->where('id_egresados', $this->id_aut_egresado)->pluck('id_referidos')->toArray())->get());
+    }
+    
+    private function getTrabajoActual()
+    {
+        return \App\Experiencia::where('id_egresado', $this->id_aut_egresado)
+                ->whereIsNull('fehca_fin')->get();
+    }
+    
+    private function getSolicitudesCarnetizacion()
+    {
+        // ...
     }
 }

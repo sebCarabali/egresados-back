@@ -233,6 +233,10 @@ Route::put('/ofertas/estado-proceso/{id}', 'OfertaController@updateEstadoProceso
  * Cambia el estado de una oferta desde la empresa
  */
 Route::get('/ofertas/{id}', 'OfertaController@getOferta');
+/**
+ * Obtiene las ofertas de una empresa ordenadas por estado_proceso
+ */
+Route::get('/ofertas/empresa/ordenadas-estado-proceso/{id}', 'OfertaController@getOfertasEmpresaOrdenadas');
 
 
 

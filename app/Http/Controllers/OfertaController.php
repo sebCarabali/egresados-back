@@ -322,7 +322,7 @@ class OfertaController extends Controller
   }
 
   public function getOfertasEmpresa(Request $request, $id)
-  {getOfertasEmpresa
+  {
     $ofertas = Oferta::orderBy('fecha_publicacion', 'ASC')->where('id_empresa', $id)->get();
 
     foreach ($ofertas as $oferta) {

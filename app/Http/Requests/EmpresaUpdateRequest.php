@@ -39,8 +39,8 @@ class EmpresaUpdateRequest extends FormRequest
             'datos-generales-empresa.razonSocial' => 'required|string',
             'datos-generales-empresa.nombreEmpresa' => 'required|unique:empresas,nombre,' . $empresa->id_aut_empresa . ',id_aut_empresa',
             'datos-generales-empresa.anioCreacion' => 'required|numeric|between:1900,' . Carbon::now()->format("Y"),
-            'datos.datos-generales-empresa.numEmpleados' => 'required|string|in:'. implode(",",$rangoEmpleados),
-            'datos.datos-generales-empresa.ingresosEmp' => 'required|string|in:'. implode(",",$salarios),
+            'datos-generales-empresa.numEmpleados' => 'required|string|in:'. implode(",",$rangoEmpleados),
+            'datos-generales-empresa.ingresosEmp' => 'required|string|in:'. implode(",",$salarios),
             'datos-generales-empresa.descripcionEmpresa' => 'required|string',
 
             'loc-contact-empresa.idCiudad' => 'required|exists:ciudades,id_aut_ciudad',

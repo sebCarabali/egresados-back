@@ -102,17 +102,20 @@ class EmpresaController extends Controller
     // public function update(Empresa $id,Request $request)
     public function update(EmpresaUpdateRequest $request, Empresa $id)
     {
+        try{
+         
         // Código de error por defecto
         $code = 400;
         $data = null;
         // return $this->fail("PASO LAS VALIDACIONES");
+        
         $empresa = $id;
         $user = $empresa->administrador->user;
         $user->email = $request['datos-cuenta']['email'];
         if (!empty($request['datos-cuenta']['contrasenia'])) {
             $user->password = bcrypt($request['datos-cuenta']['contrasenia']);
         }
-
+        
         $direccionEmpr = $empresa->direccion;
         if (!empty($request['loc-contact-empresa']['codigoPostalEmp'])) {
             $direccionEmpr->codigo_postal = $request['loc-contact-empresa']['codigoPostalEmp'];
@@ -120,7 +123,7 @@ class EmpresaController extends Controller
         $direccionEmpr->direccion = $request['loc-contact-empresa']['direccionEmp'];
         $direccionEmpr->barrio = $request['loc-contact-empresa']['barrioEmp'];
         $direccionEmpr->ciudad()->associate(Ciudad::find($request['loc-contact-empresa']['idCiudad']));
-
+        
         // $empresa = new Empresa();
         $empresa->nit = $request['datos-generales-empresa']['NIT'];
         $empresa->nombre = $request['datos-generales-empresa']['nombreEmpresa'];
@@ -132,7 +135,7 @@ class EmpresaController extends Controller
         }
         $empresa->anio_creacion = $request['datos-generales-empresa']['anioCreacion'];
         $empresa->url_doc_camaracomercio = "url pdf camara y comercio";
-
+        
         if (!empty($request['loc-contact-empresa']['telefonoEmp'])) {
             $empresa->telefono = $request['loc-contact-empresa']['telefonoEmp'];
         }
@@ -140,15 +143,16 @@ class EmpresaController extends Controller
             $empresa->correo = $request['loc-contact-empresa']['emailEmp'];
         }
         $empresa->descripcion = $request['datos-generales-empresa']['descripcionEmpresa'];
-
-
+        
+        
         $direccionAdministrador = $empresa->administrador->direccion;
         $direccionAdministrador->codigo_postal = $request['loc-contact-empresa']['codigoPostalEmp'];
         $direccionAdministrador->direccion = $request['datos-resp']['direccionTrabajoResp'];
         $direccionAdministrador->barrio = $request['loc-contact-empresa']['barrioEmp'];
         $direccionAdministrador->ciudad()->associate(Ciudad::find($request['loc-contact-empresa']['idCiudad']));
-
+        
         $representanteLegal = $empresa->representante;
+        // return $this->success($request->all());
         $representanteLegal->nombre = $request['datos-resp']['nombrereplegal'];
         $representanteLegal->apellidos = $request['datos-resp']['apellidoreplegal'];
         if (!empty($request['datos-resp']['telefonoreplegal'])) {
@@ -166,7 +170,7 @@ class EmpresaController extends Controller
             $administradorEmp->telefono = $request['datos-resp']['telefonoResp'];
         }
         $administradorEmp->telefono_movil = $request['datos-resp']['telefonoMovilResp'];
-
+        
         $administradorEmp->correo_corporativo = $request['datos-resp']['emailCorpResp'];
         $ids = array();
         foreach ($request['sectores']['subsectores'] as $sect) {
@@ -197,6 +201,10 @@ class EmpresaController extends Controller
 
         DB::commit();
         return $this->success($empresa);
+           
+    }catch(Exception $e){
+        return $this->fail($e->getMessage());
+    }
     }
 
 

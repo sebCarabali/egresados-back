@@ -16,6 +16,11 @@ class Oferta extends Model
         'fecha_publicacion', 'fecha_cierre', 'estado', 'estado_proceso'
     ];
 
+    public function sector()
+    {
+        return $this->belongsTo('App\Sector', 'id_sector', 'id_aut_sector');
+    }
+
     public function contrato()
     {
         return $this->hasOne('App\Contrato', 'id_oferta', 'id_aut_oferta');
@@ -29,6 +34,11 @@ class Oferta extends Model
     public function empresa()
     {
         return $this->belongsTo('App\Empresa', 'id_empresa', 'id_aut_empresa');
+    }
+
+    public function nivelEstudio()
+    {
+        return $this->belongsTo('App\NivelEstudio', 'id_aut_nivestud', 'id_aut_estudio');
     }
 
     public function areasConocimiento()

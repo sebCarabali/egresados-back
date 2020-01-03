@@ -16,12 +16,26 @@ class Programa extends Model
                 /*->withPivot('tipo', 'mension_honor', 'titulo_especial', 'comentarios', 'fecha_graduacion',
                             'docente_influencia');*/
     }
+    
+    public function sede() {
+        return $this->belongsTo('App\Sede', 'id_sede', 'id_aut_sede');
+    }
 
     public function facultad() {
-        return $this->belognsTo('App\Facultad', 'id_facultad');
+        return $this->belongsTo('App\Facultad', 'id_facultad', 'id_aut_facultad');
     }
     public function referidos()
     {
         return $this->hasMany('App\Referido','id_aut_referido');
+    }
+    
+    public function nivelEstudio()
+    {
+        return $this->belongsTo('App\NivelEstudio', 'id_nivelestudio', 'id_aut_estudio');
+    }
+
+    public function ofertas()
+    {
+        return $this->belongsToMany('App\Oferta', 'programas_ofertas', 'id_programa', 'id_oferta');
     }
 }

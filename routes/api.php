@@ -31,7 +31,9 @@ Route::put('completeEgresados/{idEgresado}', 'API\EgresadoController@fullInfo');
 /*
 *Retorna el Id del egresado para inicio de sesion
 */
-Route::get('getIdegresados/{correo}', 'API\EgresadoController@getEgresadoEmail');
+
+Route::get('cuestionario','API\TipoObservacionController@getCuestionario');
+Route::get('getIdegresados/{correo}','API\EgresadoController@getEgresadoEmail');
 /*
 *Validación de carnetización de egresado
 */
@@ -102,6 +104,9 @@ Route::get('sedes', 'API\SedesController@getAll');
  * Obtener los servicios
  */
 Route::get('servicios', 'ServicioController@getAll');
+
+Route::get('eventos', 'EventosController@getAllWithoutPaging');
+
 /**
  * Gestión Apoyos
  */
@@ -113,10 +118,20 @@ Route::put('apoyos', 'ApoyoController@update');
 /**
  * Gestión eventos
  */
-Route::get('eventos', 'ApoyoController@getAll');
-Route::get('eventos/{idEvento}', 'ApoyoController@getById');
-Route::post('eventos', 'ApoyoController@save');
-Route::put('eventos', 'ApoyoController@update');
+
+Route::get('admin/eventos', 'EventosController@getAll');
+Route::get('admin/eventos/{idEvento}', 'EventosController@getById');
+Route::post('admin/eventos', 'EventosController@save');
+Route::put('admin/eventos', 'EventosController@update');
+
+/**
+ * Gestión egresados
+ */
+Route::get('admin/egresados', 'Admin\EgresadoController@getAll');
+Route::get('admin/egresados/{idEgresado}', 'Admin\EgresadoController@getById');
+Route::get('admin/egresados/grados/{idEgresado}', 'GradosController@getByIdEgresado');
+Route::get('admin/grado/{idGrado}', 'GradosController@getById');
+Route::get('admin/observaciones', 'API\TipoObservacionController@getObservaciones');
 
 // --------------------------------------------------------------------------------
 /**
@@ -127,6 +142,10 @@ Route::post('empresas/oferta/store/{empresa}', 'OfertaController@storeOferta');
 Route::post('empresas/oferta/update/{oferta}', 'OfertaController@updateOferta');
 Route::post('empresas/storeArchivos/{empresa}', 'EmpresaController@uploadFiles')->where(['id' => '[0-9]+']);
 Route::get('ofertas/postulados/{oferta}', 'OfertaController@getAllPostulados');
+Route::put('postulado/{postulado}/{oferta}/estado', 'OfertaController@changeStatePostulado');
+Route::get('getEmpresa/{email}','EmpresaController@getEmpresaEmail');
+
+
 /**
  * Actualización  de una empresa
  */
@@ -216,6 +235,10 @@ Route::put('/ofertas/estado-proceso/{id}', 'OfertaController@updateEstadoProceso
  * Cambia el estado de una oferta desde la empresa
  */
 Route::get('/ofertas/{id}', 'OfertaController@getOferta');
+/**
+ * Obtiene las ofertas de una empresa ordenadas por estado_proceso
+ */
+Route::get('/ofertas/empresa/ordenadas-estado-proceso/{id}', 'OfertaController@getOfertasEmpresaOrdenadas');
 
 
 

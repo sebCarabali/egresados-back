@@ -12,8 +12,6 @@ class Egresado extends Model
     //protected $fillable = ['nombres'];
     protected $guarded = ['id_aut_egresado'];
 
-    public $timestamps = false;
-
     public function ciudadNacimiento()
     {
       return $this->belongsTo('App\Ciudad', 'id_lugar_nacimiento');
@@ -38,7 +36,7 @@ class Egresado extends Model
     }
 
     public function programas() {
-      return $this->belongsToMany('App\Programa', 'grados', 'id_estudiante', 'id_programa');
+      return $this->belongsToMany('App\Programa', 'grados', 'id_egresado', 'id_programa');
     }
 
   public function discapacidades() {

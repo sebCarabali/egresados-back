@@ -28,7 +28,7 @@ class UserController extends Controller
         }
         // Obtener usuario con el código de confirmación
         $usuario = User::where('codigo_verificacion', $codigo)->first();
-        if(!$usuario) {
+        if($usuario == null) {
             return response()->json([
                 "mensaje" => "No se ha encontrado un usuario con código " + $codigo,
                 "status" => false

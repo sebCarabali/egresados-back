@@ -13,7 +13,7 @@ class AdministradorEmpresa extends Model
 
     use Notifiable;
   
-    public function routeNotificationForMail($notification)
+    public function routeNotificationForMail()
     {
       return $this->correo_corporativo;
     }

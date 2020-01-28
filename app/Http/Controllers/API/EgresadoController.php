@@ -111,7 +111,7 @@ class EgresadoController extends Controller {
         $egresado->estado_civil = $request->get('estado_civil');
         $egresado->genero = $request->get('genero');
         //TODO: Cambio de estados
-        $egresado->estado = 'ACTIVO';
+        $egresado->estado = 'ACTIVO NO LOGEADO';
         // get lugar_residencia data
         $localizacion = new Localizacion();
         $localizacion->codigo_postal = $request->get('codigo_postal');
@@ -280,10 +280,12 @@ class EgresadoController extends Controller {
 
     public function getEgresadoEmail($email) {
         try {
-            $idEgresado = Egresado::where("correo", "=", $email)
-                            ->select("id_aut_egresado")->first();
-            return response()->json($idEgresado, 200);
-        } catch (Exeption $e) {
+            $idEgresado = DB::table('egresados')
+            ->where('correo',$email)
+            ->select('id_aut_egresado')->first();
+            return response()->json($idEgresado,200);
+
+        }catch(Exeption $e){
             return response()->json(['error' => $e], 400);
         }
     }

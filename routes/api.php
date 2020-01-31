@@ -272,7 +272,7 @@ Route::get('areasConocimiento', 'OfertaController@getAllAreas');
 
 Route::post('ofertas/store', 'OfertaController@storeOferta');
 Route::post('login', 'AuthController@login');
-
+Route::get('verificar-empresa-activa/{email}', 'EmpresaController@verificarEmpresaActiva');
 Route::get('encriptar/{pass}', function ($pass) {
     return Hash::make($pass);
 });

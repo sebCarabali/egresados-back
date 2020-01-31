@@ -455,7 +455,7 @@ class EmpresaController extends Controller
             } else {
                 return $this->fail("No es un correo electrónico!", 422);
             }
-        } catch (Exeption $e) {
+        } catch (Exception $e) {
             return response()->json(['error' => $e], 400);
         }
     }

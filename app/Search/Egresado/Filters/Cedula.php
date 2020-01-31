@@ -9,6 +9,6 @@ class Cedula implements Filter
 {
     public static function apply(Builder $builder, $value)
     {
-        return $builder->where('identificacion', 'like', $value);
+        return $builder->whereRaw("CAST(identificacion as text) like '$value%'");
     }
 }

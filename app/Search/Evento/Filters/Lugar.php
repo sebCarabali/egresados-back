@@ -9,7 +9,7 @@ class Lugar implements Filter {
 
     public static function apply(Builder $builder, $value)
     {
-        return $builder->where('lugar', 'like', "%$value%");
+        return $builder->where('lugar', 'ilike', "%{$value}%");
     }
 
 }

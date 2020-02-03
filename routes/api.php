@@ -28,22 +28,43 @@ Route::post('egresados', 'API\EgresadoController@guardarInformacionBasica');
 * Completa la información de un egresado,(Experieincias laboral, Referidos,trabajo Actual)
 */
 Route::put('completeEgresados/{idEgresado}', 'API\EgresadoController@fullInfo');
+
+
+/*
+*Retorna las preguntas que debe responder un egresedo para su carrera y universidad
+*/
+Route::get('cuestionario','API\TipoObservacionController@getCuestionario');
+
 /*
 *Retorna el Id del egresado para inicio de sesion
 */
 Route::get('getIdegresados/{correo}','API\EgresadoController@getEgresadoEmail');
+
+/**
+ * 
+ */
+Route::get('validarSolicitudes/{idEgresado}','API\CarnetizacionController@validarSolicitudesEgresado');
+
 /*
-*Validación de carnetización de egresado
+*Validar que el estado del egresado sea Logeado
 */
-Route::get('carnetizacion/{correo}','API\CarnetizacionController@validarCarnetizacion');
+Route::get('validarEstado/{idEgresado}', 'API\CarnetizacionController@validarEstadoEgresado');
+
+/*
+*Valida si el egresado a completado la informacion 
+*/
+Route::get('validaCompletarInformacion/{idEgresado}','API\CarnetizacionController@validarCompletarInfo');
+
 /*
 *Obteniendo todas las solicitudes de carnet pendientes para el Administrador
 */
-Route::get('carnetizacion','API\CarnetizacionController@getAll');
+Route::get('carnetizacion', 'API\CarnetizacionController@getAll');
+
 /*
 *Administrador la fecha de respuesta y el estado a "Solicitado" a "respondido" de carnet por egresados
 */
-Route::get('carnetizacionUpdateAdmin','API\CarnetizacionController@updateAdmin');
+Route::get('carnetizacionUpdateAdmin/{idSolicitud}/{estado}', 'API\CarnetizacionController@updateAdmin');
+
 /*
  * Obtiene todas la ciudades de un departamento.
  */
@@ -88,7 +109,7 @@ Route::get('programas/{idFacultad}', 'API\ProgramaController@getByFacultad');
 //Route::group(['middleware' => 'cors'], function () {
 Route::post('egresados/verificar', 'API\VerificarEgresadoController@verificar');
 //});
-Route::get('nivelesPrograma', function(){
+Route::get('nivelesPrograma', function () {
     return response()->json(NivelEstudio::where('pertenece_u', 1)->get(), 200);
 });
 
@@ -102,6 +123,9 @@ Route::get('sedes', 'API\SedesController@getAll');
  * Obtener los servicios
  */
 Route::get('servicios', 'ServicioController@getAll');
+
+Route::get('eventos', 'EventosController@getAllWithoutPaging');
+
 /**
  * Gestión Apoyos
  */
@@ -109,6 +133,25 @@ Route::get('apoyos', 'ApoyoController@getAll');
 Route::get('apoyos/{idApoyo}', 'ApoyoController@getById');
 Route::post('apoyos', 'ApoyoController@save');
 Route::put('apoyos', 'ApoyoController@update');
+
+/**
+ * Gestión eventos
+ */
+
+Route::get('admin/eventos', 'EventosController@getAll');
+Route::get('admin/eventos/{idEvento}', 'EventosController@getById');
+Route::post('admin/eventos', 'EventosController@save');
+Route::put('admin/eventos', 'EventosController@update');
+
+/**
+ * Gestión egresados
+ */
+Route::get('admin/egresados', 'Admin\EgresadoController@getAll');
+Route::get('admin/egresados/{idEgresado}', 'Admin\EgresadoController@getById');
+Route::get('admin/egresados/grados/{idEgresado}', 'GradosController@getByIdEgresado');
+Route::get('admin/grado/{idGrado}', 'GradosController@getById');
+Route::get('admin/observaciones', 'API\TipoObservacionController@getObservaciones');
+
 // --------------------------------------------------------------------------------
 /**
  * Registro de una empresa
@@ -119,6 +162,9 @@ Route::post('empresas/oferta/update/{oferta}', 'OfertaController@updateOferta');
 Route::post('empresas/storeArchivos/{empresa}', 'EmpresaController@uploadFiles')->where(['id' => '[0-9]+']);
 Route::get('ofertas/postulados/{oferta}', 'OfertaController@getAllPostulados');
 Route::put('postulado/{postulado}/{oferta}/estado', 'OfertaController@changeStatePostulado');
+Route::get('getEmpresa/{email}','EmpresaController@getEmpresaEmail');
+
+
 /**
  * Actualización  de una empresa
  */
@@ -208,6 +254,10 @@ Route::put('/ofertas/estado-proceso/{id}', 'OfertaController@updateEstadoProceso
  * Cambia el estado de una oferta desde la empresa
  */
 Route::get('/ofertas/{id}', 'OfertaController@getOferta');
+/**
+ * Obtiene las ofertas de una empresa ordenadas por estado_proceso
+ */
+Route::get('/ofertas/empresa/ordenadas-estado-proceso/{id}', 'OfertaController@getOfertasEmpresaOrdenadas');
 
 
 
@@ -222,11 +272,9 @@ Route::get('areasConocimiento', 'OfertaController@getAllAreas');
 
 Route::post('ofertas/store', 'OfertaController@storeOferta');
 Route::post('login', 'AuthController@login');
-
+Route::get('verificar-empresa-activa/{email}', 'EmpresaController@verificarEmpresaActiva');
 Route::get('encriptar/{pass}', function ($pass) {
     return Hash::make($pass);
 });
 Route::group(['middleware' => ['jwt.verify']], function () {
     /*AÑADE AQUI LAS RUTAS QUE QUIERAS PROTEGER CON JWT*/ });
-
-

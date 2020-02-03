@@ -24,6 +24,7 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 
 class EmpresaController extends Controller
@@ -56,10 +57,10 @@ class EmpresaController extends Controller
             $empresa->direccion->ciudad->departamento->load('pais');
 
             // return response()->json($empresa, 200);
-            if (!is_null($empresa->administrador)){
-              $empresa->administrador->load('direccion');
-              $empresa->administrador->load('user');
-              $empresa->administrador->load('cargo');
+            if (!is_null($empresa->administrador)) {
+                $empresa->administrador->load('direccion');
+                $empresa->administrador->load('user');
+                $empresa->administrador->load('cargo');
             }
 
 
@@ -101,17 +102,20 @@ class EmpresaController extends Controller
     // public function update(Empresa $id,Request $request)
     public function update(EmpresaUpdateRequest $request, Empresa $id)
     {
+        try{
+         
         // Código de error por defecto
         $code = 400;
         $data = null;
         // return $this->fail("PASO LAS VALIDACIONES");
+        
         $empresa = $id;
         $user = $empresa->administrador->user;
         $user->email = $request['datos-cuenta']['email'];
         if (!empty($request['datos-cuenta']['contrasenia'])) {
             $user->password = bcrypt($request['datos-cuenta']['contrasenia']);
         }
-
+        
         $direccionEmpr = $empresa->direccion;
         if (!empty($request['loc-contact-empresa']['codigoPostalEmp'])) {
             $direccionEmpr->codigo_postal = $request['loc-contact-empresa']['codigoPostalEmp'];
@@ -119,7 +123,7 @@ class EmpresaController extends Controller
         $direccionEmpr->direccion = $request['loc-contact-empresa']['direccionEmp'];
         $direccionEmpr->barrio = $request['loc-contact-empresa']['barrioEmp'];
         $direccionEmpr->ciudad()->associate(Ciudad::find($request['loc-contact-empresa']['idCiudad']));
-
+        
         // $empresa = new Empresa();
         $empresa->nit = $request['datos-generales-empresa']['NIT'];
         $empresa->nombre = $request['datos-generales-empresa']['nombreEmpresa'];
@@ -131,7 +135,7 @@ class EmpresaController extends Controller
         }
         $empresa->anio_creacion = $request['datos-generales-empresa']['anioCreacion'];
         $empresa->url_doc_camaracomercio = "url pdf camara y comercio";
-
+        
         if (!empty($request['loc-contact-empresa']['telefonoEmp'])) {
             $empresa->telefono = $request['loc-contact-empresa']['telefonoEmp'];
         }
@@ -139,15 +143,16 @@ class EmpresaController extends Controller
             $empresa->correo = $request['loc-contact-empresa']['emailEmp'];
         }
         $empresa->descripcion = $request['datos-generales-empresa']['descripcionEmpresa'];
-
-
+        
+        
         $direccionAdministrador = $empresa->administrador->direccion;
         $direccionAdministrador->codigo_postal = $request['loc-contact-empresa']['codigoPostalEmp'];
         $direccionAdministrador->direccion = $request['datos-resp']['direccionTrabajoResp'];
         $direccionAdministrador->barrio = $request['loc-contact-empresa']['barrioEmp'];
         $direccionAdministrador->ciudad()->associate(Ciudad::find($request['loc-contact-empresa']['idCiudad']));
-
+        
         $representanteLegal = $empresa->representante;
+        // return $this->success($request->all());
         $representanteLegal->nombre = $request['datos-resp']['nombrereplegal'];
         $representanteLegal->apellidos = $request['datos-resp']['apellidoreplegal'];
         if (!empty($request['datos-resp']['telefonoreplegal'])) {
@@ -158,15 +163,14 @@ class EmpresaController extends Controller
         $administradorEmp = $empresa->administrador;
         $administradorEmp->nombres = $request['datos-resp']['nombreResp'];
         $administradorEmp->apellidos = $request['datos-resp']['apellidoResp'];
-        if($request['datos-resp']['horarioContactoResp']){
+        if ($request['datos-resp']['horarioContactoResp']) {
             $administradorEmp->horario_contacto = $request['datos-resp']['horarioContactoResp'];
-
         }
         if (!empty($request['datos-resp']['telefonoResp'])) {
             $administradorEmp->telefono = $request['datos-resp']['telefonoResp'];
         }
         $administradorEmp->telefono_movil = $request['datos-resp']['telefonoMovilResp'];
-
+        
         $administradorEmp->correo_corporativo = $request['datos-resp']['emailCorpResp'];
         $ids = array();
         foreach ($request['sectores']['subsectores'] as $sect) {
@@ -197,14 +201,20 @@ class EmpresaController extends Controller
 
         DB::commit();
         return $this->success($empresa);
+           
+    }catch(Exception $e){
+        return $this->fail($e->getMessage());
+    }
     }
 
 
-    public function updateEstado($id, Request $request)
+    public function updateEstado(Empresa $id, Request $request)
     {
         // Código de error por defecto
         $code = 400;
         $data = null;
+        // $id->administrador->notify(new \App\Notifications\CambioEstadoEmpresa());
+        // return $this->fail($id->administrador);
 
         // Validador
         try {
@@ -214,9 +224,12 @@ class EmpresaController extends Controller
 
             //if (!empty($params_array)) {
             // Buscar el registro
-            $empresa = Empresa::find($id);
+            $empresa = $id;
+            // $empresa = Empresa::find($id);
 
             if (!empty($empresa) && is_object($empresa)) {
+                DB::beginTransaction();
+
                 if ($request['estado'] == 'Activo' && !empty($request['limite_publicaciones'])) {
                     // Actualizar el registro en concreto
 
@@ -227,12 +240,14 @@ class EmpresaController extends Controller
                     ]);
                     $data = $empresa;
                     $code = 200;
-                } else if ($request['estado'] == 'En espera' || $request['estado'] == 'Inactivo') {
+                } else if ($request['estado'] == 'Pendiente' || $request['estado'] == 'Inactivo') {
                     // Actualizar el registro en concreto
                     $empresa->update(['estado' => $request['estado']]);
                     $data = $empresa;
                     $code = 200;
                 }
+                DB::commit();
+                $empresa->administrador->notify(new \App\Notifications\CambioEstadoEmpresa());
             }
         } catch (ValidationException $ev) {
             return response()->json($ev->validator->errors(), 400);
@@ -316,7 +331,7 @@ class EmpresaController extends Controller
             $representante->nombres = $request['datos']['datos-resp']['nombreResp'];
             $representante->apellidos = $request['datos']['datos-resp']['apellidoResp'];
 
-            if($request['datos']['datos-resp']['horarioContactoResp']){
+            if ($request['datos']['datos-resp']['horarioContactoResp']) {
 
                 $representante->horario_contacto = $request['datos']['datos-resp']['horarioContactoResp'];
             }
@@ -375,13 +390,13 @@ class EmpresaController extends Controller
             $representanteLegal->save();
 
             // $crearUsuario->_enviarMensajeActivacion($user);
-            $correo = $user->email;
-            Mail::send('mail.confirmation', ['codigo' => $user->codigo_verificacion], function ($message) use ($correo) {
-                $message->from('carloschapid@unicauca.edu.co', 'Egresados');
-                $message->to($correo)->subject('Nuevo usuario');
-            });
-
-
+            // $correo = $user->email;
+            // Mail::send('mail.confirmation', ['codigo' => $user->codigo_verificacion], function ($message) use ($correo) {
+            //     $message->from('carloschapid@unicauca.edu.co', 'Egresados');
+            //     $message->to($correo)->subject('Nuevo usuario');
+            // });
+            $user->notify(new \App\Notifications\RegistroEmpresa());
+            Notification::send(Role::whereNombre("Administrador")->first()->users()->first(), new \App\Notifications\RegistroEmpresaAdmin($empresa));
             DB::commit();
             return $this->success($empresa->id_aut_empresa);
         } catch (Exception $e) {
@@ -413,5 +428,35 @@ class EmpresaController extends Controller
         $empresa->save();
         return $this->success([asset($pdf), $pdf]);
         // return response()->json(["esto llego", $request]);
+    }
+
+    public function getEmpresaEmail($email)
+    {
+        try {
+
+            if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $user = User::whereEmail($email)->get()->first();
+                if($user){
+                    // return $user->rol;
+                    if($user->rol->nombre == "Empresa"){
+                        if(!$user->administrador || !$user->administrador->empresa){
+                            return $this->fail("No se encontró ninguna Empresa enlazada al correo ingresado!", 422);
+                        }
+                        $empresa = new Empresa();
+                        $empresa->id_aut_empresa= $user->administrador->empresa->id_aut_empresa;
+                        return $this->success($empresa);
+                    }else{
+                        return $this->fail("No se encontró ninguna Empresa enlazada al correo ingresado!", 422);
+                    }
+                    
+                }else{
+                    return $this->fail("No se encontró ningún usuario!", 422);
+                }
+            } else {
+                return $this->fail("No es un correo electrónico!", 422);
+            }
+        } catch (Exception $e) {
+            return response()->json(['error' => $e], 400);
+        }
     }
 }

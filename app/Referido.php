@@ -20,6 +20,6 @@ class Referido extends Model
     }
     
     public function programa(){
-        return $this->belongsTo('App\Programa','id_aut_programa');
+        return $this->belongsTo('App\Programa','id_aut_programa', 'id_aut_programa');
     }
 }

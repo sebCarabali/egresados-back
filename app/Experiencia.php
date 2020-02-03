@@ -19,6 +19,6 @@ class Experiencia extends Model
     }
 
     public function ciudad(){
-        return $this->belongsTo('App\Ciudad', 'id_ciudad');
+        return $this->belongsTo('App\Ciudad', 'id_ciudad', 'id_aut_ciudad');
     }
 }

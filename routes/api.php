@@ -46,7 +46,7 @@ Route::get('getIdegresados/{correo}','API\EgresadoController@getEgresadoEmail');
 Route::get('validarSolicitudes/{idEgresado}','API\CarnetizacionController@validarSolicitudesEgresado');
 
 /*
-*Validar que el estado del egresado sea Logeado
+*Validar que el estado del egresado sea Activo Logeado o Pendiente
 */
 Route::get('validarEstado/{idEgresado}', 'API\CarnetizacionController@validarEstadoEgresado');
 

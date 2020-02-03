@@ -42,14 +42,14 @@ class CarnetizacionController extends Controller
     */
 
     public function validarEstadoEgresado($idEgresado){
-        return response()->json($idEgresado, 200);
+   
         $estados_egresado = Egresado::where('id_aut_egresado',$idEgresado)
         ->select("estado")->first();
         
 
-        if($estados_egresado->estado=='PENDIENTE'){
+        if($estados_egresado->estado=='PENDIENTE' || $estados_egresado->estado=='ACTIVO NO LOGUEADO'){
             return response()->json(false,200);
-        }else if($estados_egresado->estado=='ACTIVO LOGEADO' ){
+        }else if($estados_egresado->estado=='ACTIVO LOGUEADO' ){
             return response()->json(true,200);
         }
         return response()->json('ERROR AL CARGAR ESTADO DE EGRESADO');
@@ -61,18 +61,15 @@ class CarnetizacionController extends Controller
     */
 
     public function validarCompletarInfo($idEgresado){
-        return response()->json($idEgresado, 200);
         $estado_complete = Egresado::where('id_aut_egresado',$idEgresado)
-        ->select("estado_completar")->first();
-        
+        ->select("estado_completar")->first();        
         return response()->json($estado_complete,200);
     }
 
     public function validarSolicitudesEgresado($idEgresado){
-        return response()->json($idEgresado, 200);
+        //return response()->json($idEgresado, 400);
         $solicitud_pendiente = DB::table('carnetizacion')
         ->where('carnetizacion.id_egresado',$idEgresado)
-        ->where('carnetizacion.estado_solicitud','PENDIENTE')
         ->select('carnetizacion.estado_solicitud')->first();
        
         return response()->json($solicitud_pendiente, 200);

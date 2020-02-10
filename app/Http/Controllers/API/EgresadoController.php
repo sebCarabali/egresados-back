@@ -304,14 +304,33 @@ class EgresadoController extends Controller
     }
 
     //Carga la informacion de un egresado para mostrar en Ver Perfil
-    public function verPerfil($idEgresado)
+   /* public function verPerfil($idEgresado)
     {
         $egresado = Egresado::find($idEgresado);
         return $this->success(new EgresadoAdminResource($egresado));
-    }
+    }*/
 
-    //Metodo que permite actualizar informacion de un egresado
-    
+    //Carga la informacion de un egresado para mostrar en Ver Perfil
+    public function verPerfil($email)
+    {
+        $idEgresado = DB::table('egresados')
+                ->where('correo', $email)
+                ->select('id_aut_egresado')->first();
+
+                $egresado = Egresado::find($idEgresado->id_aut_egresado);
+        
+        //return response()->json($egresado,400);
+        return $this->success(new EgresadoAdminResource($egresado));
+    }
+    //Metodo que permite actualzar la información del egresado por parte de un egresado
+    public function actualizaEgresado(Request $request, $idEgresado){
+       /* $egresado = Egresado::find($idEgresado);
+        Información personal→ 
+        Experiencia laboral
+        Referencia personal
+        Grado*/
+    }
+    //Metodo que permite actualizar informacion de un egresado por parte del administrador
     public function update(Request $request, $idEgresado)
     {
         $egresado = Egresado::find($idEgresado);

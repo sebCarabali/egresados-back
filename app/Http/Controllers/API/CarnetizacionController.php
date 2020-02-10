@@ -45,14 +45,16 @@ class CarnetizacionController extends Controller
    
         $estados_egresado = Egresado::where('id_aut_egresado',$idEgresado)
         ->select("estado")->first();
-        
+        $estadoBol=false;
 
         if($estados_egresado->estado=='PENDIENTE' || $estados_egresado->estado=='ACTIVO NO LOGUEADO'){
-            return response()->json(false,200);
+            $estadoBol=false;
+            return response()->json($estadoBol,200);
         }else if($estados_egresado->estado=='ACTIVO LOGUEADO' ){
-            return response()->json(true,200);
+            $estadoBol=true;
+            return response()->json($estadoBol,200);
         }
-        return response()->json('ERROR AL CARGAR ESTADO DE EGRESADO');
+        return response()->json('ERROR AL CARGAR ESTADO DE EGRESADO',400);
     }
 
     /*

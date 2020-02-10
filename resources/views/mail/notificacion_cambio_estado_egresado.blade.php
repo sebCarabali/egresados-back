@@ -1,6 +1,6 @@
 @extends('mail.layout')
 @isset($empresa)
-@section('titulo_mensaje', 'Se ha cambiado el estado del #gresado')
+@section('titulo_mensaje', 'Se ha cambiado el estado del egresado')
 @section('contenido')
 
 <div>

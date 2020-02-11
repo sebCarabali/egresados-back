@@ -113,6 +113,12 @@ Route::get('nivelesPrograma', function () {
     return response()->json(NivelEstudio::where('pertenece_u', 1)->get(), 200);
 });
 
+/**
+ *  //Carga la informacion de un egresado para mostrar en Ver Perfil
+ */
+Route::get('verPerfilEgresado/{idEgresado}', 'API\EgresadoController@verPerfil');
+Route::put('actualizarReferido/{idEgresado}','API\refPersonalesController@update');
+
 Route::post('users/validar/{codigo}', 'UserController@activarCuenta');
 Route::get('users/validar/{codigo}', 'UserController@esUsuarioActivoPorCodigo');
 

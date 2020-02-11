@@ -21,6 +21,7 @@ use App\Cargo;
 use App\Grado;
 use Validator;
 use Excel;
+use \App\Http\Resources\EgresadoAdminResource;
 use App\Imports\EgresadosImport;
 
 class EgresadoController extends Controller
@@ -302,41 +303,34 @@ class EgresadoController extends Controller
         }
     }
 
-    //Carga los atributos de un egresado especifico para actualizar
-    public function edit($idEgresado)
+    //Carga la informacion de un egresado para mostrar en Ver Perfil
+   /* public function verPerfil($idEgresado)
     {
+        $egresado = Egresado::find($idEgresado);
+        return $this->success(new EgresadoAdminResource($egresado));
+    }*/
 
+    //Carga la informacion de un egresado para mostrar en Ver Perfil
+    public function verPerfil($email)
+    {
+        $idEgresado = DB::table('egresados')
+                ->where('correo', $email)
+                ->select('id_aut_egresado')->first();
 
-        $expedicion = DB::table('egresados')
-            ->join('ciudades', 'egresados.id_lugar_expedicion', '=', 'ciudades.id_aut_ciudad')
-            ->join('departamentos', 'departamentos.id_aut_departamento', '=', 'ciudades.id_departamento')
-            ->join('pais', 'pais.id_aut_pais', '=', 'departamentos.id_aut_dep')
-            ->select('paises.nombre', 'departamentos.nombre', 'ciudades.nombre')
-            ->get();
-
-        $residencia = DB::table('egresados')
-            ->join('localizacion', 'egresado.id_lugar_residencia', '=', 'localizacion.id_aut_localizacion')
-            ->join('ciudades', 'localizacion.id_ciudad', '=', 'ciudades.id_aut_ciudad')
-            ->join('departamentos', 'departamentos.id_aut_departamento', '=', 'ciudades.id_departamento')
-            ->join('pais', 'pais.id_aut_pais', '=', 'departamentos.id_aut_dep')
-            ->select('localizacion.barrio', 'localizacion.direccion', 'localizacion.codigo_postal', 'paises.nombre', 'departamentos.nombre', 'ciudades.nombre')
-            ->get();
-
-        $nivelEstudio = DB::table('egresados')
-            ->join('niveles_estudio', 'egresados.id_nivel_educativo', '=', 'niveles_estudio.id_aut_estudio')
-            ->select('niveles_estudio.nombre')
-            ->get();
-
-        $nacimiento = DB::table('egresados')
-            ->join('ciudades', 'egresados.id_lugar_expedicion', '=', 'ciudades.id_aut_ciudad')
-            ->join('departamentos', 'departamentos.id_aut_departamento', '=', 'ciudades.id_departamento')
-            ->join('pais', 'pais.id_aut_pais', '=', 'departamentos.id_aut_dep')
-            ->select('paises.nombre', 'departamentos.nombre', 'ciudades.nombre')
-            ->get();
-
-        return response()->json();
+                $egresado = Egresado::find($idEgresado->id_aut_egresado);
+        
+        //return response()->json($egresado,400);
+        return $this->success(new EgresadoAdminResource($egresado));
     }
-
+    //Metodo que permite actualzar la información del egresado por parte de un egresado
+    public function actualizaEgresado(Request $request, $idEgresado){
+       /* $egresado = Egresado::find($idEgresado);
+        Información personal→ 
+        Experiencia laboral
+        Referencia personal
+        Grado*/
+    }
+    //Metodo que permite actualizar informacion de un egresado por parte del administrador
     public function update(Request $request, $idEgresado)
     {
         $egresado = Egresado::find($idEgresado);

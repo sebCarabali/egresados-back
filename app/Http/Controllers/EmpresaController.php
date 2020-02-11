@@ -112,14 +112,14 @@ class EmpresaController extends Controller
         $empresa = $id;
         $user = $empresa->administrador->user;
         $user->email = $request['datos-cuenta']['email'];
-        if (!empty($request['datos-cuenta']['contrasenia'])) {
+        /* if (!empty($request['datos-cuenta']['contrasenia'])) {
             $user->password = bcrypt($request['datos-cuenta']['contrasenia']);
-        }
+        } */
         
         $direccionEmpr = $empresa->direccion;
-        if (!empty($request['loc-contact-empresa']['codigoPostalEmp'])) {
-            $direccionEmpr->codigo_postal = $request['loc-contact-empresa']['codigoPostalEmp'];
-        }
+        $direccionEmpr->codigo_postal = $request['loc-contact-empresa']['codigoPostalEmp'];
+        // if (!empty($request['loc-contact-empresa']['codigoPostalEmp'])) {
+        // }
         $direccionEmpr->direccion = $request['loc-contact-empresa']['direccionEmp'];
         $direccionEmpr->barrio = $request['loc-contact-empresa']['barrioEmp'];
         $direccionEmpr->ciudad()->associate(Ciudad::find($request['loc-contact-empresa']['idCiudad']));
@@ -130,18 +130,18 @@ class EmpresaController extends Controller
         $empresa->razon_social = $request['datos-generales-empresa']['razonSocial'];
         $empresa->numero_empleados = $request['datos-generales-empresa']['numEmpleados'];
         $empresa->ingresos = $request['datos-generales-empresa']['ingresosEmp'];
-        if (!empty($request['loc-contact-empresa']['sitioWebEmp'])) {
-            $empresa->sitio_web = $request['loc-contact-empresa']['sitioWebEmp'];
-        }
+        $empresa->sitio_web = $request['loc-contact-empresa']['sitioWebEmp'];
+        /* if (!empty($request['loc-contact-empresa']['sitioWebEmp'])) {
+        } */
         $empresa->anio_creacion = $request['datos-generales-empresa']['anioCreacion'];
         $empresa->url_doc_camaracomercio = "url pdf camara y comercio";
         
-        if (!empty($request['loc-contact-empresa']['telefonoEmp'])) {
-            $empresa->telefono = $request['loc-contact-empresa']['telefonoEmp'];
-        }
-        if (!empty($request['loc-contact-empresa']['emailEmp'])) {
-            $empresa->correo = $request['loc-contact-empresa']['emailEmp'];
-        }
+        $empresa->telefono = $request['loc-contact-empresa']['telefonoEmp'];
+        // if (!empty($request['loc-contact-empresa']['telefonoEmp'])) {
+        // }
+        $empresa->correo = $request['loc-contact-empresa']['emailEmp'];
+        // if (!empty($request['loc-contact-empresa']['emailEmp'])) {
+        // }
         $empresa->descripcion = $request['datos-generales-empresa']['descripcionEmpresa'];
         
         
@@ -155,20 +155,20 @@ class EmpresaController extends Controller
         // return $this->success($request->all());
         $representanteLegal->nombre = $request['datos-resp']['nombrereplegal'];
         $representanteLegal->apellidos = $request['datos-resp']['apellidoreplegal'];
-        if (!empty($request['datos-resp']['telefonoreplegal'])) {
-            $representanteLegal->telefono = $request['datos-resp']['telefonoreplegal'];
-        }
+        $representanteLegal->telefono = $request['datos-resp']['telefonoreplegal'];
+        // if (!empty($request['datos-resp']['telefonoreplegal'])) {
+        // }
         $representanteLegal->telefono_movil = $request['datos-resp']['telefonoMovilreplegal'];
 
         $administradorEmp = $empresa->administrador;
         $administradorEmp->nombres = $request['datos-resp']['nombreResp'];
         $administradorEmp->apellidos = $request['datos-resp']['apellidoResp'];
-        if ($request['datos-resp']['horarioContactoResp']) {
-            $administradorEmp->horario_contacto = $request['datos-resp']['horarioContactoResp'];
-        }
-        if (!empty($request['datos-resp']['telefonoResp'])) {
-            $administradorEmp->telefono = $request['datos-resp']['telefonoResp'];
-        }
+        $administradorEmp->horario_contacto = $request['datos-resp']['horarioContactoResp'];
+        // if ($request['datos-resp']['horarioContactoResp']) {
+        // }
+        $administradorEmp->telefono = $request['datos-resp']['telefonoResp'];
+        // if (!empty($request['datos-resp']['telefonoResp'])) {
+        // }
         $administradorEmp->telefono_movil = $request['datos-resp']['telefonoMovilResp'];
         
         $administradorEmp->correo_corporativo = $request['datos-resp']['emailCorpResp'];
@@ -395,9 +395,9 @@ class EmpresaController extends Controller
             //     $message->from('carloschapid@unicauca.edu.co', 'Egresados');
             //     $message->to($correo)->subject('Nuevo usuario');
             // });
+            DB::commit();
             $user->notify(new \App\Notifications\RegistroEmpresa());
             Notification::send(Role::whereNombre("Administrador")->first()->users()->first(), new \App\Notifications\RegistroEmpresaAdmin($empresa));
-            DB::commit();
             return $this->success($empresa->id_aut_empresa);
         } catch (Exception $e) {
             return $this->fail("Registro Empresa=>" . $e->getMessage());

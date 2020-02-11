@@ -755,7 +755,7 @@ class OfertaController extends Controller
       'estado' => 'required|string|in:' . implode(',', $estados),
     ]);
     $oferta->postulaciones()->updateExistingPivot($postulado->id_aut_egresado, ["estado" => $request["estado"]]);
-
+    $postulado->notify(new \App\Notifications\CambioEstadoEgresado($oferta, $request["estado"]));
     return $this->success("Se ha actualizado el estado correctamente.");
   }
 }

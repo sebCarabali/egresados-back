@@ -46,7 +46,7 @@ Route::get('getIdegresados/{correo}','API\EgresadoController@getEgresadoEmail');
 Route::get('validarSolicitudes/{idEgresado}','API\CarnetizacionController@validarSolicitudesEgresado');
 
 /*
-*Validar que el estado del egresado sea Logeado
+*Validar que el estado del egresado sea Activo Logeado o Pendiente
 */
 Route::get('validarEstado/{idEgresado}', 'API\CarnetizacionController@validarEstadoEgresado');
 
@@ -112,6 +112,12 @@ Route::post('egresados/verificar', 'API\VerificarEgresadoController@verificar');
 Route::get('nivelesPrograma', function () {
     return response()->json(NivelEstudio::where('pertenece_u', 1)->get(), 200);
 });
+
+/**
+ *  //Carga la informacion de un egresado para mostrar en Ver Perfil
+ */
+Route::get('verPerfilEgresado/{idEgresado}', 'API\EgresadoController@verPerfil');
+Route::put('actualizarReferido/{idEgresado}','API\refPersonalesController@update');
 
 Route::post('users/validar/{codigo}', 'UserController@activarCuenta');
 Route::get('users/validar/{codigo}', 'UserController@esUsuarioActivoPorCodigo');

@@ -9,8 +9,8 @@ use App\Egresado;
 
 class CarnetizacionController extends Controller
 {
-      //Obtiene todas las solicitudes de carnetizacion de los egresados (ADMINISTRADOR)
-      public function getAll(){
+    //Obtiene todas las solicitudes de carnetizacion de los egresados (ADMINISTRADOR)
+    public function getAll(){
         $SolicitudesPendientes = Egresado::join("solicita","egresados.id_aut_egresado","=","solicita.id_egresado")
             ->join("carnetizacion","solicita.id_carnetizacion","=","carnetizacion.id_aut_carnetizacion")
             ->where('carnetizacion.estado_solicitud','=',"Solicitado")
@@ -42,17 +42,19 @@ class CarnetizacionController extends Controller
     */
 
     public function validarEstadoEgresado($idEgresado){
-        return response()->json($idEgresado, 200);
+   
         $estados_egresado = Egresado::where('id_aut_egresado',$idEgresado)
         ->select("estado")->first();
-        
+        $estadoBol=false;
 
-        if($estados_egresado->estado=='PENDIENTE'){
-            return response()->json(false,200);
-        }else if($estados_egresado->estado=='ACTIVO LOGEADO' ){
-            return response()->json(true,200);
+        if($estados_egresado->estado=='PENDIENTE' || $estados_egresado->estado=='ACTIVO NO LOGUEADO'){
+            $estadoBol=false;
+            return response()->json($estadoBol,200);
+        }else if($estados_egresado->estado=='ACTIVO LOGUEADO' ){
+            $estadoBol=true;
+            return response()->json($estadoBol,200);
         }
-        return response()->json('ERROR AL CARGAR ESTADO DE EGRESADO');
+        return response()->json('ERROR AL CARGAR ESTADO DE EGRESADO',400);
     }
 
     /*
@@ -61,18 +63,15 @@ class CarnetizacionController extends Controller
     */
 
     public function validarCompletarInfo($idEgresado){
-        return response()->json($idEgresado, 200);
         $estado_complete = Egresado::where('id_aut_egresado',$idEgresado)
-        ->select("estado_completar")->first();
-        
+        ->select("estado_completar")->first();        
         return response()->json($estado_complete,200);
     }
 
     public function validarSolicitudesEgresado($idEgresado){
-        return response()->json($idEgresado, 200);
+        //return response()->json($idEgresado, 400);
         $solicitud_pendiente = DB::table('carnetizacion')
         ->where('carnetizacion.id_egresado',$idEgresado)
-        ->where('carnetizacion.estado_solicitud','PENDIENTE')
         ->select('carnetizacion.estado_solicitud')->first();
        
         return response()->json($solicitud_pendiente, 200);

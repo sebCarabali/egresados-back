@@ -28,24 +28,43 @@ Route::post('egresados', 'API\EgresadoController@guardarInformacionBasica');
 * Completa la información de un egresado,(Experieincias laboral, Referidos,trabajo Actual)
 */
 Route::put('completeEgresados/{idEgresado}', 'API\EgresadoController@fullInfo');
+
+
+/*
+*Retorna las preguntas que debe responder un egresedo para su carrera y universidad
+*/
+Route::get('cuestionario','API\TipoObservacionController@getCuestionario');
+
 /*
 *Retorna el Id del egresado para inicio de sesion
 */
-
-Route::get('cuestionario','API\TipoObservacionController@getCuestionario');
 Route::get('getIdegresados/{correo}','API\EgresadoController@getEgresadoEmail');
+
+/**
+ * 
+ */
+Route::get('validarSolicitudes/{idEgresado}','API\CarnetizacionController@validarSolicitudesEgresado');
+
 /*
-*Validación de carnetización de egresado
+*Validar que el estado del egresado sea Logeado
 */
-Route::get('carnetizacion/{correo}', 'API\CarnetizacionController@validarCarnetizacion');
+Route::get('validarEstado/{idEgresado}', 'API\CarnetizacionController@validarEstadoEgresado');
+
+/*
+*Valida si el egresado a completado la informacion 
+*/
+Route::get('validaCompletarInformacion/{idEgresado}','API\CarnetizacionController@validarCompletarInfo');
+
 /*
 *Obteniendo todas las solicitudes de carnet pendientes para el Administrador
 */
 Route::get('carnetizacion', 'API\CarnetizacionController@getAll');
+
 /*
 *Administrador la fecha de respuesta y el estado a "Solicitado" a "respondido" de carnet por egresados
 */
-Route::get('carnetizacionUpdateAdmin', 'API\CarnetizacionController@updateAdmin');
+Route::get('carnetizacionUpdateAdmin/{idSolicitud}/{estado}', 'API\CarnetizacionController@updateAdmin');
+
 /*
  * Obtiene todas la ciudades de un departamento.
  */
@@ -118,6 +137,7 @@ Route::put('apoyos', 'ApoyoController@update');
 /**
  * Gestión eventos
  */
+
 Route::get('admin/eventos', 'EventosController@getAll');
 Route::get('admin/eventos/{idEvento}', 'EventosController@getById');
 Route::post('admin/eventos', 'EventosController@save');
@@ -131,6 +151,7 @@ Route::get('admin/egresados/{idEgresado}', 'Admin\EgresadoController@getById');
 Route::get('admin/egresados/grados/{idEgresado}', 'GradosController@getByIdEgresado');
 Route::get('admin/grado/{idGrado}', 'GradosController@getById');
 Route::get('admin/observaciones', 'API\TipoObservacionController@getObservaciones');
+
 // --------------------------------------------------------------------------------
 /**
  * Registro de una empresa
@@ -251,7 +272,7 @@ Route::get('areasConocimiento', 'OfertaController@getAllAreas');
 
 Route::post('ofertas/store', 'OfertaController@storeOferta');
 Route::post('login', 'AuthController@login');
-
+Route::get('verificar-empresa-activa/{email}', 'EmpresaController@verificarEmpresaActiva');
 Route::get('encriptar/{pass}', function ($pass) {
     return Hash::make($pass);
 });

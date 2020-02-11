@@ -4,22 +4,32 @@ namespace App\Http\Controllers;
 
 use App\Evento;
 use App\Http\Resources\EventosResource;
+use App\Search\Evento\EventoSearch;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+
 use Illuminate\Pagination\LengthAwarePaginator;
 
-class EventosController extends Controller {
+class EventosController extends Controller
+{
 
     const EVENTOS_IMAGE_PATH = 'storage/eventos';
 
     /**
      * Realiza el registro de un evento nuevo.
      */
-    public function save(Request $req) {
+    public function save(Request $req)
+    {
         //return $this->success($req->file('fileInput')->getClientOriginalName());
         $data = $req->only(
-                'nombre', 'cupos', 'lugar', 'fechaInicio', 'fechaFin', 'descripcion', 'dirigidoA'
+            'nombre',
+            'cupos',
+            'lugar',
+            'fechaInicio',
+            'fechaFin',
+            'descripcion',
+            'dirigidoA'
         );
         DB::beginTransaction();
         try {
@@ -33,6 +43,7 @@ class EventosController extends Controller {
             $evento->cupos = $data['cupos'];
             $evento->imagen = asset($req->file('fileInput')->store('storage/eventos', 'public'));
             $evento->save();
+
             DB::commit();
             return $this->success(new EventosResource($evento));
         } catch (Exception $e) {
@@ -46,38 +57,44 @@ class EventosController extends Controller {
      * @param Request $request
      * @return type 
      */
-    public function getAll(Request $request) {
+    public function getAll(Request $request)
+    {
+        $eventos = EventoSearch::apply($request);
         $page = $request->get('page');
         $pageSize = $request->get('pageSize');
-        $eventos = \App\Helpers\BusquedaEventos::apply($request);
         $results = $eventos->slice(($page - 1) * $pageSize, $pageSize)->values();
         return EventosResource::collection(
-                        new LengthAwarePaginator(
-                        $results, $total = count($eventos), $pageSize, $page
-                        )
+            new LengthAwarePaginator(
+                $results,
+                $total = count($eventos),
+                $pageSize,
+                $page
+            )
         );
     }
 
-    public function getById($idEvento) {
+    public function getById($idEvento)
+    {
         try {
-            $evento = Eventos::find($idEvento)->firstOrFail();
+            $evento = Evento::find($idEvento)->firstOrFail();
             return $this->success(new EventosResource($evento));
         } catch (Exception $e) {
             return $this->notFound('No se encontró el evento solicitado: ' . $e->getMessage());
         }
     }
 
-    public function update(Request $request) {
+    public function update(Request $request)
+    {
         $data = $request->only(
-                'evento', 'cupos', 'lugar', 'fechaInicio', 'fechaFin', 'descripcion', 'dirigidoA', 'id'
+            'evento'
         );
         try {
             DB::beginTransaction();
-            $evento = Evento::where('id_aut_evento', $data['id'])->firstOrFail();
-            if ($request->has('fileInput') && $request->get('fileInput') != null) {
+            $evento = Evento::where('id_aut_evento', $data['evento']['id'])->firstOrFail();
+            /*if ($request->has('fileInput') && $request->get('fileInput') != null) {
                 $evento = $this->actualizarImagen($request->file('fileInput'));
-            }
-            $eventoRet = $this->setInfoAlEvento($evento, $data);
+            }*/
+            $eventoRet = $this->setInfoAlEvento($evento, $data['evento']);
             DB::commit();
             return $this->success($eventoRet);
         } catch (Exception $e) {
@@ -86,7 +103,8 @@ class EventosController extends Controller {
         }
     }
 
-    private function setInfoAlEvento(Evento $evento, array $data) {
+    private function setInfoAlEvento(Evento $evento, array $data)
+    {
         $evento->nombre = $data['nombre'];
         $evento->fecha_inicio = date('m/d/Y', strtotime($data['fechaInicio']));
         $evento->fecha_fin = date('m/d/Y', strtotime($data['fechaFin']));
@@ -98,18 +116,18 @@ class EventosController extends Controller {
         return $evento;
     }
 
-    private function actualizarImagen($file, Evento $evento) {
+    private function actualizarImagen($file, Evento $evento)
+    {
         // TODO: Guardar nueva imagen del evento y eliminar la existente.
         if (!empty(!$evento->imagem)) {
-            Storage::delete($evento->imagen, 'public');
+            //Storage::delete($evento->imagen, 'public');
         }
         $evento->imagen = $file->store('storage/eventos', 'public');
         return $evento;
     }
-    
+
     public function getAllWithoutPaging()
     {
         return $this->success(EventosResource::collection(Evento::all()));
     }
-
 }

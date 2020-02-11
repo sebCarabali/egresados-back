@@ -23,7 +23,7 @@ class EventosResource extends Resource
             'descripcion' => $this->descripcion,
             'cupos' => $this->cupos,
             'dirigidoA' => $this->a_quien_va_dirigida,
-            'imagePath' => storage_path('storage/eventos/' . $this->imagen)
+            'imagePath' => ''//storage_path('storage/eventos/' . $this->imagen)
         ];
     }
 }

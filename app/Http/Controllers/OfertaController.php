@@ -458,6 +458,9 @@ class OfertaController extends Controller
     // return response()->json($request);
     try {
 
+      if($empresa->limite_publicaciones <= $empresa->num_publicaciones_actuales){
+        return $this->fail("Se ha llegado al limite de publicaciones!");
+      }
       DB::beginTransaction();
       // Se busca o crea el cargo
 
@@ -498,10 +501,10 @@ class OfertaController extends Controller
       $oferta->estado = "Pendiente"; // Enum ('Aceptada', 'Rechazada', 'Pendiente');  --Administrador
       $oferta->estado_proceso = "Pendiente"; // ('En seleccion', 'Desactivada', 'Expirada');  --Empresa
       $oferta->id_sector = $request['informacionPrincipal']['idSector'];
-      if (isset($request['informacionPrincipal']['nombreTempEmpresa'])) {
+      if (!empty($request['informacionPrincipal']['nombreTempEmpresa'])) {
         $oferta->nombre_temporal_empresa = $request['informacionPrincipal']['nombreTempEmpresa']; //
       }
-      if (isset($request['requisitos']['licenciaConduccion'])) {
+      if (!empty($request['requisitos']['licenciaConduccion'])) {
         $oferta->licencia_conduccion = $request['requisitos']['licenciaConduccion']; // Enum ('A1', 'A2', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3')
       }
       $oferta->requisitos_minimos = $request['requisitos']['requisitosMinimos']; // Texto descriptivo
@@ -517,13 +520,13 @@ class OfertaController extends Controller
       $contrato = new Contrato();
       $contrato->tipo_contrato = $request['contrato']['tipoContrato']; //Enum ('Término indefinido', 'Contrato de aprendizaje', 'Prestación de servicios', 'Obra a labor determinada', 'Término fijo')
       $contrato->jornada_laboral = $request['contrato']['jornada']; //Enum ('Medio tiempo', 'Tiempo completo', 'Tiempo parcial');
-      if (isset($request['contrato']['duracion'])) {
+      if (!empty($request['contrato']['duracion'])) {
         $contrato->duracion = $request['contrato']['duracion'];
       }
-      if (isset($request['contrato']['horario'])) {
+      if (!empty($request['contrato']['horario'])) {
         $contrato->horario = $request['contrato']['horario'];
       }
-      if (isset($request['contrato']['comentariosSalario'])) {
+      if (!empty($request['contrato']['comentariosSalario'])) {
         $contrato->comentarios_salario = $request['contrato']['comentariosSalario'];
       }
 
@@ -609,15 +612,15 @@ class OfertaController extends Controller
       $contrato = $oferta->contrato;
       $contrato->tipo_contrato = $request['contrato']['tipoContrato']; //Enum ('Término indefinido', 'Contrato de aprendizaje', 'Prestación de servicios', 'Obra a labor determinada', 'Término fijo')
       $contrato->jornada_laboral = $request['contrato']['jornada']; //Enum ('Medio tiempo', 'Tiempo completo', 'Tiempo parcial');
-      if (isset($request['contrato']['duracion'])) {
-        $contrato->duracion = $request['contrato']['duracion'];
-      }
-      if (isset($request['contrato']['horario'])) {
-        $contrato->horario = $request['contrato']['horario'];
-      }
-      if (isset($request['contrato']['comentariosSalario'])) {
-        $contrato->comentarios_salario = $request['contrato']['comentariosSalario'];
-      }
+      $contrato->duracion = $request['contrato']['duracion'];
+      // if (isset($request['contrato']['duracion'])) {
+      // }
+      $contrato->horario = $request['contrato']['horario'];
+      // if (isset($request['contrato']['horario'])) {
+      // }
+      $contrato->comentarios_salario = $request['contrato']['comentariosSalario'];
+      // if (isset($request['contrato']['comentariosSalario'])) {
+      // }
 
       $contrato->save();
       // Se busca o crea el cargo
@@ -660,9 +663,9 @@ class OfertaController extends Controller
       // $oferta->estado = "Pendiente"; // Enum ('Aceptada', 'Rechazada', 'Pendiente');  --Administrador
       // $oferta->estado_proceso = "Pendiente"; // ('En seleccion', 'Desactivada', 'Expirada');  --Empresa
       $oferta->id_sector = $request['informacionPrincipal']['idSector'];
-      if (isset($request['informacionPrincipal']['nombreTempEmpresa'])) {
-        $oferta->nombre_temporal_empresa = $request['informacionPrincipal']['nombreTempEmpresa']; //
-      }
+      $oferta->nombre_temporal_empresa = $request['informacionPrincipal']['nombreTempEmpresa']; //
+      // if (isset($request['informacionPrincipal']['nombreTempEmpresa'])) {
+      // }
       if (isset($request['requisitos']['licenciaConduccion'])) {
         $oferta->licencia_conduccion = $request['requisitos']['licenciaConduccion']; // Enum ('A1', 'A2', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3')
       }
@@ -755,7 +758,7 @@ class OfertaController extends Controller
       'estado' => 'required|string|in:' . implode(',', $estados),
     ]);
     $oferta->postulaciones()->updateExistingPivot($postulado->id_aut_egresado, ["estado" => $request["estado"]]);
-
+    $postulado->notify(new \App\Notifications\CambioEstadoEgresado($oferta, $request["estado"]));
     return $this->success("Se ha actualizado el estado correctamente.");
   }
 }

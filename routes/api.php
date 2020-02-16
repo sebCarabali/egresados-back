@@ -79,6 +79,8 @@ Route::put('actualizarReferido/{idEgresado}', 'API\refPersonalesController@updat
 Route::post('users/validar/{codigo}', 'UserController@activarCuenta');
 Route::get('users/validar/{codigo}', 'UserController@esUsuarioActivoPorCodigo');
 
+Route::put('egresados/infoPersonal/{idEgresado}', 'API\ActualizarInfoPersonalController@update');
+
 Route::get('facultades/{idSede}', 'API\FacultadController@getBySede');
 Route::get('programas/{idSede}/{idFacultad}/{idNivelEstudio}', 'API\ProgramaController@getBySedeAndFacultadAndNivelEstudio');
 Route::get('sedes', 'API\SedesController@getAll');

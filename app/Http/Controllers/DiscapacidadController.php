@@ -2,14 +2,29 @@
 
 namespace App\Http\Controllers;
 
-use App\Discapacidad;
 use App\Http\Resources\DiscapacidadResource;
-use Illuminate\Http\Request;
+use App\Repository\Eloquent\DiscapacidadRepository;
 
 class DiscapacidadController extends Controller
 {
+    private $repository;
+
+    public function __construct(DiscapacidadRepository $repository)
+    {
+        $this->repository = $repository;
+    }
+
     public function getAll()
     {
-        return DiscapacidadResource::collection(Discapacidad::all()); 
+        $discapacidades = $this->repository->all();
+
+        return $this->success(DiscapacidadResource::collection($discapacidades));
+    }
+
+    public function getDiscapacidadesEgresado($idEgresado)
+    {
+        $discapacidadesEgresado = $this->repository->findByEgresado($idEgresado);
+
+        return $this->success(DiscapacidadResource::collection($discapacidadesEgresado));
     }
 }

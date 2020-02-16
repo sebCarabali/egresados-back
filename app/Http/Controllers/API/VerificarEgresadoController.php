@@ -19,7 +19,7 @@ class VerificarEgresadoController extends Controller {
     const ACTIVO_NO_LOGUEADO = 'ACTIVO NO LOGUEADO';
     // Para el tipo de grado
     const GRADO_POSTUMO = 'GRADO POSTUMO';
-    const GRADO_PRIVADO = 'GRADO_PRIVADO';
+    const GRADO_PRIVADO = 'GRADO PRIVADO';
     // Para grados
     const ACTIVO = 'ACTIVO';
     const PENDIENTE = 'PENDIENTE';
@@ -184,7 +184,7 @@ class VerificarEgresadoController extends Controller {
     
     private function obtenerTipoGrado($row)
     {
-        $tipoGrado = '';
+        $tipoGrado = self::GRADO_PRIVADO;
         if($this->esGradoPostumo($row)) {
             $tipoGrado = self::GRADO_POSTUMO;
         } else if($this->esGradoPrivado($row)) {
@@ -206,7 +206,7 @@ class VerificarEgresadoController extends Controller {
 
     private function esGradoDiferente(Egresado $egresado, $programaExcel) {
         $idProgramasEgresado = DB::table('grados')->select('id_programa')
-                        ->where('id_estudiante', $egresado->id_aut_egresado)
+                        ->where('id_egresado', $egresado->id_aut_egresado)
                         ->where('estado', self::ACTIVO)
                         ->pluck('id_programa')->toArray();
         $programas = Programa::select('nombre')->whereIn('id_aut_programa', $idProgramasEgresado)->get();

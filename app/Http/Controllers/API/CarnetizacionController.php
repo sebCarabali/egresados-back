@@ -64,7 +64,7 @@ class CarnetizacionController extends Controller
 
     public function validarCompletarInfo($idEgresado){
         $estado_complete = Egresado::where('id_aut_egresado',$idEgresado)
-        ->select("estado_completar")->first();        
+        ->select("estado_completar")->first();
         return response()->json($estado_complete,200);
     }
 
@@ -73,8 +73,14 @@ class CarnetizacionController extends Controller
         $solicitud_pendiente = DB::table('carnetizacion')
         ->where('carnetizacion.id_egresado',$idEgresado)
         ->select('carnetizacion.estado_solicitud')->first();
+
+        if($solicitud_pendiente==""){
+            return response()->json([], 400);
+        }else{
+            return response()->json($solicitud_pendiente, 400);
+        }
        
-        return response()->json($solicitud_pendiente, 200);
+       
         
     }
 }

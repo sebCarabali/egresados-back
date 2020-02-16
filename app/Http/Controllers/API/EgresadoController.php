@@ -304,13 +304,6 @@ class EgresadoController extends Controller
     }
 
     //Carga la informacion de un egresado para mostrar en Ver Perfil
-   /* public function verPerfil($idEgresado)
-    {
-        $egresado = Egresado::find($idEgresado);
-        return $this->success(new EgresadoAdminResource($egresado));
-    }*/
-
-    //Carga la informacion de un egresado para mostrar en Ver Perfil
     public function verPerfil($email)
     {
         $idEgresado = DB::table('egresados')
@@ -318,8 +311,7 @@ class EgresadoController extends Controller
                 ->select('id_aut_egresado')->first();
 
                 $egresado = Egresado::find($idEgresado->id_aut_egresado);
-        
-        //return response()->json($egresado,400);
+
         return $this->success(new EgresadoAdminResource($egresado));
     }
     //Metodo que permite actualzar la información del egresado por parte de un egresado
@@ -403,7 +395,6 @@ class EgresadoController extends Controller
                 $referido->programa()->associate(Programa::where('id_aut_programa', $ref['id_aut_programa'])->firstOrFail());
                 $referido->telefono_movil = $ref['telefono_movil'];
                 $referido->correo = $ref['correo'];
-
                 $referido->save();
                 $egresado->referido()->attach($referido);
             }

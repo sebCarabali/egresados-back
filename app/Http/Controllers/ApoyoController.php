@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Apoyo;
 use App\Helpers\CrearUsuario;
+use App\Http\Requests\StoreApoyoRequest;
 use App\Http\Resources\ApoyoResource;
 use Exception;
 use Illuminate\Http\Request;
@@ -37,7 +38,7 @@ class ApoyoController extends Controller
         return response()->json(['error' => 'No se encontró el apoyo con id: ' . $idApoyo], 400);
     }
 
-    public function save(Request $request)
+    public function save(StoreApoyoRequest $request)
     {
         $data = $request->only('nombres', 'nombreRol', 'apellidos', 'correo', 'correoSecundario', 'servicios');
         DB::beginTransaction();

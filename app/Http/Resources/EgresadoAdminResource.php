@@ -8,6 +8,7 @@
 
 namespace App\Http\Resources;
 
+use App\Solicita;
 use \Illuminate\Http\Resources\Json\Resource;
 use \Illuminate\Support\Facades\DB;
 
@@ -16,9 +17,11 @@ use \Illuminate\Support\Facades\DB;
  *
  * @author sebastian
  */
-class EgresadoAdminResource extends Resource {
+class EgresadoAdminResource extends Resource
+{
 
-    public function toArray($request) {
+    public function toArray($request)
+    {
         return [
             'id' => $this->id_aut_egresado,
             'nombres' => $this->nombres,
@@ -41,20 +44,20 @@ class EgresadoAdminResource extends Resource {
         ];
     }
 
-    
+
     private function getReferidos()
     {
         return ReferidoResource::collection(\App\Referido::whereIn('id_aut_referido', DB::table('referidos_egresados')->where('id_egresados', $this->id_aut_egresado)->pluck('id_referidos')->toArray())->get());
     }
-    
+
     private function getTrabajoActual()
     {
         return ExperienciaResource::collection(\App\Experiencia::where('id_egresado', $this->id_aut_egresado)
-                ->whereNull('fecha_fin')->get());
+            ->whereNull('fecha_fin')->get());
     }
-    
+
     private function getSolicitudesCarnetizacion()
     {
-        return SolicitudCarnetResource::collection(DB::table('solicita')->where('id_egresado', $this->id_aut_egresado)->get());
+        return SolicitudCarnetResource::collection(Solicita::where('id_egresado', $this->id_aut_egresado)->get());
     }
 }

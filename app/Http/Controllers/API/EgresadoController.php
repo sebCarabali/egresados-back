@@ -21,6 +21,7 @@ use App\Cargo;
 use App\Grado;
 use Validator;
 use Excel;
+use \App\Http\Resources\EgresadoAdminResource;
 use App\Imports\EgresadosImport;
 
 class EgresadoController extends Controller
@@ -302,41 +303,26 @@ class EgresadoController extends Controller
         }
     }
 
-    //Carga los atributos de un egresado especifico para actualizar
-    public function edit($idEgresado)
+    //Carga la informacion de un egresado para mostrar en Ver Perfil
+    public function verPerfil($email)
     {
+        $idEgresado = DB::table('egresados')
+                ->where('correo', $email)
+                ->select('id_aut_egresado')->first();
 
+                $egresado = Egresado::find($idEgresado->id_aut_egresado);
 
-        $expedicion = DB::table('egresados')
-            ->join('ciudades', 'egresados.id_lugar_expedicion', '=', 'ciudades.id_aut_ciudad')
-            ->join('departamentos', 'departamentos.id_aut_departamento', '=', 'ciudades.id_departamento')
-            ->join('pais', 'pais.id_aut_pais', '=', 'departamentos.id_aut_dep')
-            ->select('paises.nombre', 'departamentos.nombre', 'ciudades.nombre')
-            ->get();
-
-        $residencia = DB::table('egresados')
-            ->join('localizacion', 'egresado.id_lugar_residencia', '=', 'localizacion.id_aut_localizacion')
-            ->join('ciudades', 'localizacion.id_ciudad', '=', 'ciudades.id_aut_ciudad')
-            ->join('departamentos', 'departamentos.id_aut_departamento', '=', 'ciudades.id_departamento')
-            ->join('pais', 'pais.id_aut_pais', '=', 'departamentos.id_aut_dep')
-            ->select('localizacion.barrio', 'localizacion.direccion', 'localizacion.codigo_postal', 'paises.nombre', 'departamentos.nombre', 'ciudades.nombre')
-            ->get();
-
-        $nivelEstudio = DB::table('egresados')
-            ->join('niveles_estudio', 'egresados.id_nivel_educativo', '=', 'niveles_estudio.id_aut_estudio')
-            ->select('niveles_estudio.nombre')
-            ->get();
-
-        $nacimiento = DB::table('egresados')
-            ->join('ciudades', 'egresados.id_lugar_expedicion', '=', 'ciudades.id_aut_ciudad')
-            ->join('departamentos', 'departamentos.id_aut_departamento', '=', 'ciudades.id_departamento')
-            ->join('pais', 'pais.id_aut_pais', '=', 'departamentos.id_aut_dep')
-            ->select('paises.nombre', 'departamentos.nombre', 'ciudades.nombre')
-            ->get();
-
-        return response()->json();
+        return $this->success(new EgresadoAdminResource($egresado));
     }
-
+    //Metodo que permite actualzar la información del egresado por parte de un egresado
+    public function actualizaEgresado(Request $request, $idEgresado){
+       /* $egresado = Egresado::find($idEgresado);
+        Información personal→ 
+        Experiencia laboral
+        Referencia personal
+        Grado*/
+    }
+    //Metodo que permite actualizar informacion de un egresado por parte del administrador
     public function update(Request $request, $idEgresado)
     {
         $egresado = Egresado::find($idEgresado);
@@ -409,7 +395,6 @@ class EgresadoController extends Controller
                 $referido->programa()->associate(Programa::where('id_aut_programa', $ref['id_aut_programa'])->firstOrFail());
                 $referido->telefono_movil = $ref['telefono_movil'];
                 $referido->correo = $ref['correo'];
-
                 $referido->save();
                 $egresado->referido()->attach($referido);
             }
@@ -467,11 +452,9 @@ class EgresadoController extends Controller
                 ->where('egresados.id_aut_egresado', $idEgresado)
                 ->where('grados.estado', 'PENDIENTE')
                 ->where('grados.id_programa', '=', $gradoSimultaneo['id_aut_programa'])
-                ->select('grados.id_aut_grado')->first();
-
-
-
-            $grado = Grado::find($idGradoRegistrado->id_aut_grado);
+                ->select('grados.id_aut_grado')->max('grados.id_aut_grado');
+                
+            $grado = Grado::find($idGradoRegistrado);
 
             $this->guardarComentario($gradoSimultaneo['comentarios'], $grado);
         } catch (Exception $e) {
@@ -535,7 +518,7 @@ class EgresadoController extends Controller
 
                 // Se obtine la informacion de un grado simultaneo
                 $gradoSimultaneo = $request->get('gradoAdicional');
-
+                //return response()->json($gradoSimultaneo, 400);
 
                 if ($expActual && count($expActual) > 0) {
                     $this->guardarInfoExperiencia($expActual, $idEgresado);
@@ -545,17 +528,20 @@ class EgresadoController extends Controller
                 if ($comentariosGradoRegistrado && count($comentariosGradoRegistrado)) {
                     $grado = Grado::where('id_egresado', '=', $idEgresado)
                         ->where('grados.estado', 'PENDIENTE')->first();
-
+                       
                     $this->guardarComentario($comentariosGradoRegistrado, $grado);
                 }
+                
+                if ($request->get('otroGrado')) {
+                    
+                    
 
-                if (/* $gradoSimultaneo['id_nivel_educativo']!=0 */$gradoSimultaneo && count($gradoSimultaneo)) {
-                    $this->guardarGradoSimultaneo($gradoSimultaneo, $idEgresado);
-                    /* return response()->json($gradoSimultaneo['comentarios'], 400);
-                             * INSERT INTO ofertas.grados
+                   $val= $this->guardarGradoSimultaneo($gradoSimultaneo, $idEgresado);
+                     //return response()->json($idGradoRegistrado, 200);
+                            /* INSERT INTO ofertas.grados
                               ( id_aut_grado, tipo_grado, mencion_honor, titulo_especial, anio_graduacion, fecha_graduacion, id_programa, id_egresado, estado, observacion)
                               VALUES ( 2, '', '', '', '2019', '09/09/2019', 2, 10, 'PENDIENTE', '' );
-                             */
+                            */
                 }
             } catch (Exception $e) {
                 return response()->json($e->all(), 400);

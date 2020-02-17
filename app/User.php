@@ -39,6 +39,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany('App\AdministradorEmpresa', 'id_aut_user', 'id_aut_user');
     }
 
+    public function administrador()
+    {
+        return $this->hasOne('App\AdministradorEmpresa', 'id_aut_user', 'id_aut_user');
+    }
+
     public function getJWTIdentifier()
     {
         return $this->getKey();

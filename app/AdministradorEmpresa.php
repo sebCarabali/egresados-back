@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Model;
 
 class AdministradorEmpresa extends Model
@@ -9,6 +10,13 @@ class AdministradorEmpresa extends Model
     protected $table = 'administrador_empresa';
     protected $primaryKey = 'id_aut_administrador_empresa';
     public $timestamps = false;
+
+    use Notifiable;
+  
+    public function routeNotificationForMail()
+    {
+      return $this->correo_corporativo;
+    }
 
     public function direccion()
     {

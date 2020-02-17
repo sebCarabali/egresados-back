@@ -13,8 +13,8 @@ class CarnetizacionController extends Controller
 {
     //Obtiene todas las solicitudes de carnetizacion de los egresados (ADMINISTRADOR)
     public function getAll(){
-        $solicitudesPendiente = Carnetizacion::where('carnetizacion.estado_solicitud','=',"PENDIENTE")->get();
-        return response()->json($SolicitudesPendientes,200);
+        $solicitudesPendientes = Carnetizacion::where('carnetizacion.estado_solicitud','=',"PENDIENTE")->get();
+        return response()->json($solicitudesPendientes,200);
     }
 
     // Actualiza el Administrador la fecha de respuesta y el estado a "Solicitado" a "respondido" de carnet por egresados(ADMINISTRADOR)

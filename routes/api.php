@@ -29,19 +29,11 @@ Route::post('egresados', 'API\EgresadoController@guardarInformacionBasica');
 */
 Route::put('completeEgresados/{idEgresado}', 'API\EgresadoController@fullInfo');
 
-
 /*
-*Retorna las preguntas que debe responder un egresedo para su carrera y universidad
+    Carnetizacion Egresados
 */
-Route::get('cuestionario','API\TipoObservacionController@getCuestionario');
-
-/*
-*Retorna el Id del egresado para inicio de sesion
-*/
-Route::get('getIdegresados/{correo}','API\EgresadoController@getEgresadoEmail');
-
 /**
- * 
+ * Permite validar las solicitudes que un egresado a realizado anteriormente
  */
 Route::get('validarSolicitudes/{idEgresado}','API\CarnetizacionController@validarSolicitudesEgresado');
 
@@ -63,7 +55,25 @@ Route::get('carnetizacion', 'API\CarnetizacionController@getAll');
 /*
 *Administrador la fecha de respuesta y el estado a "Solicitado" a "respondido" de carnet por egresados
 */
-Route::get('carnetizacionUpdateAdmin/{idSolicitud}/{estado}', 'API\CarnetizacionController@updateAdmin');
+Route::put('carnetizacionUpdateAdmin/{idSolicitud}/{estado}', 'API\CarnetizacionController@updateAdmin');
+
+Route::put('cancelarSolicitud/{idEgresado}','API\CarnetizacionController@cancelarSolicitud');
+Route::put('enviarSolicitudCarnet/{idSolicitud}','API\CarnetizacionController@solicitarCarnet');
+
+//******************************************* */
+
+
+/*
+*Retorna las preguntas que debe responder un egresedo para su carrera y universidad
+carnetizacionUpdateAdmin
+*/
+Route::get('cuestionario','API\TipoObservacionController@getCuestionario');
+
+/*
+*Retorna el Id del egresado para inicio de sesion
+*/
+Route::get('getIdegresados/{correo}','API\EgresadoController@getEgresadoEmail');
+
 
 /*
  * Obtiene todas la ciudades de un departamento.

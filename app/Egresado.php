@@ -74,7 +74,7 @@ class Egresado extends Model
 
   public function carnetizaciones()
   {
-    return $this->belongsToMany('App\Carnetizacion', 'solicita', 'id_egresados', 'id_carnetizacion');
+    return $this->hasMany('App\Carnetizacion','id_egresado');
   }
 
 }

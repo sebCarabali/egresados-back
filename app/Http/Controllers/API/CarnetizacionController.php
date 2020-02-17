@@ -13,7 +13,9 @@ class CarnetizacionController extends Controller
 {
     //Obtiene todas las solicitudes de carnetizacion de los egresados (ADMINISTRADOR)
     public function getAll(){
-        $solicitudesPendientes = Carnetizacion::where('carnetizacion.estado_solicitud','=',"PENDIENTE")->get();
+        $solicitudesPendientes = Carnetizacion::join('egresados','egresados.id_aut_egresado','carnetizacion.id_egresado')
+        ->where('carnetizacion.estado_solicitud','=',"PENDIENTE")
+        ->select('carnetizacion.id_aut_carnetizacion','egresados.nombres','egresados.apellidos','egresados.correo','egresados.identificacion','carnetizacion.fecha_solicitud')->get();
         return response()->json($solicitudesPendientes,200);
     }
 

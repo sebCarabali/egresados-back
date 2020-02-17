@@ -13,14 +13,8 @@ class CarnetizacionController extends Controller
 {
     //Obtiene todas las solicitudes de carnetizacion de los egresados (ADMINISTRADOR)
     public function getAll(){
-        /*
-        $SolicitudesPendientes = Egresado::join("egresados.id_aut_egresado","=","solicita.id_egresado")
-            ->join("carnetizacion","solicita.id_carnetizacion","=","carnetizacion.id_aut_carnetizacion")
-            ->where('carnetizacion.estado_solicitud','=',"SOLICITADO")
-            ->select('egresados.nombres', 'egresados.apellidos', 'egresados.correo', 'egresados.identificacion','solicita.fecha_solicitud')
-            ->get();*/
-        $solicitudesPendiente = Carnetizacion::where('carnetizacion.estado_solicitud','=',"SOLICITADO")->get();
-        return response()->json($SolicitudesPendientes,200);
+        $solicitudesPendientes = Carnetizacion::where('carnetizacion.estado_solicitud','=',"PENDIENTE")->get();
+        return response()->json($solicitudesPendientes,200);
     }
 
     // Actualiza el Administrador la fecha de respuesta y el estado a "Solicitado" a "respondido" de carnet por egresados(ADMINISTRADOR)
@@ -35,17 +29,15 @@ class CarnetizacionController extends Controller
         $fecha= Carbon::now();
         $fecha=$fecha->format('yy-m-d');
 
-        $solicitud = Carnetizacion::where("estado_solicitud","=","SOLICITADO")
+        $solicitud = Carnetizacion::where("estado_solicitud","=","PENDIENTE")
         ->where("id_aut_carnetizacion","=",$idSolicitud)->update(['estado_solicitud'=>$nuevoEstado],['fecha_respuesta'=>$fecha]);
     }
 
     
     // Confirmacion de respuesta del Administrador para el egresado, se modifica el estado de solicitud RESPONDIDO -> RECIBIDO
     public function updateEgresado($idEgresado){
-        $carnetizacion= Egresado::join("solicita","egresado.id_aut_egresado","=","solicita.id_egresado")
-        ->join("carnetizacion","solicita.id_carnetizacion","=","carnetizacion.id_aut_carnetizacion")
-        ->where("carnetizacion.estado_solicitud","=","RESPONDIDO")
-        ->where("solicita.id_egresado","=",$idEgresado)
+        $carnetizacion = Carnetizacion::where("carnetizacion.estado_solicitud","=","RESPONDIDO")
+        ->where("carnetizacion.id_egresado","=",$idEgresado)
         ->update(["carnetizacion.estado_solicitud"=>"RECIBIDO"]);
     }
 

@@ -41,8 +41,28 @@ Route::get('validaCompletarInformacion/{idEgresado}', 'API\CarnetizacionControll
 // Obteniendo todas las solicitudes de carnet pendientes para el Administrador
 Route::get('carnetizacion', 'API\CarnetizacionController@getAll');
 
-// Administrador la fecha de respuesta y el estado a "Solicitado" a "respondido" de carnet por egresados
-Route::get('carnetizacionUpdateAdmin/{idSolicitud}/{estado}', 'API\CarnetizacionController@updateAdmin');
+/*
+*Administrador la fecha de respuesta y el estado a "Solicitado" a "respondido" de carnet por egresados
+*/
+Route::put('carnetizacionUpdateAdmin/{idSolicitud}/{estado}', 'API\CarnetizacionController@updateAdmin');
+
+Route::put('cancelarSolicitud/{idEgresado}','API\CarnetizacionController@cancelarSolicitud');
+Route::put('enviarSolicitudCarnet/{idSolicitud}','API\CarnetizacionController@solicitarCarnet');
+
+//******************************************* */
+
+
+/*
+*Retorna las preguntas que debe responder un egresedo para su carrera y universidad
+carnetizacionUpdateAdmin
+*/
+Route::get('cuestionario','API\TipoObservacionController@getCuestionario');
+
+/*
+*Retorna el Id del egresado para inicio de sesion
+*/
+Route::get('getIdegresados/{correo}','API\EgresadoController@getEgresadoEmail');
+
 
 // Obtiene todas la ciudades de un departamento.
 Route::get('ciudades/{idDepartamento}', 'CiudadController@getByDepartamento');

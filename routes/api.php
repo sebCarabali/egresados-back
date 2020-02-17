@@ -92,7 +92,7 @@ Route::get('lugares/ciudades/{idDepartamento}', 'CiudadController@findAll');
 Route::get('discapacidades/{idEgresado}', 'DiscapacidadController@getDiscapacidadesEgresado');
 // Obtener los servicios
 Route::get('servicios', 'ServicioController@getAll');
-
+Route::get('titulos/{idPrograma}', 'TituloController@findAllByPrograma');
 Route::get('eventos', 'EventosController@getAllWithoutPaging');
 
 // Gestión Apoyos

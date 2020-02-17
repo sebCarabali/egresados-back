@@ -1,5 +1,5 @@
 @extends('mail.layout')
-@isset($empresa)
+@isset($oferta)
 @section('titulo_mensaje', 'Se ha cambiado el estado del egresado')
 @section('contenido')
 
@@ -20,7 +20,7 @@
                         </tr>
                         <tr>
                               <th>Estado</th>
-                              <td>{{$egresado->estado}}</td>
+                              <td>{{$estado}}</td>
                         </tr>
                         <tr>
                               <td colspan="2" style="text-align:center">

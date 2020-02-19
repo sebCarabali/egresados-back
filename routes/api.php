@@ -24,6 +24,9 @@ Route::post('egresados', 'API\EgresadoController@guardarInformacionBasica');
 // Completa la información de un egresado,(Experieincias laboral, Referidos,trabajo Actual)
 Route::put('completeEgresados/{idEgresado}', 'API\EgresadoController@fullInfo');
 
+//Metodo para que retorna datos para validar si ya se ha completado el registro
+Route::get('validaCompletarRegistro/{idEgresado}','API\EgresadoController@getvalidaCompletar');
+
 // Retorna las preguntas que debe responder un egresedo para su carrera y universidad
 Route::get('cuestionario', 'API\TipoObservacionController@getCuestionario');
 
@@ -47,11 +50,15 @@ Route::get('carnetizacion', 'API\CarnetizacionController@getAll');
 Route::put('carnetizacionUpdateAdmin/{idSolicitud}/{estado}', 'API\CarnetizacionController@updateAdmin');
 
 Route::put('cancelarSolicitud/{idEgresado}','API\CarnetizacionController@cancelarSolicitud');
-Route::put('enviarSolicitudCarnet/{idSolicitud}','API\CarnetizacionController@solicitarCarnet');
+Route::put('enviarSolicitudCarnet/{idEgresado}','API\CarnetizacionController@solicitarCarnet');
 
-//******************************************* */
+//********************************************************** */
 
+/*
+* RUTAS DE PARA LOS GRADOS
+ */
 
+ Route::get('obtenerGradosEgresado/{idEgresado}','API\ActualizarGradosController@getGrados');
 /*
 *Retorna las preguntas que debe responder un egresedo para su carrera y universidad
 carnetizacionUpdateAdmin

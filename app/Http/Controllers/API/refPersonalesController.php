@@ -56,33 +56,4 @@ class refPersonalesController extends Controller
             }
         }
     }
-/*
-    public function updateReferido($y){
-        return respose()->json("ENTRANDO",400);
-        /*$referidoUpdate = Referido::find($referido['id_aut_egresado']);
-        $referidoUpdate->nombres=$referido['nombres'];
-        $referidoUpdate->niveles_estudio()->associate(NivelEstudio::where('id_aut_estudio',$referido['id_nivel_educativo'])->firstOrFail());
-        $referidoUpdate->telefono_movil=$referido['telefono_movil'];
-        $referidoUpdate->correo=$referido['correo'];
-        $referidoUpdate->parentesco=$referido['parentesco'];
-        $referidoUpdate->programa()->associate(Programa::where('id_aut_programa', $referido['id_aut_programa'])->firstOrFail());
-        $referidoUpdate->es_egresado=$referido['es_egresado'];
-        $referidoUpdate->update();
-    }
-
-    public function crearReferidos(array $referido){
-        $referidoNuevo= new Referido();
-        $referidoNuevo->nombres=$referido['nombres'];
-        $referidoNuevo->niveles_estudio()->associate(NivelEstudio::where('id_aut_estudio',$referido['id_nivel_educativo'])->firstOrFail());
-        $referidoNuevo->telefono_movil=$referido['telefono_movil'];
-        $referidoNuevo->correo=$referido['correo'];
-        $referidoNuevo->parentesco=$referido['parentesco'];
-        $referidoNuevo->programa()->associate(Programa::where('id_aut_programa', $referido['id_aut_programa'])->firstOrFail());
-        $referidoNuevo->es_egresado=$referido['es_egresado'];
-        $referidoNuevo->seve();
-    }
-
-    public function eliminarRegerido( $idRreferido){
-        Referido::destroy($idRreferido);
-    }*/
 }

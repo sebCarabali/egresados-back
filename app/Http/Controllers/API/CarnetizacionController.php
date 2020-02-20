@@ -20,9 +20,9 @@ class CarnetizacionController extends Controller
     }
 
     // Actualiza el Administrador la fecha de respuesta y el estado a "Solicitado" a "respondido" de carnet por egresados(ADMINISTRADOR)
-    public function updateAdmin($idSolicitud,$estado){
+    public function updateAdmin($idSolicitud,Request $estado){
         $nuevoEstado="";
-        if($estado){
+        if($estado->get('estado')){
             $nuevoEstado="RESPONDIDO";
         }else {
             $nuevoEstado="RECHAZADO";

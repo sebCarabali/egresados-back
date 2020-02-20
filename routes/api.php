@@ -47,10 +47,10 @@ Route::get('carnetizacion', 'API\CarnetizacionController@getAll');
 /*
 *Administrador la fecha de respuesta y el estado a "Solicitado" a "respondido" de carnet por egresados
 */
-Route::put('carnetizacionUpdateAdmin/{idSolicitud}/{estado}', 'API\CarnetizacionController@updateAdmin');
+Route::put('carnetizacionUpdateAdmin/{idSolicitud}', 'API\CarnetizacionController@updateAdmin');
 
-Route::put('cancelarSolicitud/{idEgresado}','API\CarnetizacionController@cancelarSolicitud');
-Route::put('enviarSolicitudCarnet/{idEgresado}','API\CarnetizacionController@solicitarCarnet');
+Route::get('cancelarSolicitud/{idEgresado}','API\CarnetizacionController@cancelarSolicitud');
+Route::get('enviarSolicitudCarnet/{idEgresado}','API\CarnetizacionController@solicitarCarnet');
 
 //********************************************************** */
 

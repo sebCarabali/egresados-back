@@ -8,18 +8,17 @@
 
 namespace App\Http\Resources;
 
-use App\Solicita;
-use \Illuminate\Http\Resources\Json\Resource;
-use \Illuminate\Support\Facades\DB;
+use App\Carnetizacion;
+use Illuminate\Http\Resources\Json\Resource;
+use Illuminate\Support\Facades\DB;
 
 /**
- * Description of EgresadoAdminResource
+ * Description of EgresadoAdminResource.
  *
  * @author sebastian
  */
 class EgresadoAdminResource extends Resource
 {
-
     public function toArray($request)
     {
         return [
@@ -40,10 +39,9 @@ class EgresadoAdminResource extends Resource
             'telefonoFijo' => $this->telefono_fijo,
             'solicitudes' => $this->getSolicitudesCarnetizacion(),
             'lugarNacimiento' => new CiudadResource($this->ciudadNacimiento()->first()),
-            'lugarResidencia' => new LocalizacionResource($this->lugarResidencia()->first())
+            'lugarResidencia' => new LocalizacionResource($this->lugarResidencia()->first()),
         ];
     }
-
 
     private function getReferidos()
     {
@@ -58,6 +56,6 @@ class EgresadoAdminResource extends Resource
 
     private function getSolicitudesCarnetizacion()
     {
-        return SolicitudCarnetResource::collection(Solicita::where('id_egresado', $this->id_aut_egresado)->get());
+        return SolicitudCarnetResource::collection(Carnetizacion::where('id_egresado', $this->id_aut_egresado)->get());
     }
 }

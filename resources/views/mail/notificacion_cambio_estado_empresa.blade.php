@@ -24,7 +24,7 @@
                         </tr>
                         <tr>
                               <td colspan="2" style="text-align:center">
-                                    <a class="btn-a" href="http://localhost:4200/login">INGRESAR</a>
+                                    <a class="btn-a" href="{{env("URL_FRONT")}}login">INGRESAR</a>
                               </td>
                         </tr>
                   </tbody>

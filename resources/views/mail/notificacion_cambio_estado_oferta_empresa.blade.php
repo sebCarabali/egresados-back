@@ -24,7 +24,7 @@
                         </tr>
                         <tr>
                               <td colspan="2" style="text-align:center">
-                                    <a class="btn-a" href="http://localhost:4200/empresa/{{$oferta->id_empresa}}/misOfertas">MIS OFERTAS</a>
+                                    <a class="btn-a" href="{{env("URL_FRONT")}}empresa/{{$oferta->id_empresa}}/misOfertas">MIS OFERTAS</a>
                               </td>
                         </tr>
                   </tbody>

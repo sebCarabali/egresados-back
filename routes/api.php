@@ -49,8 +49,8 @@ Route::get('carnetizacion', 'API\CarnetizacionController@getAll');
 */
 Route::put('carnetizacionUpdateAdmin/{idSolicitud}', 'API\CarnetizacionController@updateAdmin');
 
-Route::get('cancelarSolicitud/{idEgresado}','API\CarnetizacionController@cancelarSolicitud');
-Route::get('enviarSolicitudCarnet/{idEgresado}','API\CarnetizacionController@solicitarCarnet');
+//Actualizacion del estado del carnetizacion por parte de un egresado, Estados PENDIENTES O CANCELADO
+Route::put('enviarEstadoSolicitudCarnet/{idEgresado}','API\CarnetizacionController@updateEstadoSolicitudCarnet');
 
 //********************************************************** */
 

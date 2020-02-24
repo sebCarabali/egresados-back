@@ -17,9 +17,10 @@ class ActualizarInfoPersonalController extends Controller
         $egresado = Egresado::where('id_aut_egresado', $idEgresado)->first();
 
         //Obteniendo discapacidades del formulario
-        //$discapacidades = $request->get('discapacidades');
-        //$nuevaDiscapacidad = new Discapacidad();
-        //$nuevaDiscapacidad = $request->get('otra_discapacidad');
+        $discapacidades = $request->get('discapacidades');
+        $nuevaDiscapacidad = new Discapacidad();
+        $nuevaDiscapacidad = $request->get('otra_discapacidad');
+
         $egresado->nombres = $request->get('nombres');
         $egresado->apellidos = $request->get('apellidos');
         $egresado->grupoEtnico = $request->get('grupoEtnico');
@@ -44,23 +45,23 @@ class ActualizarInfoPersonalController extends Controller
 
         //$egresado->num_hijos = $request->get('num_hijos');
 
-        $egresado = $this->_updateInformation($egresado, $residencia);
+        $egresado = $this->_updateInformation($egresado, $residencia,$dicapacidades,$nuevaDiscapacidad);
 
         return $this->success($egresado);
     }
 
-    private function _updateInformation(Egresado $egresado, $localizacion)
+    private function _updateInformation(Egresado $egresado, $localizacion,$dicapacidades,$nuevaDiscapacidad)
     {
-        return DB::transaction(function () use ($egresado, $localizacion) {
+        return DB::transaction(function () use ($egresado, $localizacion,$dicapacidades,$nuevaDiscapacidad) {
             //Asociando listado de discapacidades de egresado
-            /*          foreach ($discapacidades as $discapacidad) {
+                      foreach ($discapacidades as $discapacidad) {
                           $egresado->discapacidad()->attach($discapacida['id_discapacidad']);
                       }
 
                       //Agregando nuevas discapacidades de egresado
                       $nuevaDiscapacidad->save();
                       $nuevaDiscapacidad->egresado()->attach($egresado->get('id_aut_egresado'));
-*/
+
             //Guardar nueva localización de egresado
             $localizacion->save();
             $egresado->lugarResidencia()->associate($localizacion);

@@ -24,6 +24,9 @@ Route::post('egresados', 'API\EgresadoController@guardarInformacionBasica');
 // Completa la información de un egresado,(Experieincias laboral, Referidos,trabajo Actual)
 Route::put('completeEgresados/{idEgresado}', 'API\EgresadoController@fullInfo');
 
+//Metodo para que retorna datos para validar si ya se ha completado el registro
+Route::get('validaCompletarRegistro/{idEgresado}','API\EgresadoController@getvalidaCompletar');
+
 // Retorna las preguntas que debe responder un egresedo para su carrera y universidad
 Route::get('cuestionario', 'API\TipoObservacionController@getCuestionario');
 
@@ -41,8 +44,32 @@ Route::get('validaCompletarInformacion/{idEgresado}', 'API\CarnetizacionControll
 // Obteniendo todas las solicitudes de carnet pendientes para el Administrador
 Route::get('carnetizacion', 'API\CarnetizacionController@getAll');
 
-// Administrador la fecha de respuesta y el estado a "Solicitado" a "respondido" de carnet por egresados
-Route::get('carnetizacionUpdateAdmin/{idSolicitud}/{estado}', 'API\CarnetizacionController@updateAdmin');
+/*
+*Administrador la fecha de respuesta y el estado a "Solicitado" a "respondido" de carnet por egresados
+*/
+Route::put('carnetizacionUpdateAdmin/{idSolicitud}', 'API\CarnetizacionController@updateAdmin');
+
+//Actualizacion del estado del carnetizacion por parte de un egresado, Estados PENDIENTES O CANCELADO
+Route::put('enviarEstadoSolicitudCarnet/{idEgresado}','API\CarnetizacionController@updateEstadoSolicitudCarnet');
+
+//********************************************************** */
+
+/*
+* RUTAS DE PARA LOS GRADOS
+ */
+
+ Route::get('obtenerGradosEgresado/{idEgresado}','API\ActualizarGradosController@getGrados');
+/*
+*Retorna las preguntas que debe responder un egresedo para su carrera y universidad
+carnetizacionUpdateAdmin
+*/
+Route::get('cuestionario','API\TipoObservacionController@getCuestionario');
+
+/*
+*Retorna el Id del egresado para inicio de sesion
+*/
+Route::get('getIdegresados/{correo}','API\EgresadoController@getEgresadoEmail');
+
 
 // Obtiene todas la ciudades de un departamento.
 Route::get('ciudades/{idDepartamento}', 'CiudadController@getByDepartamento');
@@ -92,7 +119,7 @@ Route::get('lugares/ciudades/{idDepartamento}', 'CiudadController@findAll');
 Route::get('discapacidades/{idEgresado}', 'DiscapacidadController@getDiscapacidadesEgresado');
 // Obtener los servicios
 Route::get('servicios', 'ServicioController@getAll');
-
+Route::get('titulos/{idPrograma}', 'TituloController@findAllByPrograma');
 Route::get('eventos', 'EventosController@getAllWithoutPaging');
 
 // Gestión Apoyos

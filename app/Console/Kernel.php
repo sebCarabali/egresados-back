@@ -13,7 +13,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+        'App\Console\Commands\VencimientoOferta',
     ];
 
     /**
@@ -26,6 +26,8 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')
         //          ->hourly();
+        $schedule->command('vencimiento:ofertas')->daily();
+        //$schedule->command('vencimiento:ofertas')->everyMinute();
     }
 
     /**

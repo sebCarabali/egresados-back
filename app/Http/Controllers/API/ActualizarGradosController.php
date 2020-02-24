@@ -17,6 +17,9 @@ class ActualizarGradosController extends Controller
     }
 
     public function update(Request $request, $idEgresado){
-        
+        $grado = Grado::join('programas','grados.id_programa','programas.id_aut_programa')
+        ->where('grados.id_egresado',$idEgresado)->first();
+
+        return $this->success(new GradosResource($grado));
     }
 }

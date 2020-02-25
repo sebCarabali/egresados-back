@@ -81,7 +81,7 @@
                 <div class="title m-b-md">
                     Laravel
                 </div>
-
+                <img src="{{ asset('2.png') }}" alt="Aqi va la imagen" srcset="" width="100px" height="80px">
                 <div class="links">
                     <a href="https://laravel.com/docs">Documentation</a>
                     <a href="https://laracasts.com">Laracasts</a>

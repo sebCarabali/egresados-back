@@ -29,7 +29,7 @@
                         </tr>
                         <tr>
                               <td colspan="2" style="text-align:center">
-                                    <a class="btn-a" href="http://localhost:4200/admin/ofertasLaborales">LISTAR OFERTAS</a>
+                                    <a class="btn-a" href="{{env("URL_FRONT")}}admin/ofertasLaborales">LISTAR OFERTAS</a>
                               </td>
                         </tr>
                   </tbody>

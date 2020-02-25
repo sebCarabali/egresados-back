@@ -9,15 +9,16 @@ class SolicitudCarnetResource extends Resource
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
+     *
      * @return array
      */
     public function toArray($request)
     {
         return [
-           'fechaSolicitud' => $this->fecha_solicitud,
+            'fechaSolicitud' => $this->fecha_solicitud,
             'fechaRespuesta' => $this->fecha_respuesta,
-            'estadoSolicitud' => $this->carnetizacion()->first()->estado
+            'estadoSolicitud' => $this->estado_solicitud,
         ];
     }
 }

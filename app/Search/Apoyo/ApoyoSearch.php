@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Search\Evento;
+namespace App\Search\Apoyo;
 
-use App\Evento;
+use App\Apoyo;
 use App\Search\Search;
 
-class EventoSearch extends Search
+class ApoyoSearch extends Search
 {
     protected static function getBuilder()
     {
-        return (new Evento())->newQuery();
+        return (new Apoyo())->newQuery();
     }
 
     protected static function getNameSpace()

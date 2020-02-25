@@ -7,7 +7,7 @@
 </head>
 <body>
     <div class="mail">
-        Para verificar su cuenta siga el siguiente enlace <a href="http://localhost:4200/egresados/confirmar/{{$codigo}}">confirmar cuenta</a>
+        Para verificar su cuenta siga el siguiente enlace <a href="{{env("URL_FRONT")}}egresados/confirmar/{{$codigo}}">confirmar cuenta</a>
     </div>
 </body>
 </html>

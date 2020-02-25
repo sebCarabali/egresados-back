@@ -7,7 +7,7 @@
 <p>Para verificar su cuenta siga el siguiente enlace</p>
 <br><br>
 <a href="{{env("URL_FRONT")}}egresados/confirmar/{{$user->codigo_verificacion}}">confirmar cuenta</a>
-{{-- <a href="http://localhost:4200/egresados/confirmar/{{$user->codigo_verificacion}}">confirmar cuenta</a> --}}
+{{-- <a href="{{env("URL_FRONT")}}egresados/confirmar/{{$user->codigo_verificacion}}">confirmar cuenta</a> --}}
 
 <br>
 <p>Si usted no ha realizado el registro, por favor omita este mensaje!</p>
@@ -35,7 +35,7 @@
                         </tr>
                         <tr>
                               <td colspan="2" style="text-align:center">
-                                    <a class="btn-a" href="http://localhost:4200/admin/solicitudes">EMRESAS
+                                    <a class="btn-a" href="{{env("URL_FRONT")}}admin/solicitudes">EMRESAS
                                           PENDIENTES</a>
                               </td>
                         </tr>

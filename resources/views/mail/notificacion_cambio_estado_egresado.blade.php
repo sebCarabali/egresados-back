@@ -1,8 +1,8 @@
 @extends('mail.layout')
-@isset($empresa)
+@isset($oferta)
 @section('titulo_mensaje', 'Se ha cambiado el estado del egresado')
 @section('contenido')
-
+<h1>Aqui esta el egresado</h1>
 <div>
       <p>
             <table class="tabla">
@@ -24,7 +24,7 @@
                         </tr>
                         <tr>
                               <td colspan="2" style="text-align:center">
-                                    <a class="btn-a" href="http://localhost:4200/login">INGRESAR</a>
+                                    <a class="btn-a" href="{{env("URL_FRONT")}}login">INGRESAR</a>
                               </td>
                         </tr>
                   </tbody>

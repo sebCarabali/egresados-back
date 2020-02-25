@@ -4,52 +4,35 @@ namespace App\Http\Controllers;
 
 use App\Evento;
 use App\Http\Resources\EventosResource;
+use App\Repository\EventoRepositoryInterface;
 use App\Search\Evento\EventoSearch;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class EventosController extends Controller
 {
     const EVENTOS_IMAGE_PATH = 'storage/eventos';
+
+    private $repository;
+
+    public function __construct(EventoRepositoryInterface $repository)
+    {
+        $this->repository = $repository;
+    }
 
     /**
      * Realiza el registro de un evento nuevo.
      */
     public function save(Request $req)
     {
-        //return $this->success($req->file('fileInput')->getClientOriginalName());
-        $data = $req->only(
-            'nombre',
-            'cupos',
-            'lugar',
-            'fechaInicio',
-            'fechaFin',
-            'descripcion',
-            'dirigidoA'
-        );
-        DB::beginTransaction();
-
         try {
-            $evento = new Evento();
-            $evento->nombre = $data['nombre'];
-            $evento->fecha_inicio = date('m/d/Y', strtotime($data['fechaInicio']));
-            $evento->fecha_fin = date('m/d/Y', strtotime($data['fechaFin']));
-            $evento->lugar = $data['lugar'];
-            $evento->descripcion = $data['descripcion'];
-            $evento->a_quien_va_dirigida = $data['dirigidoA'];
-            $evento->cupos = $data['cupos'];
-            $evento->imagen = asset($req->file('fileInput')->store('storage/eventos', 'public'));
-            $evento->save();
+            $egresado = $this->repository->save($req);
 
-            DB::commit();
-
-            return $this->success(new EventosResource($evento));
+            return $this->success($egresado);
         } catch (Exception $e) {
-            DB::rollback();
-
-            return response()->json(['error' => $e->getMessage()], 400);
+            return $this->fail($e->getMessage());
         }
     }
 
@@ -58,30 +41,14 @@ class EventosController extends Controller
      */
     public function getAll(Request $request)
     {
-        $eventos = EventoSearch::apply($request);
-        $page = $request->get('page');
-        $pageSize = $request->get('pageSize');
-        $results = $eventos->slice(($page - 1) * $pageSize, $pageSize)->values();
+        $eventos = $this->repository->getAllWithPaging($request, new EventoSearch());
 
-        return EventosResource::collection(
-            new LengthAwarePaginator(
-                $results,
-                $total = count($eventos),
-                $pageSize,
-                $page
-            )
-        );
+        return EventosResource::collection($eventos);
     }
 
     public function getById($idEvento)
     {
-        try {
-            $evento = Evento::find($idEvento)->firstOrFail();
-
-            return $this->success(new EventosResource($evento));
-        } catch (Exception $e) {
-            return $this->notFound('No se encontró el evento solicitado: '.$e->getMessage());
-        }
+        return $this->repository->getById($idEvento);
     }
 
     public function update(Request $request)
@@ -109,14 +76,16 @@ class EventosController extends Controller
 
     public function getAllWithoutPaging()
     {
-        return $this->success(EventosResource::collection(Evento::all()));
+        $eventos = $this->repository->getAll();
+
+        return $this->success(EventosResource::collection($eventos));
     }
 
     private function setInfoAlEvento(Evento $evento, array $data)
     {
         $evento->nombre = $data['nombre'];
-        $evento->fecha_inicio = date('m/d/Y', strtotime($data['fechaInicio']));
-        $evento->fecha_fin = date('m/d/Y', strtotime($data['fechaFin']));
+        $evento->fecha_inicio = $this->getPgsqlDateFormat($data['fechaInicio']);
+        $evento->fecha_fin = $this->getPgsqlDateFormat($data['fechaFin']);
         $evento->lugar = $data['lugar'];
         $evento->descripcion = $data['descripcion'];
         $evento->a_quien_va_dirigida = $data['dirigidoA'];
@@ -130,10 +99,16 @@ class EventosController extends Controller
     {
         // TODO: Guardar nueva imagen del evento y eliminar la existente.
         if (!empty(!$evento->imagem)) {
-            //Storage::delete($evento->imagen, 'public');
+            Storage::delete($evento->imagen, 'public');
         }
         $evento->imagen = $file->store('storage/eventos', 'public');
 
         return $evento;
     }
+    
+    private function getPgsqlDateFormat($dateStr) {
+        $dateArray = explode('/', $dateStr);
+        return $dateArray[2] . '-' . $dateArray[1] . '-' . $dateArray[0];
+    }
+
 }

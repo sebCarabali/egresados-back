@@ -18,6 +18,11 @@ use Illuminate\Support\Facades\Hash;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get('image/eventos/{filename}', function($filename){
+    $file = \Illuminate\Support\Facades\Storage::get('/eventos/'.$filename);
+    return response($file, 200);// ->header('Contentype', 'image/jpeg');
+});
 // --------------------------------------------------------------------------------
 // Guarda la información básica de un egresado.
 Route::post('egresados', 'API\EgresadoController@guardarInformacionBasica');

@@ -53,7 +53,6 @@
                                                       <i><b>@yield("titulo_mensaje")</b></i></font>
                                           </div>
                                           <div style="font-size:small;text-align:center">
-                                                <h1>Aqui esta el egresado</h1>
 
                                                 @yield('contenido')
                                           </div>

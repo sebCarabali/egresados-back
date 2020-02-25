@@ -2,7 +2,6 @@
 @isset($oferta)
 @section('titulo_mensaje', 'Se ha cambiado el estado del egresado')
 @section('contenido')
-<h1>Aqui esta el egresado</h1>
 <div>
       <p>
             <table class="tabla">

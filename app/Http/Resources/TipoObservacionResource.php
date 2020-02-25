@@ -16,7 +16,8 @@ class TipoObservacionResource extends Resource
     {
         return [
             'id' => $this->id_aut_comentario,
-            'pregunta' => $this->pregunta
+            'pregunta' => $this->pregunta,
+            'pregunta_padre'=>$this->pregunta_padre
         ];
     }
 }

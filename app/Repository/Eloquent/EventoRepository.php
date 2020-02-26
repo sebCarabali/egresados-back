@@ -7,6 +7,7 @@ use App\Repository\EventoRepositoryInterface;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class EventoRepository extends BaseRepository implements EventoRepositoryInterface
 {
@@ -34,11 +35,47 @@ class EventoRepository extends BaseRepository implements EventoRepositoryInterfa
 
     public function update(Request $request, $id)
     {
+        $datos = $this->getDataFromRequest($request);
+        $file = $request->file('fileInput');
+
+        try {
+            DB::beginTransaction();
+            $evento = $this->getById($id);
+            if ($evento) {
+                $evento = $this->setInfoAlEvento($evento, $datos, $file);
+                $evento = $evento->save();
+            } else {
+                throw new Exception('No se encontró el evento con id: ' . $id);
+            }
+            DB::commit();
+
+            return $evento;
+        } catch (Exception $e) {
+            DB::rollback();
+
+            throw $e;
+        }
     }
 
     protected function getIdStr()
     {
         return 'id_aut_evento';
+    }
+
+    private function setInfoAlEvento(Evento $evento, array $data, $file)
+    {
+        $evento->nombre = $data['nombre'];
+        $evento->fecha_inicio = $this->getPgsqlDateFormat($data['fechaInicio']);
+        $evento->fecha_fin = $this->getPgsqlDateFormat($data['fechaFin']);
+        $evento->lugar = $data['lugar'];
+        $evento->descripcion = $data['descripcion'];
+        $evento->a_quien_va_dirigida = $data['dirigidoA'];
+        $evento->cupos = $data['cupos'];
+        if ('changed' == $data['imagePath']) {
+            $evento->imagen = $this->actualizarImagen($file, $evento);
+        }
+
+        return $evento;
     }
 
     private function getEventoFromRequest(Request $req)
@@ -73,12 +110,24 @@ class EventoRepository extends BaseRepository implements EventoRepositoryInterfa
             'fechaInicio',
             'fechaFin',
             'descripcion',
-            'dirigidoA'
+            'dirigidoA',
+            'imagePath'
         );
     }
-    
-    private function getPgsqlDateFormat($dateStr) {
+
+    private function getPgsqlDateFormat($dateStr)
+    {
         $dateArray = explode('/', $dateStr);
-        return $dateArray[2] . '-' . $dateArray[1] . '-' . $dateArray[0];
+
+        return $dateArray[2].'-'.$dateArray[1].'-'.$dateArray[0];
+    }
+
+    private function actualizarImagen($file, Evento $evento)
+    {
+        if (!empty($evento->imagen)) {
+            Storage::delete($evento->imagen, 'public');
+        }
+
+        return $file->store('eventos', 'public');
     }
 }

@@ -19,9 +19,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('image/eventos/{filename}', function($filename){
+Route::get('image/eventos/{filename}', function ($filename) {
     $file = \Illuminate\Support\Facades\Storage::get('/eventos/'.$filename);
-    return response($file, 200);// ->header('Contentype', 'image/jpeg');
+
+    return response($file, 200); // ->header('Contentype', 'image/jpeg');
 });
 // --------------------------------------------------------------------------------
 // Guarda la información básica de un egresado.
@@ -30,7 +31,7 @@ Route::post('egresados', 'API\EgresadoController@guardarInformacionBasica');
 Route::put('completeEgresados/{idEgresado}', 'API\EgresadoController@fullInfo');
 
 //Metodo para que retorna datos para validar si ya se ha completado el registro
-Route::get('validaCompletarRegistro/{idEgresado}','API\EgresadoController@getvalidaCompletar');
+Route::get('validaCompletarRegistro/{idEgresado}', 'API\EgresadoController@getvalidaCompletar');
 
 // Retorna las preguntas que debe responder un egresedo para su carrera y universidad
 Route::get('cuestionario', 'API\TipoObservacionController@getCuestionario');
@@ -49,32 +50,25 @@ Route::get('validaCompletarInformacion/{idEgresado}', 'API\CarnetizacionControll
 // Obteniendo todas las solicitudes de carnet pendientes para el Administrador
 Route::get('carnetizacion', 'API\CarnetizacionController@getAll');
 
-/*
-*Administrador la fecha de respuesta y el estado a "Solicitado" a "respondido" de carnet por egresados
-*/
+// Administrador la fecha de respuesta y el estado a "Solicitado" a "respondido" de carnet por egresados
 Route::put('carnetizacionUpdateAdmin/{idSolicitud}', 'API\CarnetizacionController@updateAdmin');
 
 //Actualizacion del estado del carnetizacion por parte de un egresado, Estados PENDIENTES O CANCELADO
-Route::put('enviarEstadoSolicitudCarnet/{idEgresado}','API\CarnetizacionController@updateEstadoSolicitudCarnet');
+Route::put('enviarEstadoSolicitudCarnet/{idEgresado}', 'API\CarnetizacionController@updateEstadoSolicitudCarnet');
 
 //********************************************************** */
 
-/*
-* RUTAS DE PARA LOS GRADOS
- */
+// RUTAS DE PARA LOS GRADOS
 
- Route::get('obtenerGradosEgresado/{idEgresado}','API\ActualizarGradosController@getGrados');
+ Route::get('obtenerGradosEgresado/{idEgresado}', 'API\ActualizarGradosController@getGrados');
 /*
 *Retorna las preguntas que debe responder un egresedo para su carrera y universidad
 carnetizacionUpdateAdmin
 */
-Route::get('cuestionario','API\TipoObservacionController@getCuestionario');
+Route::get('cuestionario', 'API\TipoObservacionController@getCuestionario');
 
-/*
-*Retorna el Id del egresado para inicio de sesion
-*/
-Route::get('getIdegresados/{correo}','API\EgresadoController@getEgresadoEmail');
-
+// Retorna el Id del egresado para inicio de sesion
+Route::get('getIdegresados/{correo}', 'API\EgresadoController@getEgresadoEmail');
 
 // Obtiene todas la ciudades de un departamento.
 Route::get('ciudades/{idDepartamento}', 'CiudadController@getByDepartamento');
@@ -138,7 +132,7 @@ Route::put('apoyos', 'ApoyoController@update');
 Route::get('admin/eventos', 'EventosController@getAll');
 Route::get('admin/eventos/{idEvento}', 'EventosController@getById');
 Route::post('admin/eventos', 'EventosController@save');
-Route::put('admin/eventos', 'EventosController@update');
+Route::post('admin/eventos/{id}', 'EventosController@update');
 
 // Gestión egresados
 Route::get('admin/egresados', 'Admin\EgresadoController@getAll');

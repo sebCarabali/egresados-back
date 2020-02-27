@@ -21,9 +21,9 @@ class CarnetizacionController extends Controller
 
     // Actualiza el Administrador la fecha de respuesta y el estado a "Solicitado" a "respondido" de carnet por egresados(ADMINISTRADOR)
     public function updateAdmin($idSolicitud,Request $request){
-         
+         //return response()->json($request,400);
         $fecha= Carbon::now();
-        $fecha=$fecha->format('d/m/yy');
+        $fecha=$fecha->format('m/d/yy');
 
         $solicitud = Carnetizacion::where("estado_solicitud","=","PENDIENTE")
         ->where("id_aut_carnetizacion","=",$idSolicitud)->update(['estado_solicitud'=>$request->get("estado")],['fecha_respuesta'=>$fecha]);
@@ -68,17 +68,17 @@ class CarnetizacionController extends Controller
         ->where('carnetizacion.estado_solicitud',"PENDIENTE")
         ->select('carnetizacion.estado_solicitud')->first();
 
-        return response()->json($solicitud_pendiente, 400);
+        return response()->json($solicitud_pendiente, 200);
     }
 
 
-    //Metodo que permite cambiar el estado a una solicitud de carnetizacion por egresdo
-    public function updateEstadoSolicitudCarnet($idEgresado, Request $resquest){
-
-        if($request->get('PENDIENTE')){
+    //Metodo que permite cambiar el estado a una solicitud de carnetizacion por egresado
+    public function updateEstadoSolicitudCarnet($idEgresado, Request $request){
+        //return response()->json($request, 400);
+        if($request->get('solicitud')=="PENDIENTE"){
 
             $fecha= Carbon::now();
-            $fecha=$fecha->format('d/m/yy');
+            $fecha=$fecha->format('m/d/yy');
             $egresado = Egresado::find($idEgresado);
             $nuevaSolicitudCarnet = new Carnetizacion();
             $nuevaSolicitudCarnet->estado_solicitud="PENDIENTE";
@@ -86,7 +86,7 @@ class CarnetizacionController extends Controller
             $nuevaSolicitudCarnet->egresados()->associate($egresado);
             $nuevaSolicitudCarnet->save();
             
-        }else if($request->get('CANCELADO')){
+        }else if($request->get('solicitud')=="CANCELADO"){
             $solicitud = Carnetizacion::where('id_egresado',$idEgresado)
             ->where('estado_solicitud',"PENDIENTE")->update(['estado_solicitud'=>"CANCELADO"]);
         }

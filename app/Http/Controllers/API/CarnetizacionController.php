@@ -23,10 +23,10 @@ class CarnetizacionController extends Controller
     public function updateAdmin($idSolicitud,Request $request){
          //return response()->json($request,400);
         $fecha= Carbon::now();
-        $fecha=$fecha->format('m/d/yy');
-        
+        $fecha=$fecha->format('yy/m/d');
+        //return response()->json($fecha,400);
         $solicitud = Carnetizacion::where("estado_solicitud","PENDIENTE")
-        ->where("id_aut_carnetizacion",$idSolicitud)->update(['estado_solicitud'=>$request->get("estado")],['fecha_respuesta'=>'02/02/2020']);
+        ->where("id_aut_carnetizacion",$idSolicitud)->update(['estado_solicitud'=>$request->get("estado"),'fecha_respuesta'=>$fecha]);
         //return response()->json($solicitud,200);
     }
 
@@ -79,8 +79,8 @@ class CarnetizacionController extends Controller
         if($request->get('solicitud')=="PENDIENTE"){
 
             $fecha= Carbon::now();
-            $fecha=$fecha->format('m/d/yy');
-            
+            $fecha=$fecha->format('yy/m/d');
+            //return response()->json($fecha,400);
             $egresado = Egresado::find($idEgresado);
             $nuevaSolicitudCarnet = new Carnetizacion();
             $nuevaSolicitudCarnet->estado_solicitud="PENDIENTE";

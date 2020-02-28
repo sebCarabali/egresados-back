@@ -24,9 +24,10 @@ class CarnetizacionController extends Controller
          //return response()->json($request,400);
         $fecha= Carbon::now();
         $fecha=$fecha->format('m/d/yy');
-
-        $solicitud = Carnetizacion::where("estado_solicitud","=","PENDIENTE")
-        ->where("id_aut_carnetizacion","=",$idSolicitud)->update(['estado_solicitud'=>$request->get("estado")],['fecha_respuesta'=>$fecha]);
+        
+        $solicitud = Carnetizacion::where("estado_solicitud","PENDIENTE")
+        ->where("id_aut_carnetizacion",$idSolicitud)->update(['estado_solicitud'=>$request->get("estado")],['fecha_respuesta'=>'02/02/2020']);
+        //return response()->json($solicitud,200);
     }
 
 
@@ -63,12 +64,12 @@ class CarnetizacionController extends Controller
     }
 
     public function validarSolicitudesEgresado($idEgresado){
-        $solicitud_pendiente = DB::table('carnetizacion')
-        ->where('carnetizacion.id_egresado',$idEgresado)
-        ->where('carnetizacion.estado_solicitud',"PENDIENTE")
-        ->select('carnetizacion.estado_solicitud')->first();
+    
+        $solicitud = Carnetizacion::where('id_egresado',$idEgresado)
+        ->orderBy('id_aut_carnetizacion','desc')
+        ->select('estado_solicitud')->first(); 
 
-        return response()->json($solicitud_pendiente, 200);
+        return response()->json($solicitud,200);
     }
 
 
@@ -79,6 +80,7 @@ class CarnetizacionController extends Controller
 
             $fecha= Carbon::now();
             $fecha=$fecha->format('m/d/yy');
+            
             $egresado = Egresado::find($idEgresado);
             $nuevaSolicitudCarnet = new Carnetizacion();
             $nuevaSolicitudCarnet->estado_solicitud="PENDIENTE";

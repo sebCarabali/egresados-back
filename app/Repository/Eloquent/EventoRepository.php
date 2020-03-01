@@ -45,7 +45,7 @@ class EventoRepository extends BaseRepository implements EventoRepositoryInterfa
                 $evento = $this->setInfoAlEvento($evento, $datos, $file);
                 $evento = $evento->save();
             } else {
-                throw new Exception('No se encontró el evento con id: ' . $id);
+                throw new Exception('No se encontró el evento con id: '.$id);
             }
             DB::commit();
 
@@ -68,6 +68,8 @@ class EventoRepository extends BaseRepository implements EventoRepositoryInterfa
         $evento->fecha_inicio = $this->getPgsqlDateFormat($data['fechaInicio']);
         $evento->fecha_fin = $this->getPgsqlDateFormat($data['fechaFin']);
         $evento->lugar = $data['lugar'];
+        $evento->hora_inicio = $data['horaInicio'].':00';
+        $evento->hora_fin = $data['horaFin'].':00';
         $evento->descripcion = $data['descripcion'];
         $evento->a_quien_va_dirigida = $data['dirigidoA'];
         $evento->cupos = $data['cupos'];
@@ -86,6 +88,8 @@ class EventoRepository extends BaseRepository implements EventoRepositoryInterfa
         $evento->fecha_inicio = $this->getPgsqlDateFormat($data['fechaInicio']);
         $evento->fecha_fin = $this->getPgsqlDateFormat($data['fechaFin']);
         $evento->lugar = $data['lugar'];
+        $evento->hora_inicio = $data['horaInicio'].':00';
+        $evento->hora_fin = $data['horaFin'].':00';
         $evento->descripcion = $data['descripcion'];
         $evento->a_quien_va_dirigida = $data['dirigidoA'];
         $evento->cupos = $data['cupos'];
@@ -108,6 +112,8 @@ class EventoRepository extends BaseRepository implements EventoRepositoryInterfa
             'cupos',
             'lugar',
             'fechaInicio',
+            'horaInicio',
+            'horaFin',
             'fechaFin',
             'descripcion',
             'dirigidoA',

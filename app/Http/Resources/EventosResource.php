@@ -25,11 +25,15 @@ class EventosResource extends Resource
             'cupos' => $this->cupos,
             'dirigidoA' => $this->a_quien_va_dirigida,
             'imagePath' => $this->imagen,
+            'horaInicio' => substr($this->hora_inicio, 0, 5),
+            'horaFin' => substr($this->hora_fin, 0, 5),
         ];
     }
 
-    private function getDate($date) {
+    private function getDate($date)
+    {
         $dateArray = explode('-', $date);
-        return $dateArray[2] . '/' . $dateArray[1] . '/' . $dateArray[0];
+
+        return $dateArray[2].'/'.$dateArray[1].'/'.$dateArray[0];
     }
 }

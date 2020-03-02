@@ -493,7 +493,6 @@ class EgresadoController extends Controller
         return response()->json($datosCompletar,200);
     }
 
-
     public function fullInfo($idEgresado, Request $request)
     {
         //return response()->json($idEgresado,400);

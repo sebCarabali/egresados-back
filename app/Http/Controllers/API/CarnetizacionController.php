@@ -14,26 +14,20 @@ class CarnetizacionController extends Controller
     //Obtiene todas las solicitudes de carnetizacion de los egresados (ADMINISTRADOR)
     public function getAll(){
         $solicitudesPendientes = Carnetizacion::join('egresados','egresados.id_aut_egresado','carnetizacion.id_egresado')
-        ->where('carnetizacion.estado_solicitud','=',"PENDIENTE")
+        ->where('carnetizacion.estado_solicitud','PENDIENTE')
         ->select('carnetizacion.id_aut_carnetizacion','egresados.nombres','egresados.apellidos','egresados.correo','egresados.identificacion','carnetizacion.fecha_solicitud')->get();
         return response()->json($solicitudesPendientes,200);
     }
 
     // Actualiza el Administrador la fecha de respuesta y el estado a "Solicitado" a "respondido" de carnet por egresados(ADMINISTRADOR)
-    public function updateAdmin($idSolicitud,Request $estado){
-        $nuevoEstado="";
-        if($estado->get('estado')){
-            $nuevoEstado="RESPONDIDO";
-        }else {
-            $nuevoEstado="RECHAZADO";
-        }
-
-        return response()->json($nuevoEstado,400);
+    public function updateAdmin($idSolicitud,Request $request){
+         //return response()->json($request,400);
         $fecha= Carbon::now();
-        $fecha=$fecha->format('d/m/yy');
-
-        $solicitud = Carnetizacion::where("estado_solicitud","=","PENDIENTE")
-        ->where("id_aut_carnetizacion","=",$idSolicitud)->update(['estado_solicitud'=>$nuevoEstado],['fecha_respuesta'=>$fecha]);
+        $fecha=$fecha->format('yy/m/d');
+        //return response()->json($fecha,400);
+        $solicitud = Carnetizacion::where("estado_solicitud","PENDIENTE")
+        ->where("id_aut_carnetizacion",$idSolicitud)->update(['estado_solicitud'=>$request->get("estado"),'fecha_respuesta'=>$fecha]);
+        //return response()->json($solicitud,200);
     }
 
 
@@ -70,22 +64,23 @@ class CarnetizacionController extends Controller
     }
 
     public function validarSolicitudesEgresado($idEgresado){
-        $solicitud_pendiente = DB::table('carnetizacion')
-        ->where('carnetizacion.id_egresado',$idEgresado)
-        ->where('carnetizacion.estado_solicitud',"PENDIENTE")
-        ->select('carnetizacion.estado_solicitud')->first();
+    
+        $solicitud = Carnetizacion::where('id_egresado',$idEgresado)
+        ->orderBy('id_aut_carnetizacion','desc')
+        ->select('estado_solicitud')->first(); 
 
-        return response()->json($solicitud_pendiente, 200);
+        return response()->json($solicitud,200);
     }
 
 
-    //Metodo que permite cambiar el estado a una solicitud de carnetizacion por egresdo
-    public function updateEstadoSolicitudCarnet($idEgresado, Request $resquest){
-
-        if($request->get('PENDIENTE')){
+    //Metodo que permite cambiar el estado a una solicitud de carnetizacion por egresado
+    public function updateEstadoSolicitudCarnet($idEgresado, Request $request){
+        //return response()->json($request, 400);
+        if($request->get('solicitud')=="PENDIENTE"){
 
             $fecha= Carbon::now();
-            $fecha=$fecha->format('d/m/yy');
+            $fecha=$fecha->format('yy/m/d');
+            //return response()->json($fecha,400);
             $egresado = Egresado::find($idEgresado);
             $nuevaSolicitudCarnet = new Carnetizacion();
             $nuevaSolicitudCarnet->estado_solicitud="PENDIENTE";
@@ -93,7 +88,7 @@ class CarnetizacionController extends Controller
             $nuevaSolicitudCarnet->egresados()->associate($egresado);
             $nuevaSolicitudCarnet->save();
             
-        }else if($request->get('CANCELADO')){
+        }else if($request->get('solicitud')=="CANCELADO"){
             $solicitud = Carnetizacion::where('id_egresado',$idEgresado)
             ->where('estado_solicitud',"PENDIENTE")->update(['estado_solicitud'=>"CANCELADO"]);
         }

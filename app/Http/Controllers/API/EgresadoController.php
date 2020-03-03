@@ -223,7 +223,7 @@ class EgresadoController extends Controller
     //Metodo que permite almacenar una lista de Referidos de un egresado
     private function guardarReferido(array $referidos, $idEgresado)
     {
-
+       
         foreach ($referidos as $ref) {
             try {
                 if ($ref['es_egresado']) {
@@ -269,7 +269,7 @@ class EgresadoController extends Controller
             $experiencia->tel_trabajo = $exp['tel_trabajo'];
             $experiencia->rango_salario = $exp['rango_salario'];
             $experiencia->fecha_inicio = $exp['fecha_inicio'];
-            $experiencia->fecha_fin = $exp['fecha_fin'];
+            //$experiencia->fecha_fin = $exp['fecha_fin'];
             $experiencia->tipo_contrato = $exp['tipo_contrato'];
             $experiencia->sector = $exp['sector'];
             $experiencia->trabajo_en_su_area = $exp['trabajo_en_su_area'];
@@ -455,7 +455,7 @@ class EgresadoController extends Controller
                 ->select('grados.id_aut_grado')->max('grados.id_aut_grado');
                 
             $grado = Grado::find($idGradoRegistrado);
-
+                
             $this->guardarComentario($gradoSimultaneo['comentarios'], $grado);
         } catch (Exception $e) {
             return response()->json(["error al momento de guardar grados simultaneo"], 400);
@@ -511,7 +511,7 @@ class EgresadoController extends Controller
                 $referidos = $request->get('referidos');
 
                 if ($referidos && count($referidos) > 0) {
-
+                    //return response()->json($referidos,400);
                     $this->guardarReferido($referidos, $idEgresado);
                 }
 
@@ -523,7 +523,7 @@ class EgresadoController extends Controller
 
                 //Se obtienen los comentarios del  grado ya registrado en el preregistro
                 $comentariosGradoRegistrado = $request->get('comentarios');
-
+                //return response()->json($request->get('comentarios'),400);
                 /*
                          * GRADO SIMULTANEO
                          * Este caso se presenta cuando un graduando se
@@ -542,13 +542,12 @@ class EgresadoController extends Controller
                 if ($comentariosGradoRegistrado && count($comentariosGradoRegistrado)) {
                     $grado = Grado::where('id_egresado', '=', $idEgresado)
                         ->where('grados.estado', 'PENDIENTE')->first();
-                       
+                    
+                    //return response()->json($idEgresado,400);
                     $this->guardarComentario($comentariosGradoRegistrado, $grado);
                 }
                 
                 if ($request->get('otroGrado')) {
-                    
-                    
 
                    $val= $this->guardarGradoSimultaneo($gradoSimultaneo, $idEgresado);
                      //return response()->json($idGradoRegistrado, 200);

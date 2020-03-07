@@ -19,18 +19,21 @@ class ActualizarInfoPersonalController extends Controller
 
         //Obteniendo discapacidades del formulario
         $discapacidades = $request->get('discapacidades');
+         //Asociando listado de discapacidades de egresado
+         
         $otraDiscapacidad = $request->get('otra_discapacidad');
         
         
         $egresado->nombres = $request->get('nombres');
         $egresado->apellidos = $request->get('apellidos');
-        $egresado->grupoEtnico = $request->get('grupoEtnico');
+        $egresado->grupo_etnico = $request->get('grupoEtnico');
         $egresado->estado_civil = $request->get('estadoCivil');
         $egresado->identificacion = $request->get('identificacion');
         $egresado->genero = $request->get('genero');
         $egresado->correo = $request->get('correo');
         $egresado->correo_alternativo = $request->get('correoAlternativo');
-        $egresado->telefono_fijo = $request->get('telefono_fijo');
+        $egresado->telefono_fijo = $request->get('telefonoFijo');
+        //return response()->json( $request,400);
         $egresado->celular = $request->get('celular');
 
         $egresado->ciudadNacimiento()->dissociate();
@@ -45,7 +48,7 @@ class ActualizarInfoPersonalController extends Controller
         $residencia->ciudad()->associate(Ciudad::where('id_aut_ciudad', $request->get('idCiudadResidencia'))->first());
 
         //$egresado->num_hijos = $request->get('num_hijos');
-
+        //
         $egresado = $this->_updateInformation($egresado, $residencia,$discapacidades,$otraDiscapacidad);
 
         return $this->success($egresado);
@@ -56,19 +59,22 @@ class ActualizarInfoPersonalController extends Controller
         return DB::transaction(function () use ($egresado, $localizacion,$discapacidades,$otraDiscapacidad) {
             
             //Asociando listado de discapacidades de egresado
+            $egresado->discapacidades()->detach();
             foreach ($discapacidades as $discapacidad) {
-                $egresado->discapacidad()->attach($discapacidad['id_discapacidad']);
+
+                $egresado->discapacidades()->attach($discapacidad);
+               
             }
 
             //Agregando nuevas discapacidades de egresado
-            if(empty($otraDiscapacidad)){
-                $egresado->discapacidad()->attach($otraDiscapacidad['id_discapacidad'],$otraDiscapacidad['descripcion']);
+            if(!empty($otraDiscapacidad)){
+                $egresado->discapacidades()->attach($otraDiscapacidad['id_discapacidad'],[$otraDiscapacidad['descripcion']]);
             }
             //Guardar nueva localización de egresado
             $localizacion->save();
             $egresado->lugarResidencia()->associate($localizacion);
-
-            return $egresado;
+            $egresado->save();
+//            return response()->json($egresado,400);
         });
     }
 }

@@ -31,6 +31,7 @@ class EgresadoAdminResource extends Resource
             'genero' => $this->genero,
             'correo' => $this->correo,
             'correoAlternativo' => $this->correo_alternativo,
+            'estado_completar'=>$this->estado_completar,
             'estadoCivil' => $this->estado_civil,
             'celular' => $this->celular,
             'grados' => GradosResource::collection(\App\Grado::where('id_egresado', $this->id_aut_egresado)->get()),

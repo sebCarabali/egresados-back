@@ -14,8 +14,6 @@ class Programa extends Model
     public function egresados()
     {
         return $this->belognsToMany('App\Egresado', 'grados', 'id_programa', 'id_estudiante');
-        /*->withPivot('tipo', 'mension_honor', 'titulo_especial', 'comentarios', 'fecha_graduacion',
-                    'docente_influencia');*/
     }
 
     public function sede()

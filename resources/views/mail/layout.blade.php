@@ -53,7 +53,6 @@
                                                       <i><b>@yield("titulo_mensaje")</b></i></font>
                                           </div>
                                           <div style="font-size:small;text-align:center">
-                                                ======================0000
                                                 @yield('contenido')
                                           </div>
                                           <br>

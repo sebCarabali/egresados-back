@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Departamento;
 use App\Ciudad;
-use Illuminate\Http\Request;
+use App\Departamento;
+use App\Http\Resources\CiudadResource;
 use Illuminate\Support\Facades\DB;
 
 class CiudadController extends Controller
@@ -13,30 +13,36 @@ class CiudadController extends Controller
     {
         $ciudades = DB::table('ciudades')->
                 where('id_departamento', $idDepartamento)->get();
+
         return response()->json($ciudades, 200);
     }
 
     public function getAllCitiesWithDeparments($idPais)
     {
-      $departamentos = Departamento::where('id_pais_fk', $idPais)->get();
+        $departamentos = Departamento::where('id_pais_fk', $idPais)->get();
 
-      $departamentos->load('ciudades');
+        $departamentos->load('ciudades');
 
-      foreach ($departamentos as $departamento) {
-        unset($departamento['id_pais_fk']);
+        foreach ($departamentos as $departamento) {
+            unset($departamento['id_pais_fk']);
 
-        $departamento['id_departamento'] = $departamento['id_aut_dep'];
-        unset($departamento['id_aut_dep']);
-        foreach ($departamento->ciudades as $ciudad) {
-          $ciudad['id_ciudad'] = $ciudad['id_aut_ciudad'];
-          unset($ciudad['id_aut_ciudad']);
-
-          unset($ciudad['id_departamento']);
+            $departamento['id_departamento'] = $departamento['id_aut_dep'];
+            unset($departamento['id_aut_dep']);
+            foreach ($departamento->ciudades as $ciudad) {
+                $ciudad['id_ciudad'] = $ciudad['id_aut_ciudad'];
+                unset($ciudad['id_aut_ciudad'], $ciudad['id_departamento']);
+            }
         }
-      }
-      // $ciudades = Ciudad::where('');
+        // $ciudades = Ciudad::where('');
 
-      return response()->json($departamentos, 200);
-      // return response()->json($ciudades, 200);
+        return response()->json($departamentos, 200);
+        // return response()->json($ciudades, 200);
+    }
+
+    public function findAll($idDepartamento)
+    {
+        $ciudades = Ciudad::where('id_departamento', $idDepartamento)->get();
+
+        return $this->success(CiudadResource::collection($ciudades));
     }
 }

@@ -61,6 +61,7 @@ Route::put('enviarEstadoSolicitudCarnet/{idEgresado}', 'API\CarnetizacionControl
 // RUTAS DE PARA LOS GRADOS
 
  Route::get('obtenerGradosEgresado/{idEgresado}', 'API\ActualizarGradosController@getGrados');
+ Route::post('actualizarGrado/{idEgresado}','API\ActualizarGradosController@update');
 /*
 *Retorna las preguntas que debe responder un egresedo para su carrera y universidad
 carnetizacionUpdateAdmin
@@ -98,9 +99,12 @@ Route::get('nivelesPrograma', function () {
     return response()->json(NivelEstudio::where('pertenece_u', 1)->get(), 200);
 });
 
-// //Carga la informacion de un egresado para mostrar en Ver Perfil
+//Actualizar Egresados
+// Carga la informacion de un egresado para mostrar en Ver Perfil
 Route::get('verPerfilEgresado/{idEgresado}', 'API\EgresadoController@verPerfil');
 Route::put('actualizarReferido/{idEgresado}', 'API\refPersonalesController@update');
+Route::post('actualizarExperiencia/{idEgresao}','API\ActualizarExperienciaController@update');
+Route::post('agregarExperiencia/{idEgresao}','API\EgresadoController@guardarInfoExperiencia');
 
 Route::post('users/validar/{codigo}', 'UserController@activarCuenta');
 Route::get('users/validar/{codigo}', 'UserController@esUsuarioActivoPorCodigo');

@@ -40,4 +40,8 @@ class Programa extends Model
     {
         return $this->belongsToMany('App\Oferta', 'programas_ofertas', 'id_programa', 'id_oferta');
     }
+
+    public function titulos(){
+        return $this->hasMany('App\Titulo','id_aut_titulo');
+    }
 }

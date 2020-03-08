@@ -256,40 +256,40 @@ class EgresadoController extends Controller
     //Metodo que permite almacenar una lista de experiencias de un egresado
     public function guardarInfoExperiencia(array $experiencias, $idEgresado)
     {
+        return DB::transaction(function () use ( $experiencias, $idEgresado) {
 
-        //Informacion experiencias pasada
+            foreach ($experiencias as $exp) {
+                //Informacion experiencias actual
+                $experiencia = new Experiencia();
+                $experiencia->nombre_empresa = $exp['nombre_empresa'];
+                $experiencia->ciudad()->associate(Ciudad::where('id_aut_ciudad', $exp['id_ciudad'])->first());
 
-        foreach ($experiencias as $exp) {
-            //Informacion experiencias actual
-            $experiencia = new Experiencia();
-            $experiencia->nombre_empresa = $exp['nombre_empresa'];
-            $experiencia->ciudad()->associate(Ciudad::where('id_aut_ciudad', $exp['id_ciudad'])->first());
+                $experiencia->dir_empresa = $exp['dir_empresa'];
+                $experiencia->tel_trabajo = $exp['tel_trabajo'];
+                $experiencia->rango_salario = $exp['rango_salario'];
+                $experiencia->fecha_inicio = $exp['fecha_inicio'];
+                $experiencia->tipo_contrato = $exp['tipo_contrato'];
+                $experiencia->sector = $exp['sector'];
+                $experiencia->trabajo_en_su_area = $exp['trabajo_en_su_area'];
+                $experiencia->categoria = $exp['categoria'];
 
-            $experiencia->dir_empresa = $exp['dir_empresa'];
-            $experiencia->tel_trabajo = $exp['tel_trabajo'];
-            $experiencia->rango_salario = $exp['rango_salario'];
-            $experiencia->fecha_inicio = $exp['fecha_inicio'];
-            //$experiencia->fecha_fin = $exp['fecha_fin'];
-            $experiencia->tipo_contrato = $exp['tipo_contrato'];
-            $experiencia->sector = $exp['sector'];
-            $experiencia->trabajo_en_su_area = $exp['trabajo_en_su_area'];
-            $experiencia->categoria = $exp['categoria'];
+                $cargo = new Cargo();
+                $cargo->nombre = $exp["cargo_nombre"];
+                $cargo->estado = false;
+                $cargo->save();
 
-            $cargo = new Cargo();
-            $cargo->nombre = $exp["cargo_nombre"];
-            $cargo->estado = false;
-            $cargo->save();
-
-            try {
-                $experiencia->cargos()->associate($cargo);
-                $experiencia->egresados()->associate(Egresado::where('id_aut_egresado', $idEgresado)->first());
-                $experiencia->save();
-            } catch (Exception $e) {
-                return response()->json(['error' => $e], 400);
+                try {
+                    $experiencia->cargos()->associate($cargo);
+                    $experiencia->egresados()->associate(Egresado::where('id_aut_egresado', $idEgresado)->first());
+                    $experiencia->save();
+                } catch (Exception $e) {
+                    return response()->json(['error' => $e], 400);
+                }
+                return response()->json($experiencias, 202);
             }
-            return response()->json($experiencias, 202);
-        }
+        });
     }
+
 
     public function getEgresadoEmail($email)
     {
@@ -314,14 +314,7 @@ class EgresadoController extends Controller
 
         return $this->success(new EgresadoAdminResource($egresado));
     }
-    //Metodo que permite actualzar la información del egresado por parte de un egresado
-    public function actualizaEgresado(Request $request, $idEgresado){
-       /* $egresado = Egresado::find($idEgresado);
-        Información personal→ 
-        Experiencia laboral
-        Referencia personal
-        Grado*/
-    }
+
     //Metodo que permite actualizar informacion de un egresado por parte del administrador
     public function update(Request $request, $idEgresado)
     {
@@ -431,7 +424,7 @@ class EgresadoController extends Controller
                 'id_programa' => $gradoSimultaneo['id_aut_programa'],
                 'mension_honor' => $gradoSimultaneo['mencion_honor'],
                 'titulo_especial' => $gradoSimultaneo['titulo_especial'],
-                'fecha_grado' => date('m/d/Y', strtotime($gradoPendiente['fecha_grado'])),
+                'fecha_grado' => date('Y/m/d', strtotime($gradoPendiente['fecha_grado'])),
                 'anio_graduacion' => $gradoPendiente['anio_graduacion'],
                 'estado' => "PENDIENTE"
             );

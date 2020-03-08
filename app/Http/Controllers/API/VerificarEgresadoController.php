@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Egresado;
 use App\Exceptions\FormatoExcelException;
 use App\Grado;
+use App\Helpers\VerificarEgresado\FilasInconsistentesValidator;
 use App\Http\Controllers\Controller;
 use App\Imports\EgresadosImport;
 use App\Programa;
@@ -103,7 +104,7 @@ class VerificarEgresadoController extends Controller
             // Recorrer todas las filas de los datos del excel.
             foreach ($excelData as $row) {
                 // Verifica si faltan campos en la fila, de se así está fila queda inconsistente.
-                if ($this->esFilaInconsistente($row)) {
+                if (FilasInconsistentesValidator::validarFila($row)) {
                     array_push($inconsistentes, $row);
 
                     continue;

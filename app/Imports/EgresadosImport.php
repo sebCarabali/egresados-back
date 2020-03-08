@@ -3,7 +3,6 @@
 namespace App\Imports;
 
 use App\Exceptions\FormatoExcelException;
-use Exception;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\{ToCollection};
 
@@ -37,7 +36,7 @@ class EgresadosImport implements ToCollection
                     'titulo' => mb_strtoupper($row[6]),
                     'mencion' => mb_strtoupper($row[7]),
                     'programa' => mb_strtoupper($row[8]),
-                    'anioGrado' => explode('/', $fechaGrado)[2],
+                    'anioGrado' => '' == $fechaGrado ? '' : explode('/', $fechaGrado)[2],
                 ];
                 array_push($this->egresados, $egresado);
             } elseif (!FormatoArchivoValidator::validarCabecera($row)) {
@@ -83,7 +82,7 @@ class EgresadosImport implements ToCollection
             return date('m/d/Y', strtotime($datestr));
         }
 
-        throw new Exception('No es posible transformar la fecha de grado: '.$fecha);
+        return '';
     }
 
     private function _obtenerIdentificacion($identificacion)

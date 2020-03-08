@@ -26,7 +26,7 @@ class GuardarInformacionBasicaRequest extends FormRequest
         return [
             'correo' => 'required|email|unique:egresados|unique:users,email',
             'correo_alternativo' => 'required|email',
-            'identificacion' => 'required|unique:egresados',
+            'identificacion' => 'required',
             'nombres' => 'required',
             'grupo_etnico' => 'required',
             'apellidos' => 'required',

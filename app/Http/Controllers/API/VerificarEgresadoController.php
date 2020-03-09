@@ -171,7 +171,7 @@ class VerificarEgresadoController extends Controller
     {
         if (self::ACTIVO_LOGUEADO === $egresado->estado) {
             if ($this->esGradoDiferente($egresado, $row['programa'], self::PENDIENTE)) {
-                $this->registrarNuevoGrado($egresado, $row);
+                $this->registrarNuevoGrado($egresado, $row, self::ACTIVO);
                 array_push($activosLogueados, $row);
             } else {
                 $grado = $this->gradoRepository->obtenerGradoPorProgramaYEgresado($row['programa'], $egresado->id_aut_egresado);
@@ -188,7 +188,7 @@ class VerificarEgresadoController extends Controller
     {
         if (self::ACTIVO_NO_LOGUEADO === $egresado->estado
                 && $this->esGradoDiferente($egresado, $row['programa'], self::ACTIVO)) {
-            $this->registrarNuevoGrado($egresado, $row);
+            $this->registrarNuevoGrado($egresado, $row, self::ACTIVO);
             array_push($activosNoLogueados, $row);
         }
 
@@ -221,7 +221,7 @@ class VerificarEgresadoController extends Controller
                 empty($row['titulo']);
     }
 
-    private function registrarNuevoGrado($egresado, $row)
+    private function registrarNuevoGrado($egresado, $row, $estado)
     {
         $programa = Programa::where(DB::raw('upper(nombre)'), $row['programa'])->first();
         if (!$programa) {
@@ -233,7 +233,7 @@ class VerificarEgresadoController extends Controller
             'tipo_grado' => $this->obtenerTipoGrado($row),
             'mencion_honor' => $row['mencion'],
             'titulo_especial' => $row['titulo'],
-            'estado' => self::ACTIVO,
+            'estado' => $estado,
         ]);
 
         return $egresado;
@@ -260,7 +260,7 @@ class VerificarEgresadoController extends Controller
             'estado' => self::ACTIVO_NO_LOGUEADO,
         ]);
 
-        return $this->registrarNuevoGrado($egresado, $row);
+        //return $this->registrarNuevoGrado($egresado, $row, self::PENDIENTE);
     }
 
     private function esGradoDiferente(Egresado $egresado, $programaExcel, $estado)

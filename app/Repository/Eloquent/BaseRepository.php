@@ -27,7 +27,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
         $page = $request->get('page');
         $pageSize = $request->get('pageSize');
         $ret = [];
-
+        $tot = $this->model::count();
         if (null != $searchClass) {
             $ret = $searchClass::apply($request);
         } else {
@@ -37,7 +37,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
 
         return new LengthAwarePaginator(
             $ret,
-            $total = count($ret),
+            $total = $tot,
             $pageSize,
             $page
         );

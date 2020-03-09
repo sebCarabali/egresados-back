@@ -21,13 +21,13 @@ class CarnetizacionController extends Controller
 
     // Actualiza el Administrador la fecha de respuesta y el estado a "Solicitado" a "respondido" de carnet por egresados(ADMINISTRADOR)
     public function updateAdmin($idSolicitud,Request $request){
-         //return response()->json($request,400);
+         
         $fecha= Carbon::now();
         $fecha=$fecha->format('yy/m/d');
-        //return response()->json($fecha,400);
+        
         $solicitud = Carnetizacion::where("estado_solicitud","PENDIENTE")
         ->where("id_aut_carnetizacion",$idSolicitud)->update(['estado_solicitud'=>$request->get("estado"),'fecha_respuesta'=>$fecha]);
-        //return response()->json($solicitud,200);
+        
     }
 
 
@@ -80,7 +80,7 @@ class CarnetizacionController extends Controller
 
             $fecha= Carbon::now();
             $fecha=$fecha->format('yy/m/d');
-            //return response()->json($fecha,400);
+        
             $egresado = Egresado::find($idEgresado);
             $nuevaSolicitudCarnet = new Carnetizacion();
             $nuevaSolicitudCarnet->estado_solicitud="PENDIENTE";

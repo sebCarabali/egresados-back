@@ -14,8 +14,6 @@ class Programa extends Model
     public function egresados()
     {
         return $this->belognsToMany('App\Egresado', 'grados', 'id_programa', 'id_estudiante');
-        /*->withPivot('tipo', 'mension_honor', 'titulo_especial', 'comentarios', 'fecha_graduacion',
-                    'docente_influencia');*/
     }
 
     public function sede()
@@ -41,5 +39,9 @@ class Programa extends Model
     public function ofertas()
     {
         return $this->belongsToMany('App\Oferta', 'programas_ofertas', 'id_programa', 'id_oferta');
+    }
+
+    public function titulos(){
+        return $this->hasMany('App\Titulo','id_aut_titulo');
     }
 }

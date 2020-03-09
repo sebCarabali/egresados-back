@@ -265,7 +265,7 @@ class VerificarEgresadoController extends Controller
 
     private function esGradoDiferente(Egresado $egresado, $programaExcel, $estado)
     {
-        $programas = Grado::where('estado', $estado)->where('id_egresado', $egresado->id_aut_egresado)->pluck('id_programa')->toArray();
+        $programas = Grado::where('id_egresado', $egresado->id_aut_egresado)->pluck('id_programa')->toArray();
         $yaGraduadoDePrograma = Programa::where('nombre', $programaExcel)->whereIn('id_aut_programa', $programas)->exists();
 
         return !$yaGraduadoDePrograma;

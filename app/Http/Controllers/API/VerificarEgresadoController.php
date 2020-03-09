@@ -9,6 +9,7 @@ use App\Helpers\VerificarEgresado\FilasInconsistentesValidator;
 use App\Http\Controllers\Controller;
 use App\Imports\EgresadosImport;
 use App\Programa;
+use App\Repository\GradoRepositoryInterface;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -26,6 +27,13 @@ class VerificarEgresadoController extends Controller
     // Para grados
     const ACTIVO = 'ACTIVO';
     const PENDIENTE = 'PENDIENTE';
+
+    private $gradoRepository;
+
+    public function __construct(GradoRepositoryInterface $gradoRepository)
+    {
+        $this->gradoRepository = $gradoRepository;
+    }
 
     /**
      * Usada para verificar los egresados, que se encuentran registrados
@@ -131,9 +139,23 @@ class VerificarEgresadoController extends Controller
     private function clasificarEgresado($egresado, $row, $activosLogueados, $activosNoLogueados)
     {
         if ($egresado) { // El egresado ya se encuentra registrad en la base de datos.
-            $activosLogueados = $this->esEgresadoPendiente($egresado, $row, $activosLogueados);
+            switch ($egresado->estado) {
+                case self::PENDIENTE:
+                    $activosLogueados = $this->esEgresadoPendiente($egresado, $row, $activosLogueados);
+
+                break;
+                case self::ACTIVO_NO_LOGUEADO:
+                    $activosNoLogueados = $this->esActivoNoLogueadoConGradoNuevo($egresado, $row, $activosNoLogueados);
+
+                break;
+                case self::ACTIVO_LOGUEADO:
+                    $activosLogueados = $this->esActivoLogueadoConGradoNuevo($egresado, $row, $activosLogueados);
+
+                break;
+            }
+            /* $activosLogueados = $this->esEgresadoPendiente($egresado, $row, $activosLogueados);
             $activosNoLogueados = $this->esActivoNoLogueadoConGradoNuevo($egresado, $row, $activosNoLogueados);
-            $activosLogueados = $this->esActivoLogueadoConGradoNuevo($egresado, $row, $activosLogueados);
+            $activosLogueados = $this->esActivoLogueadoConGradoNuevo($egresado, $row, $activosLogueados); */
         } else {
             $this->registrarActivoNoLogueado($row);
             array_push($activosNoLogueados, $row);
@@ -147,10 +169,16 @@ class VerificarEgresadoController extends Controller
 
     private function esActivoLogueadoConGradoNuevo($egresado, $row, $activosLogueados)
     {
-        if (self::ACTIVO_LOGUEADO === $egresado->estado
-                && $this->esGradoDiferente($egresado, $row['programa'])) {
-            $this->registrarNuevoGrado($egresado, $row);
-            array_push($activosLogueados, $row);
+        if (self::ACTIVO_LOGUEADO === $egresado->estado) {
+            if ($this->esGradoDiferente($egresado, $row['programa'], self::PENDIENTE)) {
+                $this->registrarNuevoGrado($egresado, $row);
+                array_push($activosLogueados, $row);
+            } else {
+                $grado = $this->gradoRepository->obtenerGradoPorProgramaYEgresado($row['programa'], $egresado->id_aut_egresado);
+                $grado->estado = self::ACTIVO;
+                $grado->save();
+                array_push($activosLogueados, $row);
+            }
         }
 
         return $activosLogueados;
@@ -159,7 +187,7 @@ class VerificarEgresadoController extends Controller
     private function esActivoNoLogueadoConGradoNuevo($egresado, $row, $activosNoLogueados)
     {
         if (self::ACTIVO_NO_LOGUEADO === $egresado->estado
-                && $this->esGradoDiferente($egresado, $row['programa'])) {
+                && $this->esGradoDiferente($egresado, $row['programa'], self::ACTIVO)) {
             $this->registrarNuevoGrado($egresado, $row);
             array_push($activosNoLogueados, $row);
         }
@@ -235,9 +263,9 @@ class VerificarEgresadoController extends Controller
         return $this->registrarNuevoGrado($egresado, $row);
     }
 
-    private function esGradoDiferente(Egresado $egresado, $programaExcel)
+    private function esGradoDiferente(Egresado $egresado, $programaExcel, $estado)
     {
-        $programas = Grado::where('estado', self::ACTIVO)->where('id_egresado', $egresado->id_aut_egresado)->pluck('id_programa')->toArray();
+        $programas = Grado::where('estado', $estado)->where('id_egresado', $egresado->id_aut_egresado)->pluck('id_programa')->toArray();
         $yaGraduadoDePrograma = Programa::where('nombre', $programaExcel)->whereIn('id_aut_programa', $programas)->exists();
 
         return !$yaGraduadoDePrograma;

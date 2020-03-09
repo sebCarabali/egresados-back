@@ -50,7 +50,6 @@ class EgresadoController extends Controller
         // verificar si ya hay datos registrados.
         $hasDataRegistered = $this->_tieneDatosRegistrados($request->get('identificacion'));
         if ($hasDataRegistered) {
-            return response()->json('Aquí en la prueba');
             // cambiar estado egresado y completar información básica
             $egresado = Egresado::where('identificacion', $request->get('identificacion'))->first();
 

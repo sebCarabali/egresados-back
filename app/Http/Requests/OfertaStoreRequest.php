@@ -59,7 +59,7 @@ class OfertaStoreRequest extends FormRequest
             'requisitos.perfil' => 'required|string|in:'.implode(',', $perfiles),
             
             'requisitos.experienciaLaboral' => 'required|string|in:'.implode(",",$experiencia),
-            'requisitos.anios' => 'required_unless:requisitos.experienciaLaboral,'.'Sin experiencia'.'|integer|min:1',
+            'requisitos.anios' => 'required_unless:requisitos.experienciaLaboral,'.'Sin experiencia'.'|integer|min:0',
             'requisitos.licenciaConduccion' => 'nullable|string|in:'.implode(",",$tipo_licencia),
             'requisitos.idDiscapacidades' => 'nullable|array',
             'requisitos.idDiscapacidades.*' => 'integer|exists:discapacidades,id_aut_discapacidades',

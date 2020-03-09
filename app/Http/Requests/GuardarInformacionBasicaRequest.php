@@ -25,7 +25,7 @@ class GuardarInformacionBasicaRequest extends FormRequest
     {
         return [
             'correo' => 'required|email|unique:egresados|unique:users,email',
-            'correo_alternativo' => 'required|email',
+            'correo_alternativo' => 'email',
             'identificacion' => 'required',
             'nombres' => 'required',
             'grupo_etnico' => 'required',
@@ -38,7 +38,7 @@ class GuardarInformacionBasicaRequest extends FormRequest
             'id_lugar_residencia' => 'required',
             'discapacidad' => 'required',
             'estado_civil' => 'required',
-            'id_nivel_educativo' => 'required'
+            'id_nivel_educativo' => 'required',
         ];
     }
 
@@ -64,7 +64,7 @@ class GuardarInformacionBasicaRequest extends FormRequest
             'estado_civil.required' => 'Debe proporcionar su estado civil.',
             'id_nivel_educativo.required' => 'Debe seleccionar su nivel de estudio.',
             'direccion.required' => 'Debe proporcionar una dirección de residencia.',
-            'id_ciudad_residencia' => 'Debe proporcionar la ciudad en la cual reside.'
+            'id_ciudad_residencia' => 'Debe proporcionar la ciudad en la cual reside.',
         ];
     }
 }

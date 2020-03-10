@@ -19,7 +19,7 @@
                         </tr>
                         <tr>
                               <th>Estado</th>
-                              <td>{{$egresado->estado}}</td>
+                              <td>{{$estado}}</td>
                         </tr>
                         <tr>
                               <td colspan="2" style="text-align:center">

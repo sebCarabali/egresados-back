@@ -40,6 +40,7 @@ class EgresadoAdminResource extends Resource
             'trabajosActuales' => $this->getTrabajoActual(),
             'telefonoFijo' => $this->telefono_fijo,
             'solicitudes' => $this->getSolicitudesCarnetizacion(),
+            'lugarExpedicion' => new CiudadResource($this->lugarExpedicion()->first()),
             'lugarNacimiento' => new CiudadResource($this->ciudadNacimiento()->first()),
             'lugarResidencia' => new LocalizacionResource($this->lugarResidencia()->first()),
             'discapacidades' => $this->getDiscapacidades(),

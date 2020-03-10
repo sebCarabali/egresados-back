@@ -18,6 +18,7 @@ use App\Programa;
 use App\Referido;
 use App\Repository\EgresadoRepositoryInterface;
 use App\Role as Rol;
+use App\Titulo;
 use App\User;
 use Excel;
 use Exception;
@@ -67,8 +68,7 @@ class EgresadoController extends Controller
     //Metodo que permite almacenar una lista de experiencias de un egresado
     public function guardarInfoExperiencia(array $experiencias, $idEgresado)
     {
-        return DB::transaction(function () use ( $experiencias, $idEgresado) {
-
+        return DB::transaction(function () use ($experiencias, $idEgresado) {
             foreach ($experiencias as $exp) {
                 //Informacion experiencias actual
                 $experiencia = new Experiencia();
@@ -85,7 +85,7 @@ class EgresadoController extends Controller
                 $experiencia->categoria = $exp['categoria'];
 
                 $cargo = new Cargo();
-                $cargo->nombre = $exp["cargo_nombre"];
+                $cargo->nombre = $exp['cargo_nombre'];
                 $cargo->estado = false;
                 $cargo->save();
 
@@ -96,11 +96,11 @@ class EgresadoController extends Controller
                 } catch (Exception $e) {
                     return response()->json(['error' => $e], 400);
                 }
+
                 return response()->json($experiencias, 202);
             }
         });
     }
-
 
     public function getEgresadoEmail($email)
     {
@@ -411,7 +411,7 @@ class EgresadoController extends Controller
         $grado = [
             'id_programa' => $request->get('id_programa'),
             'mension_honor' => $request->get('mension_honor'),
-            'titulo_especial' => $request->get('titulo_especial'),
+            'titulo_especial' => $request->has('titulo_especial') ? Titulo::where('id_aut_titulo', intval($request->get('titulo_especial')))->pluck('nombre')->first() : '',
             'fecha_grado' => date('m/d/Y', strtotime($request->get('fecha_grado'))),
             'anio_graduacion' => $request->get('anio_graduacion'),
         ];
@@ -445,7 +445,7 @@ class EgresadoController extends Controller
         if ($grado) { // ya se ha registrado el grado del egresado
             // Actualizar info grado
             $grado->mencion_honor = '' == $request->get('mencion_honor') ? 'No' : $request->get('mencion_honor');
-            $grado->titulo_especial = $request->get('titulo_especial');
+            $grado->titulo_especial = $request->has('titulo_especial') ? Titulo::where('id_aut_titulo', intval($request->get('titulo_especial')))->pluck('nombre')->first() : '';
             $grado->fecha_graduacion = date('m/d/Y', strtotime($request->get('fecha_grado')));
             $grado->anio_graduacion = $request->get('anio_graduacion');
             $grado->save();
@@ -454,7 +454,7 @@ class EgresadoController extends Controller
             $grado = [
                 'id_programa' => $request->get('id_programa'),
                 'mencion_honor' => $request->get('mension_honor'),
-                'titulo_especial' => $request->get('titulo_especial'),
+                'titulo_especial' => $request->has('titulo_especial') ? Titulo::where('id_aut_titulo', intval($request->get('titulo_especial')))->pluck('nombre')->first() : '',
                 'fecha_grado' => date('m/d/Y', strtotime($request->get('fecha_grado'))),
                 'anio_graduacion' => $request->get('anio_graduacion'),
             ];

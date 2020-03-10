@@ -28,7 +28,6 @@ class StoreApoyoRequest extends FormRequest
             'apellidos' => 'required',
             'nombreRol' => 'required',
             'correo' => 'email|required|unique:apoyos|unique:users,email',
-            'correoSecundario' => 'email|required'
         ];
     }
 
@@ -42,7 +41,7 @@ class StoreApoyoRequest extends FormRequest
             'correo.required' => 'El correo es requerido',
             'correo.unique' => 'Ya se encuentra registrado un usuario con el correo',
             'correoSecundario.email' => 'El correo secundario es requerido',
-            'correoSecundario.required' => 'El correo secundario es requerido'
+            'correoSecundario.required' => 'El correo secundario es requerido',
         ];
     }
 }

@@ -40,7 +40,7 @@ class EgresadosImport implements ToCollection
                 ];
                 array_push($this->egresados, $egresado);
             } elseif (!FormatoArchivoValidator::validarCabecera($row)) {
-                throw new FormatoExcelException('El archivo no cumple con el formato establecido');
+                throw new FormatoExcelException();
             }
             $this->primeraLinea = false;
         }

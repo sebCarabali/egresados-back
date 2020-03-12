@@ -44,6 +44,7 @@ class ApoyoController extends Controller
     public function save(StoreApoyoRequest $request)
     {
         $data = $request->only('nombres', 'nombreRol', 'apellidos', 'correo', 'correoSecundario', 'servicios');
+
         DB::beginTransaction();
 
         try {
@@ -52,7 +53,7 @@ class ApoyoController extends Controller
                 'apellidos' => $data['apellidos'],
                 'nombre_rol' => $request->get('nombreRol'),
                 'correo' => $data['correo'],
-                'correo_secundario' => $data['correoSecundario'],
+                'correo_secundario' => $request->has('correoSecundario') ? $data['correoSecundario'] : '',
             ]);
             $crearUsuarioHelper = new CrearUsuario();
             $usuario = $crearUsuarioHelper->crearUsuarioApoyo($apoyo);

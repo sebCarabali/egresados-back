@@ -9,6 +9,7 @@
 namespace App\Http\Resources;
 
 use App\Carnetizacion;
+use App\Discapacidad;
 use Illuminate\Http\Resources\Json\Resource;
 use Illuminate\Support\Facades\DB;
 
@@ -31,6 +32,7 @@ class EgresadoAdminResource extends Resource
             'genero' => $this->genero,
             'correo' => $this->correo,
             'correoAlternativo' => $this->correo_alternativo,
+            'estado_completar' => $this->estado_completar,
             'estadoCivil' => $this->estado_civil,
             'celular' => $this->celular,
             'grados' => GradosResource::collection(\App\Grado::where('id_egresado', $this->id_aut_egresado)->get()),
@@ -38,20 +40,39 @@ class EgresadoAdminResource extends Resource
             'trabajosActuales' => $this->getTrabajoActual(),
             'telefonoFijo' => $this->telefono_fijo,
             'solicitudes' => $this->getSolicitudesCarnetizacion(),
+            'lugarExpedicion' => new CiudadResource($this->lugarExpedicion()->first()),
             'lugarNacimiento' => new CiudadResource($this->ciudadNacimiento()->first()),
             'lugarResidencia' => new LocalizacionResource($this->lugarResidencia()->first()),
+            'discapacidades' => $this->getDiscapacidades(),
         ];
     }
 
     private function getReferidos()
     {
-        return ReferidoResource::collection(\App\Referido::whereIn('id_aut_referido', DB::table('referidos_egresados')->where('id_egresados', $this->id_aut_egresado)->pluck('id_referidos')->toArray())->get());
+        return ReferidoResource::
+        collection(\App\Referido::whereIn(
+            'id_aut_referido',
+            DB::table('referidos_egresados')->where(
+                'id_egresados',
+                $this->id_aut_egresado
+            )->pluck('id_referidos')->toArray()
+        )->get());
     }
 
     private function getTrabajoActual()
     {
         return ExperienciaResource::collection(\App\Experiencia::where('id_egresado', $this->id_aut_egresado)
             ->whereNull('fecha_fin')->get());
+    }
+
+    private function getDiscapacidades()
+    {
+        return DiscapacidadResource::collection(Discapacidad::whereIn(
+            'id_aut_discapacidades',
+            DB::table('egresados_discapacidades')
+                ->where('id_egresado', $this->id_aut_egresado)
+                ->pluck('id_discapacidad')->toArray()
+        )->get());
     }
 
     private function getSolicitudesCarnetizacion()

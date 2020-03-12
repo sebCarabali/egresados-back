@@ -15,16 +15,11 @@ class refPersonalesController extends Controller
     //
     public function update(Request $request,$idEgresado){
         $referidos = $request->get('referidos');
-        //$eliminarRferidos = $request->get('eliminarReferidos');
-
         
         foreach($referidos as $referido){
             if($referido['tipoActualizacion']=='1'){ //Condición que permite identificar la actualización de un referido.
                 $referidoAntiguo = Referido::find($referido['id_aut_referido']);
-                /*$egresado = NivelEstudio::find($referido['id_nivel_educativo']);
-                $programa = Programa::find($referido['id_aut_programa']);*/
 
-                //return response()->json($referidoAntiguo->id_nivel_educativo,400);
                 $referidoAntiguo->niveles_estudio()->dissociate();
                 $referidoAntiguo->programa()->dissociate();
                 

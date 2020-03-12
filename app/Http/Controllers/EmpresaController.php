@@ -459,4 +459,25 @@ class EmpresaController extends Controller
             return response()->json(['error' => $e], 400);
         }
     }
+
+    public function evalVencimientoEmpresa()
+    {
+        $code = 400;
+        $empresas = Empresa::all();
+        $auxFecha = Carbon::now('-5:00');
+        $auxEmpresasCambiadas = [];
+        DB::beginTransaction();
+        foreach ($empresas as $empresa){
+            if (!empty($empresa->fecha_vencimiento) && !empty($empresa->fecha_activacion) && $empresa->estado != 'Inactivo'){
+                if ($auxFecha->gt((Carbon::parse($empresa->fecha_vencimiento))->addDay())) {
+                    $empresa->update(['estado' => 'Inactivo']);  
+                    array_push($auxEmpresasCambiadas, $empresa);  
+                }
+            }
+        }
+        DB::commit();
+        $code = 200;
+
+        return response()->json($auxEmpresasCambiadas, $code);
+    }
 }

@@ -227,6 +227,11 @@ Route::get('salarios/{moneda}', 'OfertaController@getSalarioPorModena');
 // Route::get('salarios', 'OfertaController@getAllSalario');
 Route::get('areasConocimiento', 'OfertaController@getAllAreas');
 
+
+/*Vencimiento ToDo en una tarea programada*/
+Route::get('verificar-vencimiento-oferta', 'OfertaController@evalVencimientoOferta');
+Route::get('verificar-vencimiento-empresa', 'EmpresaController@evalVencimientoEmpresa');
+
 Route::post('ofertas/store', 'OfertaController@storeOferta');
 Route::post('login', 'AuthController@login');
 Route::get('verificar-empresa-activa/{email}', 'EmpresaController@verificarEmpresaActiva');

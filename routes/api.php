@@ -230,9 +230,5 @@ Route::get('encriptar/{pass}', function ($pass) {
     return Hash::make($pass);
 });
 Route::group(['middleware' => ['jwt.verify']], function () {
-<<<<<<< HEAD
-    /*AÑADE AQUI LAS RUTAS QUE QUIERAS PROTEGER CON JWT*/ });
-=======
     // AÑADE AQUI LAS RUTAS QUE QUIERAS PROTEGER CON JWT
 });
->>>>>>> e30fec700d6337af8af32a31e20db66145e8b6f4

@@ -26,8 +26,9 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')
         //          ->hourly();
-        $schedule->command('vencimiento:ofertas')->daily();
-        //$schedule->command('vencimiento:ofertas')->everyMinute();
+        //$schedule->command('vencimiento:ofertas')->daily();
+        $schedule->command('vencimiento:ofertas', ['--no-ansi'])->everyMinute()
+                                                                ->appendOutputTo(storage_path('logs/schedule.log'));
     }
 
     /**

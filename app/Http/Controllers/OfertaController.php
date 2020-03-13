@@ -770,7 +770,11 @@ class OfertaController extends Controller
       $auxOfertasCambiadas = [];
       DB::beginTransaction();
       foreach ($ofertas as $oferta){
-          if (!empty($oferta->fecha_cierre) && !empty($oferta->fecha_publicacion) && $oferta->estado_proceso != 'Expirada'){
+          if (!empty($oferta->fecha_cierre) && !empty($oferta->fecha_publicacion) && 
+              $oferta->estado_proceso != 'Finalizada con contratación' && 
+              $oferta->estado_proceso != 'Finalizada sin contratación' &&
+              $oferta->estado_proceso != 'Expirada' &&
+              $oferta->estado_proceso != 'Pendiente'){
               if ($auxFecha->gt((Carbon::parse($oferta->fecha_cierre))->addDay())) {
                 $oferta->update(['estado_proceso' => 'Expirada']);  
                 array_push($auxOfertasCambiadas, $oferta);  

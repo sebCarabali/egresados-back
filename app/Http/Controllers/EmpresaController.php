@@ -237,12 +237,18 @@ class EmpresaController extends Controller
                         'estado' => $request['estado'],
                         'limite_publicaciones' => $request['limite_publicaciones'],
                         'fecha_activacion' => Carbon::now('-5:00'),
+                        'fecha_vencimiento' => Carbon::now('-5:00')->addYear(),
                     ]);
                     $data = $empresa;
                     $code = 200;
                 } else if ($request['estado'] == 'Pendiente' || $request['estado'] == 'Inactivo') {
                     // Actualizar el registro en concreto
-                    $empresa->update(['estado' => $request['estado']]);
+                    $empresa->update([
+                        'estado' => $request['estado'],
+                        'limite_publicaciones' => 0,
+                        'fecha_activacion' => null,
+                        'fecha_vencimiento' => null
+                    ]);
                     $data = $empresa;
                     $code = 200;
                 }
@@ -470,7 +476,10 @@ class EmpresaController extends Controller
         foreach ($empresas as $empresa){
             if (!empty($empresa->fecha_vencimiento) && !empty($empresa->fecha_activacion) && $empresa->estado != 'Inactivo'){
                 if ($auxFecha->gt((Carbon::parse($empresa->fecha_vencimiento))->addDay())) {
-                    $empresa->update(['estado' => 'Inactivo']);  
+                    $empresa->update([
+                        'estado' => 'Inactivo',
+                        'limite_publicaciones' => 0,
+                   ]);
                     array_push($auxEmpresasCambiadas, $empresa);  
                 }
             }

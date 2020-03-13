@@ -146,6 +146,7 @@ Route::get('admin/grado/{idGrado}', 'GradosController@getById');
 Route::get('admin/observaciones', 'API\TipoObservacionController@getObservaciones');
 
 Route::get('admin/servicios/{email}', 'ServicioController@getServiciosApoyo');
+Route::put('apoyos/activaremail/{codigo}', 'ApoyoController@activarNuevoEmailBy');
 // --------------------------------------------------------------------------------
 // Registro de una empresa
 Route::post('empresas/store', 'EmpresaController@store');

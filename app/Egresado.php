@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Model;
 
 class Egresado extends Model
@@ -11,6 +12,13 @@ class Egresado extends Model
     protected $primaryKey = 'id_aut_egresado';
     //protected $fillable = ['nombres'];
     protected $guarded = ['id_aut_egresado'];
+
+    use Notifiable;
+  
+    public function routeNotificationForMail()
+    {
+      return $this->correo;
+    }
 
     public function ciudadNacimiento()
     {
@@ -66,7 +74,7 @@ class Egresado extends Model
 
   public function carnetizaciones()
   {
-    return $this->belongsToMany('App\Carnetizacion', 'solicita', 'id_egresados', 'id_carnetizacion');
+    return $this->hasMany('App\Carnetizacion','id_egresado');
   }
 
 }

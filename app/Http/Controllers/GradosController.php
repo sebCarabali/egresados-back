@@ -8,24 +8,25 @@
 
 namespace App\Http\Controllers;
 
-use \App\Grado;
-use Illuminate\Support\Facades\DB;
-use \App\Http\Resources\GradosResource;
+use App\Grado;
+use App\Http\Resources\GradosResource;
+
 /**
- * Description of GradosController
+ * Description of GradosController.
  *
  * @author sebastian
  */
-class GradosController extends Controller {
-    
-    public function getByIdEgresado($idEgresado) {
-        $grados = Grado::where('id_estudiante', $idEgresado)->get();
+class GradosController extends Controller
+{
+    public function getByIdEgresado($idEgresado)
+    {
+        $grados = Grado::where('id_egresado', $idEgresado)->get();
+
         return $this->success(GradosResource::collection($grados));
     }
-    
+
     public function getById($idGrado)
     {
         return $this->success(new GradosResource(Grado::where('id_aut_grado', $idGrado)->first()));
     }
-    
 }

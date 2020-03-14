@@ -24,8 +24,8 @@ class GuardarInformacionBasicaRequest extends FormRequest
     public function rules()
     {
         return [
-            'correo' => 'required|email|unique:egresados',
-            'correo_alternativo' => 'required|email',
+            'correo' => 'required|email|unique:egresados|unique:users,email',
+            //'correo_alternativo' => 'email',
             'identificacion' => 'required',
             'nombres' => 'required',
             'grupo_etnico' => 'required',
@@ -38,7 +38,7 @@ class GuardarInformacionBasicaRequest extends FormRequest
             'id_lugar_residencia' => 'required',
             'discapacidad' => 'required',
             'estado_civil' => 'required',
-            'id_nivel_educativo' => 'required'
+            'id_nivel_educativo' => 'required',
         ];
     }
 
@@ -49,7 +49,7 @@ class GuardarInformacionBasicaRequest extends FormRequest
             'correo.email' => 'Debe proporcionar un correo electrónico válido.',
             'identificacion.required' => 'Debe proporcionar su número de identificación',
             'identificacion.unique' => 'El número de identificación proporcionado ya se encuentra registrado.',
-            'correo.unique' => 'Ya existe registrado este correo electrónico.',
+            'correo.unique' => 'Ya existe un registro con este correo electrónico.',
             'correo_alternativo.required' => 'Debe proporcionar un correo electrónico alternativo.',
             'correo_alternativo.email' => 'Debe proporcionar un correo electrónico alternativo válido.',
             'nombres.required' => 'Debe proporcionar sus nombres.',
@@ -60,11 +60,11 @@ class GuardarInformacionBasicaRequest extends FormRequest
             'fecha_nacimiento.date' => 'Debe seleccionar una fecha válida.',
             'id_ciudad_nacimiento.required' => 'Debe porporcionar una ciudad de nacimiento.',
             'grupo_etnico.required' => 'Debe proporcionar un grupo etnico.',
-            'discapacidad.required' => 'Debe indicar si tiene una discapacidad.',
+            'discapacidad.required' => 'Debe indicar si tiene una discapacidad o ninguna.',
             'estado_civil.required' => 'Debe proporcionar su estado civil.',
             'id_nivel_educativo.required' => 'Debe seleccionar su nivel de estudio.',
             'direccion.required' => 'Debe proporcionar una dirección de residencia.',
-            'id_ciudad_residencia' => 'Debe proporcionar la ciudad en la cual reside.'
+            'id_ciudad_residencia' => 'Debe proporcionar la ciudad en la cual reside.',
         ];
     }
 }

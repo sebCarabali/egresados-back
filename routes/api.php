@@ -147,6 +147,8 @@ Route::get('admin/observaciones', 'API\TipoObservacionController@getObservacione
 
 Route::get('admin/servicios/{email}', 'ServicioController@getServiciosApoyo');
 Route::put('apoyos/activaremail/{codigo}', 'ApoyoController@activarNuevoEmailBy');
+Route::get('apoyos/enProceso/{id}', 'ApoyoController@estaEnProcesoDeActivacion');
+
 // --------------------------------------------------------------------------------
 // Registro de una empresa
 Route::post('empresas/store', 'EmpresaController@store');
@@ -229,8 +231,7 @@ Route::get('salarios/{moneda}', 'OfertaController@getSalarioPorModena');
 // Route::get('salarios', 'OfertaController@getAllSalario');
 Route::get('areasConocimiento', 'OfertaController@getAllAreas');
 
-
-/*Vencimiento ToDo en una tarea programada*/
+// Vencimiento ToDo en una tarea programada
 Route::get('verificar-vencimiento-oferta', 'OfertaController@evalVencimientoOferta');
 Route::get('verificar-vencimiento-empresa', 'EmpresaController@evalVencimientoEmpresa');
 

@@ -96,9 +96,10 @@ class EgresadoController extends Controller
                 } catch (Exception $e) {
                     return response()->json(['error' => $e], 400);
                 }
-                return response()->json($experiencias, 200);
+                
             }
         });
+        return response()->json($experiencias, 200);
     }
 
     public function getEgresadoEmail($email)
@@ -189,7 +190,7 @@ class EgresadoController extends Controller
                 'id_programa' => $gradoSimultaneo['id_aut_programa'],
                 'mension_honor' => $gradoSimultaneo['mencion_honor'],
                 'titulo_especial' => $gradoSimultaneo['titulo_especial'],
-                'fecha_grado' => date('d/m/Y', strtotime($gradoPendiente['fecha_grado'])),
+                'fecha_grado' => date('m/d/Y', strtotime($gradoPendiente['fecha_graduacion'])),
                 'anio_graduacion' => $gradoPendiente['anio_graduacion'],
                 'estado' => 'PENDIENTE',
             ];

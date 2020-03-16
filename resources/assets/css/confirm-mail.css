@@ -1,0 +1,40 @@
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1rem;
+  background-color: #fff;
+}
+
+.mail-wrapper {
+  box-sizing: border-box;
+  margin: 0 auto;
+  width: 70%;
+  text-align: center;
+  background-color: #fff;
+}
+
+.mail-wrapper .mail-description {
+  padding: 10px;
+  font-size: 0.9rem;
+}
+
+.mail-wrapper .mail-title {
+  padding: 10px;
+  color: #990000;
+}
+
+.mail-wrapper .mail-welcome-message {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding: 10px;
+}
+
+.mail-wrapper .mail-welcome-message img {
+  width: 100%;
+}
+
+.mail-wrapper .mail-footer {
+  color: #990000;
+  font-style: italic;
+  font-weight: bold;
+  margin-bottom: 20px;
+}

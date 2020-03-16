@@ -2,28 +2,58 @@
 
 namespace App;
 
-use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Model;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
+    protected $table = 'users';
+    protected $primaryKey = 'id_aut_user';
+    public $timestamps = false;
+
     protected $fillable = [
-        'name', 'email', 'password',
+        'email', 'password',  'first_name', 'last_name', 'codigo_verificacion'
     ];
 
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
     protected $hidden = [
-        'password', 'remember_token',
+        'password'
     ];
+
+    // Relación con la tabla roles
+    // public function rol()
+    // {
+    //     return $this->belongsTo('App\Role', 'id_rol');
+    // }
+
+    public function rol()
+    {
+        return $this->belongsTo(Role::class, 'id_rol', 'id_aut_rol');
+    }
+
+    public function administradores()
+    {
+        return $this->hasMany('App\AdministradorEmpresa', 'id_aut_user', 'id_aut_user');
+    }
+
+    public function administrador()
+    {
+        return $this->hasOne('App\AdministradorEmpresa', 'id_aut_user', 'id_aut_user');
+    }
+
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+    
+    public function getJWTCustomClaims()
+    {
+        return [
+            'rol' => $this->rol()->first()->nombre,
+            'email' => $this->email
+        ];
+    }
 }

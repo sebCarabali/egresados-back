@@ -18,6 +18,7 @@ use App\Programa;
 use App\Referido;
 use App\Repository\EgresadoRepositoryInterface;
 use App\Role as Rol;
+use App\Titulo;
 use App\User;
 use Excel;
 use Exception;
@@ -67,8 +68,7 @@ class EgresadoController extends Controller
     //Metodo que permite almacenar una lista de experiencias de un egresado
     public function guardarInfoExperiencia(array $experiencias, $idEgresado)
     {
-        return DB::transaction(function () use ( $experiencias, $idEgresado) {
-
+        return DB::transaction(function () use ($experiencias, $idEgresado) {
             foreach ($experiencias as $exp) {
                 //Informacion experiencias actual
                 $experiencia = new Experiencia();
@@ -78,14 +78,14 @@ class EgresadoController extends Controller
                 $experiencia->dir_empresa = $exp['dir_empresa'];
                 $experiencia->tel_trabajo = $exp['tel_trabajo'];
                 $experiencia->rango_salario = $exp['rango_salario'];
-                $experiencia->fecha_inicio = $exp['fecha_inicio'];
+                $experiencia->fecha_inicio = date('d/m/Y', strtotime($exp['fecha_inicio']));
                 $experiencia->tipo_contrato = $exp['tipo_contrato'];
                 $experiencia->sector = $exp['sector'];
                 $experiencia->trabajo_en_su_area = $exp['trabajo_en_su_area'];
                 $experiencia->categoria = $exp['categoria'];
 
                 $cargo = new Cargo();
-                $cargo->nombre = $exp["cargo_nombre"];
+                $cargo->nombre = $exp['cargo_nombre'];
                 $cargo->estado = false;
                 $cargo->save();
 
@@ -96,11 +96,10 @@ class EgresadoController extends Controller
                 } catch (Exception $e) {
                     return response()->json(['error' => $e], 400);
                 }
-                return response()->json($experiencias, 202);
+                return response()->json($experiencias, 200);
             }
         });
     }
-
 
     public function getEgresadoEmail($email)
     {
@@ -190,7 +189,7 @@ class EgresadoController extends Controller
                 'id_programa' => $gradoSimultaneo['id_aut_programa'],
                 'mension_honor' => $gradoSimultaneo['mencion_honor'],
                 'titulo_especial' => $gradoSimultaneo['titulo_especial'],
-                'fecha_grado' => date('Y/m/d', strtotime($gradoPendiente['fecha_grado'])),
+                'fecha_grado' => date('d/m/Y', strtotime($gradoPendiente['fecha_grado'])),
                 'anio_graduacion' => $gradoPendiente['anio_graduacion'],
                 'estado' => 'PENDIENTE',
             ];
@@ -254,60 +253,50 @@ class EgresadoController extends Controller
 
     public function fullInfo($idEgresado, Request $request)
     {
-        //return response()->json($idEgresado,400);
         return DB::transaction(function () use ($request, $idEgresado) {
             try {
                 $egresado = Egresado::find($idEgresado);
 
                 $egresado->ha_trabajado = $request->get('ha_trabajado');
-                $egresado->trabaja_actualmente = $request->get('trabaja_actualmente');
+                $egresado->trabaja_actualmente = $request->get('trabajo_actualmente');
+                                
                 $egresado->estado_completar = true;
                 $egresado->save();
 
                 // Obteniendo informacion de los referidos de un egresado
                 $referidos = $request->get('referidos');
 
-                if ($referidos && count($referidos) > 0) {
-                    //return response()->json($referidos,400);
+                if ($referidos && count($referidos) > 0) {                    
                     $this->guardarReferido($referidos, $idEgresado);
                 }
 
                 // Obteniendo informacion de las experiencias de un egresado
                 $expActual = $request->get('expActual');
-
                 //Se obtienen los comentarios del  grado ya registrado en el preregistro
                 $comentariosGradoRegistrado = $request->get('comentarios');
-                //return response()->json($request->get('comentarios'),400);
-                /*
-                         * GRADO SIMULTANEO
-                         * Este caso se presenta cuando un graduando se
-                         * gradua de DOS carreras diferentes al tiempo
-                         */
-
+                /*GRADO SIMULTANEO
+                    * Este caso se presenta cuando un graduando se
+                    * gradua de DOS carreras diferentes al tiempo
+                */
                 // Se obtine la informacion de un grado simultaneo
                 $gradoSimultaneo = $request->get('gradoAdicional');
-                //return response()->json($gradoSimultaneo, 400);
 
+                
                 if ($expActual && count($expActual) > 0) {
+                    
                     $this->guardarInfoExperiencia($expActual, $idEgresado);
                 }
 
                 if ($comentariosGradoRegistrado && count($comentariosGradoRegistrado)) {
-                    $grado = Grado::where('id_egresado', '=', $idEgresado)
+                    $grado = Grado::where('id_egresado', $idEgresado)
                         ->where('grados.estado', 'PENDIENTE')->first();
-
-                    //return response()->json($idEgresado,400);
-                    $this->guardarComentario($comentariosGradoRegistrado, $grado);
+                        $this->guardarComentario($comentariosGradoRegistrado, $grado);
                 }
-
+                
                 if ($request->get('otroGrado')) {
-                    $val = $this->guardarGradoSimultaneo($gradoSimultaneo, $idEgresado);
-                    //return response()->json($idGradoRegistrado, 200);
-                            /* INSERT INTO ofertas.grados
-                              ( id_aut_grado, tipo_grado, mencion_honor, titulo_especial, anio_graduacion, fecha_graduacion, id_programa, id_egresado, estado, observacion)
-                              VALUES ( 2, '', '', '', '2019', '09/09/2019', 2, 10, 'PENDIENTE', '' );
-                            */
+                    $this->guardarGradoSimultaneo($gradoSimultaneo, $idEgresado);
                 }
+                
             } catch (Exception $e) {
                 return response()->json($e->all(), 400);
             }
@@ -380,7 +369,7 @@ class EgresadoController extends Controller
         $egresado->correo = $request->get('correo');
         $egresado->correo_alternativo = $request->get('correo_alternativo');
         $egresado->grupo_etnico = $request->get('grupo_etnico');
-        $egresado->fecha_nacimiento = date('m/d/Y', strtotime($request->get('fecha_nacimiento')));
+        $egresado->fecha_nacimiento = date('d/m/Y', strtotime($request->get('fecha_nacimiento')));
 
         $egresado->lugarExpedicion()->associate(Ciudad::where('id_aut_ciudad', $request->get('id_lugar_expedicion'))->first());
         $egresado->ciudadNacimiento()->associate(Ciudad::where('id_aut_ciudad', $request->get('id_lugar_nacimiento'))->first());
@@ -411,8 +400,9 @@ class EgresadoController extends Controller
         $grado = [
             'id_programa' => $request->get('id_programa'),
             'mension_honor' => $request->get('mension_honor'),
-            'titulo_especial' => $request->get('titulo_especial'),
-            'fecha_grado' => date('m/d/Y', strtotime($request->get('fecha_grado'))),
+
+            'titulo_especial' => $request->has('titulo_especial') ? Titulo::where('id_aut_titulo', intval($request->get('titulo_especial')))->pluck('nombre')->first() : '',
+            'fecha_grado' => date('d/m/Y', strtotime($request->get('fecha_grado'))),
             'anio_graduacion' => $request->get('anio_graduacion'),
         ];
 
@@ -428,7 +418,7 @@ class EgresadoController extends Controller
         $egresado->correo_alternativo = $request->get('correo_alternativo');
         $egresado->grupo_etnico = $request->get('grupo_etnico');
 
-        $egresado->fecha_nacimiento = date('m/d/Y', strtotime($request->get('fecha_nacimiento')));
+        $egresado->fecha_nacimiento = date('d/m/Y', strtotime($request->get('fecha_nacimiento')));
         $egresado->lugarExpedicion()->associate(Ciudad::where('id_aut_ciudad', $request->get('id_lugar_expedicion'))->first());
         $egresado->ciudadNacimiento()->associate(Ciudad::where('id_aut_ciudad', $request->get('id_lugar_nacimiento'))->first());
         //$egresado->nivelEducativo()->associate(NivelEstudio::find($request->get('id_nivel_educativo'))->first());
@@ -445,8 +435,11 @@ class EgresadoController extends Controller
         if ($grado) { // ya se ha registrado el grado del egresado
             // Actualizar info grado
             $grado->mencion_honor = '' == $request->get('mencion_honor') ? 'No' : $request->get('mencion_honor');
-            $grado->titulo_especial = $request->get('titulo_especial');
-            $grado->fecha_graduacion = date('m/d/Y', strtotime($request->get('fecha_grado')));
+
+            $grado->titulo_especial = $request->has('titulo_especial') ? Titulo::where('id_aut_titulo', intval($request->get('titulo_especial')))->pluck('nombre')->first() : '';
+
+            $grado->fecha_graduacion = date('d/m/Y', strtotime($request->get('fecha_grado')));
+
             $grado->anio_graduacion = $request->get('anio_graduacion');
             $grado->save();
             $grado = [];
@@ -454,8 +447,11 @@ class EgresadoController extends Controller
             $grado = [
                 'id_programa' => $request->get('id_programa'),
                 'mencion_honor' => $request->get('mension_honor'),
-                'titulo_especial' => $request->get('titulo_especial'),
-                'fecha_grado' => date('m/d/Y', strtotime($request->get('fecha_grado'))),
+
+                'titulo_especial' => $request->has('titulo_especial') ? Titulo::where('id_aut_titulo', intval($request->get('titulo_especial')))->pluck('nombre')->first() : '',
+
+                'fecha_grado' => date('d/m/Y', strtotime($request->get('fecha_grado'))),
+
                 'anio_graduacion' => $request->get('anio_graduacion'),
             ];
         }
@@ -634,7 +630,7 @@ class EgresadoController extends Controller
             }
 
             //Asociando nuevas experiencias para un egresado
-            $this->guardarInfoExperiencia($experiencias, $idEgresado);
+            $this->guardarInfoExperiencia($experienciasUpdate, $idEgresado);
         });
     }
 

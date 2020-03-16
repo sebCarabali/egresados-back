@@ -59,9 +59,7 @@ class VerificarEgresadoController extends Controller
 
             return response()->json(['data' => $data], 200);
         } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
-        } catch (FormatoExcelException $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            return response()->json(['error' => $e->getMessage(), 'code' => $e->getCode()], 400);
         }
     }
 
@@ -260,7 +258,7 @@ class VerificarEgresadoController extends Controller
             'estado' => self::ACTIVO_NO_LOGUEADO,
         ]);
 
-        //return $this->registrarNuevoGrado($egresado, $row, self::PENDIENTE);
+        return $this->registrarNuevoGrado($egresado, $row, self::PENDIENTE);
     }
 
     private function esGradoDiferente(Egresado $egresado, $programaExcel, $estado)

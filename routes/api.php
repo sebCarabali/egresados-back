@@ -61,7 +61,7 @@ Route::put('enviarEstadoSolicitudCarnet/{idEgresado}', 'API\CarnetizacionControl
 // RUTAS DE PARA LOS GRADOS
 
  Route::get('obtenerGradosEgresado/{idEgresado}', 'API\ActualizarGradosController@getGrados');
- Route::post('actualizarGrado/{idEgresado}','API\ActualizarGradosController@update');
+ Route::post('actualizarGrado/{idEgresado}', 'API\ActualizarGradosController@update');
 /*
 *Retorna las preguntas que debe responder un egresedo para su carrera y universidad
 carnetizacionUpdateAdmin
@@ -103,8 +103,8 @@ Route::get('nivelesPrograma', function () {
 // Carga la informacion de un egresado para mostrar en Ver Perfil
 Route::get('verPerfilEgresado/{idEgresado}', 'API\EgresadoController@verPerfil');
 Route::put('actualizarReferido/{idEgresado}', 'API\refPersonalesController@update');
-Route::post('actualizarExperiencia/{idEgresao}','API\ActualizarExperienciaController@update');
-Route::post('agregarExperiencia/{idEgresao}','API\EgresadoController@guardarInfoExperiencia');
+Route::post('actualizarExperiencia/{idEgresao}', 'API\ActualizarExperienciaController@update');
+Route::post('agregarExperiencia/{idEgresao}', 'API\EgresadoController@guardarInfoExperiencia');
 
 Route::post('users/validar/{codigo}', 'UserController@activarCuenta');
 Route::get('users/validar/{codigo}', 'UserController@esUsuarioActivoPorCodigo');
@@ -145,6 +145,8 @@ Route::get('admin/egresados/grados/{idEgresado}', 'GradosController@getByIdEgres
 Route::get('admin/grado/{idGrado}', 'GradosController@getById');
 Route::get('admin/observaciones', 'API\TipoObservacionController@getObservaciones');
 
+Route::get('admin/servicios/{email}', 'ServicioController@getServiciosApoyo');
+Route::put('apoyos/activaremail/{codigo}', 'ApoyoController@activarNuevoEmailBy');
 // --------------------------------------------------------------------------------
 // Registro de una empresa
 Route::post('empresas/store', 'EmpresaController@store');
@@ -226,6 +228,11 @@ Route::get('cargos', 'CargoController@getAll');
 Route::get('salarios/{moneda}', 'OfertaController@getSalarioPorModena');
 // Route::get('salarios', 'OfertaController@getAllSalario');
 Route::get('areasConocimiento', 'OfertaController@getAllAreas');
+
+
+/*Vencimiento ToDo en una tarea programada*/
+Route::get('verificar-vencimiento-oferta', 'OfertaController@evalVencimientoOferta');
+Route::get('verificar-vencimiento-empresa', 'EmpresaController@evalVencimientoEmpresa');
 
 Route::post('ofertas/store', 'OfertaController@storeOferta');
 Route::post('login', 'AuthController@login');

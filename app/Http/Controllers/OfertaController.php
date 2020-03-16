@@ -761,4 +761,29 @@ class OfertaController extends Controller
     $postulado->notify(new \App\Notifications\CambioEstadoEgresado($oferta, $request["estado"]));
     return $this->success("Se ha actualizado el estado correctamente.");
   }
+
+  public function evalVencimientoOferta()
+  {
+      $code = 400;
+      $ofertas = Oferta::all();
+      $auxFecha = Carbon::now('-5:00');
+      $auxOfertasCambiadas = [];
+      DB::beginTransaction();
+      foreach ($ofertas as $oferta){
+          if (!empty($oferta->fecha_cierre) && !empty($oferta->fecha_publicacion) && 
+              $oferta->estado_proceso != 'Finalizada con contratación' && 
+              $oferta->estado_proceso != 'Finalizada sin contratación' &&
+              $oferta->estado_proceso != 'Expirada' &&
+              $oferta->estado_proceso != 'Pendiente'){
+              if ($auxFecha->gt((Carbon::parse($oferta->fecha_cierre))->addDay())) {
+                $oferta->update(['estado_proceso' => 'Expirada']);  
+                array_push($auxOfertasCambiadas, $oferta);  
+              }
+          }
+      }
+      DB::commit();
+      $code = 200;
+
+      return response()->json($auxOfertasCambiadas, $code);
+  }
 }

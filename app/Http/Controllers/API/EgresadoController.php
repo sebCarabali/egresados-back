@@ -96,6 +96,7 @@ class EgresadoController extends Controller
                 } catch (Exception $e) {
                     return response()->json(['error' => $e], 400);
                 }
+
                 return response()->json($experiencias, 200);
             }
         });
@@ -259,14 +260,14 @@ class EgresadoController extends Controller
 
                 $egresado->ha_trabajado = $request->get('ha_trabajado');
                 $egresado->trabaja_actualmente = $request->get('trabajo_actualmente');
-                                
+
                 $egresado->estado_completar = true;
                 $egresado->save();
 
                 // Obteniendo informacion de los referidos de un egresado
                 $referidos = $request->get('referidos');
 
-                if ($referidos && count($referidos) > 0) {                    
+                if ($referidos && count($referidos) > 0) {
                     $this->guardarReferido($referidos, $idEgresado);
                 }
 
@@ -281,22 +282,19 @@ class EgresadoController extends Controller
                 // Se obtine la informacion de un grado simultaneo
                 $gradoSimultaneo = $request->get('gradoAdicional');
 
-                
                 if ($expActual && count($expActual) > 0) {
-                    
                     $this->guardarInfoExperiencia($expActual, $idEgresado);
                 }
 
                 if ($comentariosGradoRegistrado && count($comentariosGradoRegistrado)) {
                     $grado = Grado::where('id_egresado', $idEgresado)
                         ->where('grados.estado', 'PENDIENTE')->first();
-                        $this->guardarComentario($comentariosGradoRegistrado, $grado);
+                    $this->guardarComentario($comentariosGradoRegistrado, $grado);
                 }
-                
+
                 if ($request->get('otroGrado')) {
                     $this->guardarGradoSimultaneo($gradoSimultaneo, $idEgresado);
                 }
-                
             } catch (Exception $e) {
                 return response()->json($e->all(), 400);
             }
@@ -524,7 +522,7 @@ class EgresadoController extends Controller
     {
         $correo = $usuario->email;
         Mail::send('mail.confirmation', ['codigo' => $usuario->codigo_verificacion], function ($message) use ($correo) {
-            $message->from('sebastiancc@unicauca.edu.co', 'Egresados');
+            $message->from('egresadounicauca@gmail.com', 'Egresados Unicauca');
             $message->to($correo)->subject('Nuevo usuario');
         });
     }

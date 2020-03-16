@@ -148,6 +148,13 @@ class ApoyoController extends Controller
         }
     }
 
+    public function estaEnProcesoDeActivacion($id)
+    {
+        $estaEnProceso = ConfirmacionCorreo::where('id_apoyos_fk', $id)->exists();
+
+        return $this->success(['enProceso' => $estaEnProceso]);
+    }
+
     private function actualizarEmail($apoyo, $nuevo)
     {
         if (0 != strcmp(mb_strtolower($apoyo->correo), mb_strtolower($nuevo))) {
@@ -169,7 +176,7 @@ class ApoyoController extends Controller
 
             $confirmacionCorreo->notify(new CambioCorreoApoyoNotification($codigo));
 
-            return $guardo;
+            return true;
         }
 
         return false;

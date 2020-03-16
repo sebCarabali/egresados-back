@@ -80,7 +80,7 @@ class ApoyoController extends Controller
     {
         $data = $request->only('id', 'nombres', 'apellidos', 'nombreRol', 'correo', 'correoSecundario', 'servicios', 'usuario');
 
-        if (EmailYaExisteValidator::validarEmail($data['correo'])) {
+        if (EmailYaExisteValidator::validarEmail($data['correo'], $data['id'])) {
             return $this->fail('Un usuario se encuentra utilizando el correo electrónico que desea modificar');
         }
 

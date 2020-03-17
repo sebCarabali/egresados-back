@@ -72,25 +72,26 @@ class EgresadoController extends Controller
         return DB::transaction(function () use ($experiencias, $idEgresado) {
             foreach ($experiencias as $exp) {
                 //Informacion experiencias actual
-                $experiencia = new Experiencia();
-                $experiencia->nombre_empresa = $exp['nombre_empresa'];
-                $experiencia->ciudad()->associate(Ciudad::where('id_aut_ciudad', $exp['id_ciudad'])->first());
+                    try {
+                    $experiencia = new Experiencia();
+                    $experiencia->nombre_empresa = $exp['nombre_empresa'];
+                    $experiencia->ciudad()->associate(Ciudad::where('id_aut_ciudad', $exp['id_ciudad'])->first());
 
-                $experiencia->dir_empresa = $exp['dir_empresa'];
-                $experiencia->tel_trabajo = $exp['tel_trabajo'];
-                $experiencia->rango_salario = $exp['rango_salario'];
-                $experiencia->fecha_inicio = date('d/m/Y', strtotime($exp['fecha_inicio']));
-                $experiencia->tipo_contrato = $exp['tipo_contrato'];
-                $experiencia->sector = $exp['sector'];
-                $experiencia->trabajo_en_su_area = $exp['trabajo_en_su_area'];
-                $experiencia->categoria = $exp['categoria'];
+                    $experiencia->dir_empresa = $exp['dir_empresa'];
+                    $experiencia->tel_trabajo = $exp['tel_trabajo'];
+                    $experiencia->rango_salario = $exp['rango_salario'];
+                    $experiencia->fecha_inicio = PgDateHelper::machete($exp['fecha_inicio']);
+                    $experiencia->tipo_contrato = $exp['tipo_contrato'];
+                    $experiencia->sector = $exp['sector'];
+                    $experiencia->trabajo_en_su_area = $exp['trabajo_en_su_area'];
+                    $experiencia->categoria = $exp['categoria'];
 
-                $cargo = new Cargo();
-                $cargo->nombre = $exp['cargo_nombre'];
-                $cargo->estado = false;
-                $cargo->save();
+                    $cargo = new Cargo();
+                    $cargo->nombre = $exp['cargo_nombre'];
+                    $cargo->estado = false;
+                    $cargo->save();
 
-                try {
+                
                     $experiencia->cargos()->associate($cargo);
                     $experiencia->egresados()->associate(Egresado::where('id_aut_egresado', $idEgresado)->first());
                     $experiencia->save();
@@ -191,7 +192,7 @@ class EgresadoController extends Controller
                 'id_programa' => $gradoSimultaneo['id_aut_programa'],
                 'mension_honor' => $gradoSimultaneo['mencion_honor'],
                 'titulo_especial' => $gradoSimultaneo['titulo_especial'],
-                'fecha_grado' => date('m/d/Y', strtotime($gradoPendiente['fecha_graduacion'])),
+                'fecha_grado' => PgDateHelper::machete($gradoPendiente['fecha_graduacion']),
                 'anio_graduacion' => $gradoPendiente['anio_graduacion'],
                 'estado' => 'PENDIENTE',
             ];

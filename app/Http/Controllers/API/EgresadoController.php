@@ -72,25 +72,25 @@ class EgresadoController extends Controller
         return DB::transaction(function () use ($experiencias, $idEgresado) {
             foreach ($experiencias as $exp) {
                 //Informacion experiencias actual
-                $experiencia = new Experiencia();
-                $experiencia->nombre_empresa = $exp['nombre_empresa'];
-                $experiencia->ciudad()->associate(Ciudad::where('id_aut_ciudad', $exp['id_ciudad'])->first());
-
-                $experiencia->dir_empresa = $exp['dir_empresa'];
-                $experiencia->tel_trabajo = $exp['tel_trabajo'];
-                $experiencia->rango_salario = $exp['rango_salario'];
-                $experiencia->fecha_inicio = date('d/m/Y', strtotime($exp['fecha_inicio']));
-                $experiencia->tipo_contrato = $exp['tipo_contrato'];
-                $experiencia->sector = $exp['sector'];
-                $experiencia->trabajo_en_su_area = $exp['trabajo_en_su_area'];
-                $experiencia->categoria = $exp['categoria'];
-
-                $cargo = new Cargo();
-                $cargo->nombre = $exp['cargo_nombre'];
-                $cargo->estado = false;
-                $cargo->save();
-
                 try {
+                    $experiencia = new Experiencia();
+                    $experiencia->nombre_empresa = $exp['nombre_empresa'];
+                    $experiencia->ciudad()->associate(Ciudad::where('id_aut_ciudad', $exp['id_ciudad'])->first());
+
+                    $experiencia->dir_empresa = $exp['dir_empresa'];
+                    $experiencia->tel_trabajo = $exp['tel_trabajo'];
+                    $experiencia->rango_salario = $exp['rango_salario'];
+                    $experiencia->fecha_inicio = PgDateHelper::tranformarDate($exp['fecha_inicio']);
+                    $experiencia->tipo_contrato = $exp['tipo_contrato'];
+                    $experiencia->sector = $exp['sector'];
+                    $experiencia->trabajo_en_su_area = $exp['trabajo_en_su_area'];
+                    $experiencia->categoria = $exp['categoria'];
+
+                    $cargo = new Cargo();
+                    $cargo->nombre = $exp['cargo_nombre'];
+                    $cargo->estado = false;
+                    $cargo->save();
+
                     $experiencia->cargos()->associate($cargo);
                     $experiencia->egresados()->associate(Egresado::where('id_aut_egresado', $idEgresado)->first());
                     $experiencia->save();
@@ -191,7 +191,7 @@ class EgresadoController extends Controller
                 'id_programa' => $gradoSimultaneo['id_aut_programa'],
                 'mension_honor' => $gradoSimultaneo['mencion_honor'],
                 'titulo_especial' => $gradoSimultaneo['titulo_especial'],
-                'fecha_grado' => date('m/d/Y', strtotime($gradoPendiente['fecha_graduacion'])),
+                'fecha_grado' => PgDateHelper::tranformarDate($gradoPendiente['fecha_graduacion']),
                 'anio_graduacion' => $gradoPendiente['anio_graduacion'],
                 'estado' => 'PENDIENTE',
             ];
@@ -401,7 +401,7 @@ class EgresadoController extends Controller
             'mension_honor' => $request->get('mension_honor'),
 
             'titulo_especial' => $request->has('titulo_especial') ? Titulo::where('id_aut_titulo', intval($request->get('titulo_especial')))->pluck('nombre')->first() : '',
-            'fecha_grado' => PgDateHelper::stringToPgSqlFormat($request->get('fecha_grado')),
+            'fecha_grado' => $request->has('fecha_grado') ? PgDateHelper::stringToPgSqlFormat($request->get('fecha_grado')) : '',
             'anio_graduacion' => $request->get('anio_graduacion'),
         ];
 
@@ -437,7 +437,7 @@ class EgresadoController extends Controller
 
             $grado->titulo_especial = $request->has('titulo_especial') ? Titulo::where('id_aut_titulo', intval($request->get('titulo_especial')))->pluck('nombre')->first() : '';
 
-            $grado->fecha_graduacion = date('d/m/Y', strtotime($request->get('fecha_grado')));
+            $grado->fecha_graduacion = $request->has('fecha_grado') ? PgDateHelper::stringToPgSqlFormat($request->get('fecha_grado')) : '';
 
             $grado->anio_graduacion = $request->get('anio_graduacion');
             $grado->save();
@@ -449,7 +449,7 @@ class EgresadoController extends Controller
 
                 'titulo_especial' => $request->has('titulo_especial') ? Titulo::where('id_aut_titulo', intval($request->get('titulo_especial')))->pluck('nombre')->first() : '',
 
-                'fecha_grado' => date('d/m/Y', strtotime($request->get('fecha_grado'))),
+                'fecha_graduacion' => $request->has('fecha_grado') ? PgDateHelper::stringToPgSqlFormat($request->get('fecha_grado')) : '',
 
                 'anio_graduacion' => $request->get('anio_graduacion'),
             ];
@@ -544,7 +544,7 @@ class EgresadoController extends Controller
                     'mencion_honor' => array_key_exists('mension_honor', $grado) ? $grado['mension_honor'] : 'No',
                     'titulo_especial' => array_key_exists('titulo_especial', $grado) ? $grado['titulo_especial'] : '',
                     //'comentarios' => array_key_exists('comentarios', $grado) ? $grado['comentarios'] : '',
-                    'fecha_graduacion' => PgDateHelper::stringToPgSqlFormat($grado['fecha_grado']),
+                    'fecha_graduacion' => '' != $grado['fecha_grado'] ? PgDateHelper::stringToPgSqlFormat($grado['fecha_grado']) : '',
                     //'docente_influencia' => array_key_exists('docente_influencia', $grado) ? $grado['docente_influencia'] : '',
                     'anio_graduacion' => $grado['anio_graduacion'],
                     'estado' => self::PENDIENTE,

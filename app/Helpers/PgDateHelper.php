@@ -31,4 +31,13 @@ class PgDateHelper
 
         return $dateArray[2].'/'.$dateArray[1].'/'.$dateArray[0];
     }
+
+    public static function tranformarDate($dateStr)
+    {
+        $dateArr = explode('-', $dateStr);
+
+        $dia = substr($dateArr[2], 0, 2);
+
+        return $dateArr[0].'-'.$dateArr[1].'-'.$dia;
+    }
 }

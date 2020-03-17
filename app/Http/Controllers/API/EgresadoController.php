@@ -8,6 +8,7 @@ use App\Ciudad;
 use App\Egresado;
 use App\Experiencia;
 use App\Grado;
+use App\Helpers\PgDateHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GuardarInformacionBasicaRequest;
 use App\Http\Resources\EgresadoAdminResource;
@@ -96,9 +97,9 @@ class EgresadoController extends Controller
                 } catch (Exception $e) {
                     return response()->json(['error' => $e], 400);
                 }
-                
             }
         });
+
         return response()->json($experiencias, 200);
     }
 
@@ -260,14 +261,14 @@ class EgresadoController extends Controller
 
                 $egresado->ha_trabajado = $request->get('ha_trabajado');
                 $egresado->trabaja_actualmente = $request->get('trabajo_actualmente');
-                                
+
                 $egresado->estado_completar = true;
                 $egresado->save();
 
                 // Obteniendo informacion de los referidos de un egresado
                 $referidos = $request->get('referidos');
 
-                if ($referidos && count($referidos) > 0) {                    
+                if ($referidos && count($referidos) > 0) {
                     $this->guardarReferido($referidos, $idEgresado);
                 }
 
@@ -282,22 +283,19 @@ class EgresadoController extends Controller
                 // Se obtine la informacion de un grado simultaneo
                 $gradoSimultaneo = $request->get('gradoAdicional');
 
-                
                 if ($expActual && count($expActual) > 0) {
-                    
                     $this->guardarInfoExperiencia($expActual, $idEgresado);
                 }
 
                 if ($comentariosGradoRegistrado && count($comentariosGradoRegistrado)) {
                     $grado = Grado::where('id_egresado', $idEgresado)
                         ->where('grados.estado', 'PENDIENTE')->first();
-                        $this->guardarComentario($comentariosGradoRegistrado, $grado);
+                    $this->guardarComentario($comentariosGradoRegistrado, $grado);
                 }
-                
+
                 if ($request->get('otroGrado')) {
                     $this->guardarGradoSimultaneo($gradoSimultaneo, $idEgresado);
                 }
-                
             } catch (Exception $e) {
                 return response()->json($e->all(), 400);
             }
@@ -370,7 +368,7 @@ class EgresadoController extends Controller
         $egresado->correo = $request->get('correo');
         $egresado->correo_alternativo = $request->get('correo_alternativo');
         $egresado->grupo_etnico = $request->get('grupo_etnico');
-        $egresado->fecha_nacimiento = date('d/m/Y', strtotime($request->get('fecha_nacimiento')));
+        $egresado->fecha_nacimiento = PgDateHelper::stringToPgSqlFormat($request->get('fecha_nacimiento'));
 
         $egresado->lugarExpedicion()->associate(Ciudad::where('id_aut_ciudad', $request->get('id_lugar_expedicion'))->first());
         $egresado->ciudadNacimiento()->associate(Ciudad::where('id_aut_ciudad', $request->get('id_lugar_nacimiento'))->first());
@@ -403,7 +401,7 @@ class EgresadoController extends Controller
             'mension_honor' => $request->get('mension_honor'),
 
             'titulo_especial' => $request->has('titulo_especial') ? Titulo::where('id_aut_titulo', intval($request->get('titulo_especial')))->pluck('nombre')->first() : '',
-            'fecha_grado' => date('d/m/Y', strtotime($request->get('fecha_grado'))),
+            'fecha_grado' => PgDateHelper::stringToPgSqlFormat($request->get('fecha_grado')),
             'anio_graduacion' => $request->get('anio_graduacion'),
         ];
 
@@ -419,7 +417,7 @@ class EgresadoController extends Controller
         $egresado->correo_alternativo = $request->get('correo_alternativo');
         $egresado->grupo_etnico = $request->get('grupo_etnico');
 
-        $egresado->fecha_nacimiento = date('d/m/Y', strtotime($request->get('fecha_nacimiento')));
+        $egresado->fecha_nacimiento = PgDateHelper::stringToPgSqlFormat($request->get('fecha_nacimiento'));
         $egresado->lugarExpedicion()->associate(Ciudad::where('id_aut_ciudad', $request->get('id_lugar_expedicion'))->first());
         $egresado->ciudadNacimiento()->associate(Ciudad::where('id_aut_ciudad', $request->get('id_lugar_nacimiento'))->first());
         //$egresado->nivelEducativo()->associate(NivelEstudio::find($request->get('id_nivel_educativo'))->first());
@@ -546,7 +544,7 @@ class EgresadoController extends Controller
                     'mencion_honor' => array_key_exists('mension_honor', $grado) ? $grado['mension_honor'] : 'No',
                     'titulo_especial' => array_key_exists('titulo_especial', $grado) ? $grado['titulo_especial'] : '',
                     //'comentarios' => array_key_exists('comentarios', $grado) ? $grado['comentarios'] : '',
-                    'fecha_graduacion' => $grado['fecha_grado'],
+                    'fecha_graduacion' => PgDateHelper::stringToPgSqlFormat($grado['fecha_grado']),
                     //'docente_influencia' => array_key_exists('docente_influencia', $grado) ? $grado['docente_influencia'] : '',
                     'anio_graduacion' => $grado['anio_graduacion'],
                     'estado' => self::PENDIENTE,

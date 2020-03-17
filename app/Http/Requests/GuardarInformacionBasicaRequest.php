@@ -31,7 +31,7 @@ class GuardarInformacionBasicaRequest extends FormRequest
             'grupo_etnico' => 'required',
             'apellidos' => 'required',
             'genero' => 'required',
-            'fecha_nacimiento' => 'required|date',
+            'fecha_nacimiento' => 'required',
             'id_lugar_nacimiento' => 'required',
             'id_lugar_expedicion' => 'required',
             //'direccion' => 'required',

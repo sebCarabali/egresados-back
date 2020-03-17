@@ -368,7 +368,7 @@ class EgresadoController extends Controller
         $egresado->correo = $request->get('correo');
         $egresado->correo_alternativo = $request->get('correo_alternativo');
         $egresado->grupo_etnico = $request->get('grupo_etnico');
-        $egresado->fecha_nacimiento = PgDateHelper::stringToPgSqlFormat($request->get('fecha_nacimiento'));
+        $egresado->fecha_nacimiento = $request->has('fecha_nacimiento') ? PgDateHelper::stringToPgSqlFormat($request->get('fecha_nacimiento')) : '';
 
         $egresado->lugarExpedicion()->associate(Ciudad::where('id_aut_ciudad', $request->get('id_lugar_expedicion'))->first());
         $egresado->ciudadNacimiento()->associate(Ciudad::where('id_aut_ciudad', $request->get('id_lugar_nacimiento'))->first());

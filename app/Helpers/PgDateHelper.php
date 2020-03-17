@@ -32,7 +32,7 @@ class PgDateHelper
         return $dateArray[2].'/'.$dateArray[1].'/'.$dateArray[0];
     }
 
-    public static function machete($dateStr)
+    public static function tranformarDate($dateStr)
     {
         $dateArr = explode('-', $dateStr);
 

@@ -80,7 +80,7 @@ class EgresadoController extends Controller
                     $experiencia->dir_empresa = $exp['dir_empresa'];
                     $experiencia->tel_trabajo = $exp['tel_trabajo'];
                     $experiencia->rango_salario = $exp['rango_salario'];
-                    $experiencia->fecha_inicio = PgDateHelper::machete($exp['fecha_inicio']);
+                    $experiencia->fecha_inicio = PgDateHelper::tranformarDate($exp['fecha_inicio']);
                     $experiencia->tipo_contrato = $exp['tipo_contrato'];
                     $experiencia->sector = $exp['sector'];
                     $experiencia->trabajo_en_su_area = $exp['trabajo_en_su_area'];
@@ -192,7 +192,7 @@ class EgresadoController extends Controller
                 'id_programa' => $gradoSimultaneo['id_aut_programa'],
                 'mension_honor' => $gradoSimultaneo['mencion_honor'],
                 'titulo_especial' => $gradoSimultaneo['titulo_especial'],
-                'fecha_grado' => PgDateHelper::machete($gradoPendiente['fecha_graduacion']),
+                'fecha_grado' => PgDateHelper::tranformarDate($gradoPendiente['fecha_graduacion']),
                 'anio_graduacion' => $gradoPendiente['anio_graduacion'],
                 'estado' => 'PENDIENTE',
             ];

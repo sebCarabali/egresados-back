@@ -368,7 +368,7 @@ class EgresadoController extends Controller
         $egresado->correo = $request->get('correo');
         $egresado->correo_alternativo = $request->get('correo_alternativo');
         $egresado->grupo_etnico = $request->get('grupo_etnico');
-        $egresado->fecha_nacimiento = $request->has('fecha_nacimiento') ? PgDateHelper::stringToPgSqlFormat($request->get('fecha_nacimiento')) : '';
+        $egresado->fecha_nacimiento = $request->has('fecha_nacimiento') ? PgDateHelper::reordenarFecha($request->get('fecha_nacimiento')) : '';
 
         $egresado->lugarExpedicion()->associate(Ciudad::where('id_aut_ciudad', $request->get('id_lugar_expedicion'))->first());
         $egresado->ciudadNacimiento()->associate(Ciudad::where('id_aut_ciudad', $request->get('id_lugar_nacimiento'))->first());
@@ -401,7 +401,7 @@ class EgresadoController extends Controller
             'mension_honor' => $request->get('mension_honor'),
 
             'titulo_especial' => $request->has('titulo_especial') ? Titulo::where('id_aut_titulo', intval($request->get('titulo_especial')))->pluck('nombre')->first() : '',
-            'fecha_grado' => $request->has('fecha_grado') ? PgDateHelper::stringToPgSqlFormat($request->get('fecha_grado')) : '',
+            'fecha_grado' => $request->has('fecha_grado') ? PgDateHelper::reordenarFecha($request->get('fecha_grado')) : '',
             'anio_graduacion' => $request->get('anio_graduacion'),
         ];
 
@@ -417,7 +417,7 @@ class EgresadoController extends Controller
         $egresado->correo_alternativo = $request->get('correo_alternativo');
         $egresado->grupo_etnico = $request->get('grupo_etnico');
 
-        $egresado->fecha_nacimiento = PgDateHelper::stringToPgSqlFormat($request->get('fecha_nacimiento'));
+        $egresado->fecha_nacimiento = PgDateHelper::reordenarFecha($request->get('fecha_nacimiento'));
         $egresado->lugarExpedicion()->associate(Ciudad::where('id_aut_ciudad', $request->get('id_lugar_expedicion'))->first());
         $egresado->ciudadNacimiento()->associate(Ciudad::where('id_aut_ciudad', $request->get('id_lugar_nacimiento'))->first());
         //$egresado->nivelEducativo()->associate(NivelEstudio::find($request->get('id_nivel_educativo'))->first());
@@ -437,7 +437,7 @@ class EgresadoController extends Controller
 
             $grado->titulo_especial = $request->has('titulo_especial') ? Titulo::where('id_aut_titulo', intval($request->get('titulo_especial')))->pluck('nombre')->first() : '';
 
-            $grado->fecha_graduacion = $request->has('fecha_grado') ? PgDateHelper::stringToPgSqlFormat($request->get('fecha_grado')) : '';
+            $grado->fecha_graduacion = $request->has('fecha_grado') ? PgDateHelper::reordenarFecha($request->get('fecha_grado')) : '';
 
             $grado->anio_graduacion = $request->get('anio_graduacion');
             $grado->save();
@@ -449,7 +449,7 @@ class EgresadoController extends Controller
 
                 'titulo_especial' => $request->has('titulo_especial') ? Titulo::where('id_aut_titulo', intval($request->get('titulo_especial')))->pluck('nombre')->first() : '',
 
-                'fecha_graduacion' => $request->has('fecha_grado') ? PgDateHelper::stringToPgSqlFormat($request->get('fecha_grado')) : '',
+                'fecha_graduacion' => $request->has('fecha_grado') ? PgDateHelper::reordenarFecha($request->get('fecha_grado')) : '',
 
                 'anio_graduacion' => $request->get('anio_graduacion'),
             ];
@@ -544,7 +544,7 @@ class EgresadoController extends Controller
                     'mencion_honor' => array_key_exists('mension_honor', $grado) ? $grado['mension_honor'] : 'No',
                     'titulo_especial' => array_key_exists('titulo_especial', $grado) ? $grado['titulo_especial'] : '',
                     //'comentarios' => array_key_exists('comentarios', $grado) ? $grado['comentarios'] : '',
-                    'fecha_graduacion' => '' != $grado['fecha_grado'] ? PgDateHelper::stringToPgSqlFormat($grado['fecha_grado']) : '',
+                    'fecha_graduacion' => '' != $grado['fecha_grado'] ? PgDateHelper::reordenarFecha($grado['fecha_grado']) : '',
                     //'docente_influencia' => array_key_exists('docente_influencia', $grado) ? $grado['docente_influencia'] : '',
                     'anio_graduacion' => $grado['anio_graduacion'],
                     'estado' => self::PENDIENTE,

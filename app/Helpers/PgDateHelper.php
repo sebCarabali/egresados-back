@@ -32,6 +32,13 @@ class PgDateHelper
         return $dateArray[2].'/'.$dateArray[1].'/'.$dateArray[0];
     }
 
+    public static function reordenarFecha($dateStr)
+    {
+        $dateArr = explode('-', $dateStr);
+
+        return $dateArr[2].'-'.$dateArr[1].'-'.$dateArr[0];
+    }
+
     public static function tranformarDate($dateStr)
     {
         $dateArr = explode('-', $dateStr);
